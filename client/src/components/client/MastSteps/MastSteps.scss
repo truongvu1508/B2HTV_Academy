@@ -1,0 +1,56 @@
+$dark-2: #001e78;
+$green-1: #00ff84;
+
+.mastSteps {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  padding: 120px 0;
+
+  &__title {
+    color: $dark-2;
+    text-align: center;
+
+    h2 {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+  }
+
+  &__item {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f7f8fb;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+
+    &-step {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+
+      span {
+        padding: 6px;
+        background: $dark-2;
+        color: white;
+        font-weight: bold;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  &__text {
+    text-align: center;
+    margin-top: 32px;
+  }
+}

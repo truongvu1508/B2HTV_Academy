@@ -18,7 +18,7 @@ const MastHead = () => {
           <img src={assets.background} alt="image" />
         </div>
 
-        <div className="container" style={{ padding: "20px" }}>
+        <div className="containe" style={{ padding: "20px" }}>
           <Row justify="center" align="middle">
             <Col
               xs={24}

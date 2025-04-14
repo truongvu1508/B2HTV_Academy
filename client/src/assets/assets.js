@@ -4,6 +4,11 @@ import img_placeholder from "./landscape-placeholder.svg";
 import language_introduction from "./language_introduction.png";
 import wave from "./wave.png";
 import bg_software from "./pngtree-software-development.png";
+import click_course from "./xem-khoa-hoc.svg";
+import pay_course from "./thanh-toan.svg";
+import learn_course from "./vao-hoc.svg";
+import line_1 from "./line-1.svg";
+import line_2 from "./line-2.svg";
 
 export const assets = {
   background,
@@ -12,6 +17,11 @@ export const assets = {
   language_introduction,
   wave,
   bg_software,
+  click_course,
+  pay_course,
+  learn_course,
+  line_1,
+  line_2,
 };
 
 export const dummyEducatorData = {
