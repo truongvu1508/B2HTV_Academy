@@ -9,6 +9,7 @@ import pay_course from "./thanh-toan.svg";
 import learn_course from "./vao-hoc.svg";
 import line_1 from "./line-1.svg";
 import line_2 from "./line-2.svg";
+import error404 from "./error404.png";
 
 export const assets = {
   background,
@@ -22,6 +23,7 @@ export const assets = {
   learn_course,
   line_1,
   line_2,
+  error404,
 };
 
 export const dummyEducatorData = {

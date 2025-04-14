@@ -16,6 +16,8 @@ import About from "./pages/client/About";
 import Blog from "./pages/client/Blog";
 import Contact from "./pages/client/Contact";
 
+import Error404 from "./pages/Error404";
+
 const App = () => {
   return (
     <div>
@@ -36,6 +38,7 @@ const App = () => {
           <Route path="my-course" element={<MyCourses />} />
           <Route path="student-enrolled" element={<StudentsEnrolled />} />
         </Route>
+        <Route path="*" element={<Error404 />} />
       </Routes>
     </div>
   );

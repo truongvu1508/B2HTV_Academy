@@ -7,10 +7,11 @@ import {
   GlobalOutlined,
 } from "@ant-design/icons";
 import "./MastHead.scss";
-import { useClerk } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/clerk-react";
 
 const MastHead = () => {
   const { openSignIn } = useClerk();
+  const { user } = useUser();
   return (
     <>
       <section className="masthead">
@@ -39,9 +40,16 @@ const MastHead = () => {
                   trình và quan trọng hơn là vận dụng kiến thức này để giải
                   quyết các bài toán thực tế.
                 </p>
-                <Button onClick={openSignIn} className="masthead__button">
-                  Đăng Ký Tài Khoản
-                </Button>
+                {user ? (
+                  <></>
+                ) : (
+                  <>
+                    <Button onClick={openSignIn} className="masthead__button">
+                      Đăng Ký Tài Khoản
+                    </Button>
+                  </>
+                )}
+
                 <Row className="masthead-info">
                   <Col xs={24} sm={24} md={24} lg={8} xl={8}>
                     <div className="masthead-info__item">
