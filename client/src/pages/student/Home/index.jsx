@@ -5,6 +5,8 @@ import Footer from "../../../components/student/Footer";
 import MastMiddle from "../../../components/client/MastMiddle";
 import MastContent from "../../../components/client/MastContent";
 import MastSteps from "../../../components/client/MastSteps";
+import MastFeedback from "../../../components/client/MastFeedback";
+import MastCountUp from "../../../components/client/MastCountUp";
 
 const Home = () => {
   return (
@@ -14,6 +16,8 @@ const Home = () => {
       <MastMiddle />
       <MastContent />
       <MastSteps />
+      <MastFeedback />
+      <MastCountUp />
       <Footer />
     </>
   );
