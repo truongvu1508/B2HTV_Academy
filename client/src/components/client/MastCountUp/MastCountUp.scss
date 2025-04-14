@@ -1,0 +1,29 @@
+$green-1: #00ff84;
+$dark-2: #001e78;
+
+.mastCountUp {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: $dark-2;
+  padding-bottom: 120px;
+
+  &__item {
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 35px;
+    font-weight: 700;
+    line-height: 40px;
+    color: $green-1;
+  }
+
+  &__sub {
+    margin-top: 8px;
+    font-size: 15px;
+    line-height: 26px;
+    font-weight: 400;
+    color: white;
+  }
+}
