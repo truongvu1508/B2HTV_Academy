@@ -1,0 +1,20 @@
+import React from "react";
+import Navbar from "../../../components/student/Navbar";
+import MastHead from "../../../components/client/MastHead";
+import Footer from "../../../components/student/Footer";
+import MastMiddle from "../../../components/client/MastMiddle";
+import MastContent from "../../../components/client/MastContent";
+
+const Home = () => {
+  return (
+    <>
+      <Navbar />
+      <MastHead />
+      <MastMiddle />
+      <MastContent />
+      <Footer />
+    </>
+  );
+};
+
+export default Home;

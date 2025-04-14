@@ -1,0 +1,32 @@
+$dark-1: #00175d;
+.footer {
+  color: white;
+  background: $dark-1;
+  padding: 60px 0px;
+
+  &__title {
+    font-size: 20px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    &-media {
+      text-align: center;
+    }
+  }
+
+  &__item {
+    display: flex;
+    margin-top: 15px;
+
+    &-media {
+      justify-content: space-around;
+    }
+  }
+
+  &__icon {
+    margin-right: 10px;
+
+    &-media {
+      font-size: 32px;
+    }
+  }
+}
