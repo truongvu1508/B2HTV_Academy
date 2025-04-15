@@ -8,10 +8,14 @@ import MastSteps from "../../../components/client/MastSteps";
 import MastFeedback from "../../../components/client/MastFeedback";
 import MastCountUp from "../../../components/client/MastCountUp";
 import BackToTop from "../../../components/client/BackToTop";
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   return (
     <>
+      <Helmet>
+        <title>Trang chủ</title>
+      </Helmet>
       <Navbar />
       <MastHead />
       <MastMiddle />
