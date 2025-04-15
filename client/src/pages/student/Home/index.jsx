@@ -7,6 +7,7 @@ import MastContent from "../../../components/client/MastContent";
 import MastSteps from "../../../components/client/MastSteps";
 import MastFeedback from "../../../components/client/MastFeedback";
 import MastCountUp from "../../../components/client/MastCountUp";
+import BackToTop from "../../../components/client/BackToTop";
 
 const Home = () => {
   return (
@@ -19,6 +20,7 @@ const Home = () => {
       <MastFeedback />
       <MastCountUp />
       <Footer />
+      <BackToTop />
     </>
   );
 };
