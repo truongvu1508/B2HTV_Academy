@@ -1,4 +1,6 @@
 import profile_img1 from "./profile_img_1.png";
+import profile_img2 from "./profile_img_2.png";
+import profile_img3 from "./profile_img_3.png";
 import background from "./bg.png";
 import img_placeholder from "./landscape-placeholder.svg";
 import language_introduction from "./language_introduction.png";
@@ -10,11 +12,16 @@ import learn_course from "./vao-hoc.svg";
 import line_1 from "./line-1.svg";
 import line_2 from "./line-2.svg";
 import error404 from "./error404.png";
+import intro_1 from "./intro-1.png";
+import intro_2 from "./intro-2.png";
+import intro_3 from "./intro-3.png";
 
 export const assets = {
   background,
   img_placeholder,
   profile_img1,
+  profile_img2,
+  profile_img3,
   language_introduction,
   wave,
   bg_software,
@@ -24,6 +31,9 @@ export const assets = {
   line_1,
   line_2,
   error404,
+  intro_1,
+  intro_2,
+  intro_3,
 };
 
 export const dummyEducatorData = {
