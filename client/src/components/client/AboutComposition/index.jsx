@@ -53,7 +53,7 @@ const AboutComposition = () => {
                     <CheckCircleFilled />
                   </div>
                   <div className="mastMiddle-list__title">
-                    Sử dụng thành thạo ngôn ngữ lập trình C
+                    Giáo viên tận tâm, trình độ chuyên môn cao
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
@@ -61,7 +61,7 @@ const AboutComposition = () => {
                     <CheckCircleFilled />
                   </div>
                   <div className="mastMiddle-list__title">
-                    Nền tảng kỹ thuật lập trình vững chắc
+                    Hỗ trợ học viên 24/24
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
@@ -69,7 +69,7 @@ const AboutComposition = () => {
                     <CheckCircleFilled />
                   </div>
                   <div className="mastMiddle-list__title">
-                    Nâng cao kỹ năng giải quyết bài toán
+                    Kiến thức chặt chẽ
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
@@ -77,15 +77,7 @@ const AboutComposition = () => {
                     <CheckCircleFilled />
                   </div>
                   <div className="mastMiddle-list__title">
-                    Làm quen với các cấu trúc dữ liệu và giải thuật quan trọng
-                  </div>
-                </Flex>
-                <Flex gap={10} align="center">
-                  <div className="mastMiddle-list__icon">
-                    <CheckCircleFilled />
-                  </div>
-                  <div className="mastMiddle-list__title">
-                    Nâng cao tư duy logic trong lập trình
+                    Kho tài liệu phong phú
                   </div>
                 </Flex>
               </div>
