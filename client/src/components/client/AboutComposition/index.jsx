@@ -1,7 +1,7 @@
 import React from "react";
 import "./AboutComposition.scss";
-import { assets } from "../../../assets/assets";
-import { Button, Col, Row } from "antd";
+import { Button, Col, Row, Flex } from "antd";
+import { CheckCircleFilled } from "@ant-design/icons";
 import { useClerk, useUser } from "@clerk/clerk-react";
 
 const AboutComposition = () => {
@@ -48,7 +48,46 @@ const AboutComposition = () => {
           >
             <div className="aboutComposition__card">
               <div className="aboutComposition__card-content">
-                <img src={assets.icon_learn} alt="" />
+                <Flex gap={10} align="center">
+                  <div className="mastMiddle-list__icon">
+                    <CheckCircleFilled />
+                  </div>
+                  <div className="mastMiddle-list__title">
+                    Sử dụng thành thạo ngôn ngữ lập trình C
+                  </div>
+                </Flex>
+                <Flex gap={10} align="center">
+                  <div className="mastMiddle-list__icon">
+                    <CheckCircleFilled />
+                  </div>
+                  <div className="mastMiddle-list__title">
+                    Nền tảng kỹ thuật lập trình vững chắc
+                  </div>
+                </Flex>
+                <Flex gap={10} align="center">
+                  <div className="mastMiddle-list__icon">
+                    <CheckCircleFilled />
+                  </div>
+                  <div className="mastMiddle-list__title">
+                    Nâng cao kỹ năng giải quyết bài toán
+                  </div>
+                </Flex>
+                <Flex gap={10} align="center">
+                  <div className="mastMiddle-list__icon">
+                    <CheckCircleFilled />
+                  </div>
+                  <div className="mastMiddle-list__title">
+                    Làm quen với các cấu trúc dữ liệu và giải thuật quan trọng
+                  </div>
+                </Flex>
+                <Flex gap={10} align="center">
+                  <div className="mastMiddle-list__icon">
+                    <CheckCircleFilled />
+                  </div>
+                  <div className="mastMiddle-list__title">
+                    Nâng cao tư duy logic trong lập trình
+                  </div>
+                </Flex>
               </div>
               <h4 className="aboutComposition__card-title">
                 Xây dựng cộng đồng
