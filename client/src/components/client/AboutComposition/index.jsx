@@ -22,7 +22,9 @@ const AboutComposition = () => {
             <h3 className="aboutComposition__title">
               Học tập mọi lúc, mọi nơi
             </h3>
-            <p className="aboutComposition__text">Học tập mọi lúc, mọi nơi</p>
+            <p className="aboutComposition__text">
+              Những cam kết về khóa học của đội ngũ B2HTV
+            </p>
             {user ? (
               <></>
             ) : (
@@ -45,7 +47,7 @@ const AboutComposition = () => {
             style={{ padding: "10px" }}
           >
             <div className="aboutComposition__card">
-              <div className="aboutComposition__card-icon">
+              <div className="aboutComposition__card-content">
                 <img src={assets.icon_learn} alt="" />
               </div>
               <h4 className="aboutComposition__card-title">

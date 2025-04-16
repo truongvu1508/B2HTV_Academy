@@ -1,0 +1,15 @@
+$dark-1: #00175d;
+
+.aboutComposition {
+  &__button {
+    border: 2px solid $dark-1;
+    color: white;
+    background: $dark-1;
+    padding: 30px;
+    margin-top: 20px;
+    &:hover {
+      background: white !important;
+      color: $dark-1 !important;
+    }
+  }
+}
