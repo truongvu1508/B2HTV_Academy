@@ -3,12 +3,13 @@ $green-1: #00ff84;
 $dark-3: #282664;
 
 .aboutTarget {
-  height: 100%;
   width: 100%;
+  height: 100%;
   overflow: hidden;
   color: white;
   background: $dark-3;
   padding-top: 120px;
+  padding-bottom: 50px;
 
   &__title {
     text-align: center;
