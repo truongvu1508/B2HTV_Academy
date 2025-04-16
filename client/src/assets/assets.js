@@ -15,6 +15,10 @@ import error404 from "./error404.png";
 import intro_1 from "./intro-1.png";
 import intro_2 from "./intro-2.png";
 import intro_3 from "./intro-3.png";
+import icon_learn from "./icon-learn.svg";
+import icon_standart from "./icon-standart.svg";
+import icon_anything from "./icon-anything.svg";
+import icon_flexible from "./icon-flexible.svg";
 
 export const assets = {
   background,
@@ -34,6 +38,10 @@ export const assets = {
   intro_1,
   intro_2,
   intro_3,
+  icon_anything,
+  icon_flexible,
+  icon_learn,
+  icon_standart,
 };
 
 export const dummyEducatorData = {

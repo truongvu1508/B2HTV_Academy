@@ -6,6 +6,7 @@ import AboutHead from "../../../components/client/AboutHead";
 import { Helmet } from "react-helmet";
 import MastFeedback from "../../../components/client/MastFeedback";
 import MastCountUp from "../../../components/client/MastCountUp";
+import AboutTarget from "../../../components/client/AboutTarget";
 
 const About = () => {
   return (
@@ -15,6 +16,7 @@ const About = () => {
       </Helmet>
       <Navbar />
       <AboutHead />
+      <AboutTarget />
       <MastFeedback />
       <MastCountUp />
       <Footer />
