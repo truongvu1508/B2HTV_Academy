@@ -24,11 +24,12 @@ $dark-3: #282664;
   }
 
   &__card {
-    padding: 60px 40px 50px;
+    padding: 50px 20px 40px;
     border-radius: 10px;
     text-align: center;
     transition: all 0.3s ease;
     background: white;
+    min-height: 400px;
 
     &-icon {
       font-size: 64px !important;

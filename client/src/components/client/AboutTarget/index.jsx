@@ -11,13 +11,7 @@ const AboutTarget = () => {
           <h2>Mục tiêu của đội ngũ B2HTV Academy!</h2>
           <p className="aboutTarget__sub">B2HTV - Become A Better Developer</p>
         </div>
-        <Row
-          justify="center"
-          align="middle"
-          gutter={[16, 16]}
-          data-aos="fade-up"
-          data-aos-anchor-placement="top-bottom"
-        >
+        <Row justify="center" align="middle">
           <Col
             xs={24}
             sm={24}
@@ -93,7 +87,7 @@ const AboutTarget = () => {
               </h4>
               <p className="aboutTarget__card-text">
                 Đây là mục tiêu hàng đầu của B2HTV, mong muốn được kết nối, giúp
-                đỡ, là nơi đặt niềm tin của các học viên trên toàn quốc.
+                đỡ, nơi đặt niềm tin của các học viên trên toàn quốc.
               </p>
             </div>
           </Col>
