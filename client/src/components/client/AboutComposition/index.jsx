@@ -50,34 +50,34 @@ const AboutComposition = () => {
             <div className="aboutComposition__card">
               <div className="aboutComposition__card-content">
                 <Flex gap={10} align="center">
-                  <div className="mastMiddle-list__icon">
+                  <div className="aboutComposition-list__icon">
                     <CheckCircleFilled />
                   </div>
-                  <div className="mastMiddle-list__title">
+                  <div className="aboutComposition-list__title">
                     Giáo viên tận tâm, trình độ chuyên môn cao
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
-                  <div className="mastMiddle-list__icon">
+                  <div className="aboutComposition-list__icon">
                     <CheckCircleFilled />
                   </div>
-                  <div className="mastMiddle-list__title">
+                  <div className="aboutComposition-list__title">
                     Hỗ trợ học viên 24/24
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
-                  <div className="mastMiddle-list__icon">
+                  <div className="aboutComposition-list__icon">
                     <CheckCircleFilled />
                   </div>
-                  <div className="mastMiddle-list__title">
+                  <div className="aboutComposition-list__title">
                     Kiến thức chặt chẽ
                   </div>
                 </Flex>
                 <Flex gap={10} align="center">
-                  <div className="mastMiddle-list__icon">
+                  <div className="aboutComposition-list__icon">
                     <CheckCircleFilled />
                   </div>
-                  <div className="mastMiddle-list__title">
+                  <div className="aboutComposition-list__title">
                     Kho tài liệu phong phú
                   </div>
                 </Flex>

@@ -1,4 +1,5 @@
 $dark-1: #00175d;
+$purple-1: #00adef;
 
 .aboutComposition {
   height: 100%;
@@ -7,8 +8,15 @@ $dark-1: #00175d;
   background: white;
   padding: 100px 50px;
 
+  &__title {
+    font-size: 42px;
+    font-weight: 700;
+    color: $dark-1;
+    margin-bottom: 10px;
+  }
+
   &__button {
-    border: 2px solid $dark-1;
+    border: 2px solid $dark-1 !important;
     color: white;
     background: $dark-1;
     padding: 30px;
@@ -31,6 +39,21 @@ $dark-1: #00175d;
       width: 300px;
       background: $dark-1;
       border-radius: 8px;
+      padding: 50px 20px;
+    }
+  }
+
+  &-list {
+    font-size: 15px;
+
+    &__icon {
+      font-size: 26px !important;
+      color: $purple-1;
+    }
+
+    &__title {
+      color: white;
+      font-weight: 500;
     }
   }
 }

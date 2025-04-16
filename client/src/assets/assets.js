@@ -19,7 +19,7 @@ import icon_learn from "./icon-learn.svg";
 import icon_standart from "./icon-standart.svg";
 import icon_anything from "./icon-anything.svg";
 import icon_flexible from "./icon-flexible.svg";
-import bg_student_learn from "./icon-flexible.svg";
+import bg_student_learn from "./student_learn.png";
 
 export const assets = {
   background,
