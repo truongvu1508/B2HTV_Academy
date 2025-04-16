@@ -81,13 +81,9 @@ const AboutComposition = () => {
                   </div>
                 </Flex>
               </div>
-              <h4 className="aboutComposition__card-title">
+              <div className="aboutComposition__card-image">
                 Xây dựng cộng đồng
-              </h4>
-              <p className="aboutComposition__card-text">
-                B2HTV với mong muốn giúp đỡ các bạn sinh viên, lập trình viên
-                mới bước vào ngành IT trở thành một lập trình viên giỏi
-              </p>
+              </div>
             </div>
           </Col>
         </Row>
