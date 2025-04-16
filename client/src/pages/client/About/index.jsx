@@ -4,6 +4,8 @@ import Footer from "../../../components/student/Footer";
 import BackToTop from "../../../components/client/BackToTop";
 import AboutHead from "../../../components/client/AboutHead";
 import { Helmet } from "react-helmet";
+import MastFeedback from "../../../components/client/MastFeedback";
+import MastCountUp from "../../../components/client/MastCountUp";
 
 const About = () => {
   return (
@@ -13,6 +15,8 @@ const About = () => {
       </Helmet>
       <Navbar />
       <AboutHead />
+      <MastFeedback />
+      <MastCountUp />
       <Footer />
       <BackToTop />
     </>
