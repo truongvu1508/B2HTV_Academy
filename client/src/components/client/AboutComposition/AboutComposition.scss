@@ -1,6 +1,12 @@
 $dark-1: #00175d;
 
 .aboutComposition {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: white;
+  padding: 100px 50px;
+
   &__button {
     border: 2px solid $dark-1;
     color: white;
@@ -10,6 +16,21 @@ $dark-1: #00175d;
     &:hover {
       background: white !important;
       color: $dark-1 !important;
+    }
+  }
+
+  &__card {
+    position: relative;
+    padding-left: 112px;
+
+    &-content {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      width: 300px;
+      background: $dark-1;
+      border-radius: 8px;
     }
   }
 }

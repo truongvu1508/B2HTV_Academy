@@ -3,6 +3,7 @@ import "./AboutComposition.scss";
 import { Button, Col, Row, Flex } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { useClerk, useUser } from "@clerk/clerk-react";
+import { assets } from "../../../assets/assets";
 
 const AboutComposition = () => {
   const { openSignIn } = useClerk();
@@ -82,7 +83,7 @@ const AboutComposition = () => {
                 </Flex>
               </div>
               <div className="aboutComposition__card-image">
-                Xây dựng cộng đồng
+                <img src={assets.bg_student_learn} alt="Background Student" />
               </div>
             </div>
           </Col>
