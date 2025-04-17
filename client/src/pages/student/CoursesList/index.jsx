@@ -1,11 +1,14 @@
 import React from "react";
 import Navbar from "../../../components/student/Navbar";
+import Footer from "../../../components/student/Footer";
+import CoursesSection from "../../../components/student/CoursesSection";
 
 const CoursesList = () => {
   return (
     <>
       <Navbar />
-      <h1>Courses List Page</h1>
+      <CoursesSection />
+      <Footer />
     </>
   );
 };
