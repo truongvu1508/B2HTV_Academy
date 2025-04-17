@@ -11,7 +11,7 @@ export default {
         default: ["15px", "21px"],
       },
       gridTemplateColumns: {
-        auto: "repeat(auto-fit, minmax(200px,1fr))",
+        auto: "repeat(auto-fit, minmax(300px,1fr))",
       },
       colors: {
         "green-1": "#00FF84",
