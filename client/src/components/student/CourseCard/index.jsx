@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { assets } from "../../../assets/assets";
-import AppContext from "antd/es/app/context";
+import { AppContext } from "../../../context/AppContext";
 import { Link } from "react-router-dom";
 
 const CourseCard = ({ course }) => {
@@ -28,8 +28,8 @@ const CourseCard = ({ course }) => {
         <p className="text-base font-semibold text-gray-800">
           {(
             course.coursePrice -
-            (course.coursePrice * course.courseDiscount) / 100
-          ).toFixed(0)}{" "}
+            (course.coursePrice * course.discount) / 100
+          ).toFixed(2)}{" "}
           {currency}
         </p>
       </div>

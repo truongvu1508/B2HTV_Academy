@@ -9,6 +9,7 @@ import MastFeedback from "../../../components/client/MastFeedback";
 import MastCountUp from "../../../components/client/MastCountUp";
 import BackToTop from "../../../components/client/BackToTop";
 import { Helmet } from "react-helmet";
+import CoursesSection from "../../../components/student/CoursesSection";
 
 const Home = () => {
   return (
@@ -19,7 +20,7 @@ const Home = () => {
       <Navbar />
       <MastHead />
       <MastMiddle />
-      <MastContent />
+      <MastContent /> <CoursesSection />
       <MastSteps />
       <MastFeedback />
       <MastCountUp />
