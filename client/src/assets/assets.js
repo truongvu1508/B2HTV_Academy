@@ -22,6 +22,7 @@ import icon_flexible from "./icon-flexible.svg";
 import bg_student_learn from "./student_learn.png";
 import search_icon from "./search_icon.svg";
 import star from "./star.svg";
+import star_blank from "./star_blank.svg";
 
 export const assets = {
   background,
@@ -48,6 +49,7 @@ export const assets = {
   bg_student_learn,
   search_icon,
   star,
+  star_blank,
 };
 
 export const dummyEducatorData = {
@@ -152,7 +154,7 @@ export const dummyCourses = [
     courseRatings: [
       {
         userId: "user_2qjlgkAqIMpiR2flWIRzvWKtE0w",
-        rating: 5,
+        rating: 4,
         _id: "6773e37360cb0ab974342314",
       },
     ],
@@ -196,7 +198,7 @@ export const dummyCourses = [
     courseRatings: [
       {
         userId: "user_2qjlgkAqIMpiR2flWIRzvWKtE0w",
-        rating: 5,
+        rating: 3,
         _id: "6773e37360cb0ab974342314",
       },
     ],
@@ -239,7 +241,7 @@ export const dummyCourses = [
     courseRatings: [
       {
         userId: "user_2qjlgkAqIMpiR2flWIRzvWKtE0w",
-        rating: 5,
+        rating: 1,
         _id: "6773e37360cb0ab974342314",
       },
     ],
