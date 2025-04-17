@@ -21,6 +21,7 @@ import icon_anything from "./icon-anything.svg";
 import icon_flexible from "./icon-flexible.svg";
 import bg_student_learn from "./student_learn.png";
 import search_icon from "./search_icon.svg";
+import star from "./star.svg";
 
 export const assets = {
   background,
@@ -46,6 +47,7 @@ export const assets = {
   icon_standart,
   bg_student_learn,
   search_icon,
+  star,
 };
 
 export const dummyEducatorData = {
