@@ -1,14 +1,16 @@
-import React from "react";
+import React, { useContext } from "react";
 import { assets } from "../../../assets/assets";
 import { NavLink } from "react-router-dom";
 import Home from "../../../pages/student/Home";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { AppContext } from "../../../context/AppContext";
 
 const Navbar = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
+  const { navigate } = useContext(AppContext);
 
   const navLinkStyles = ({ isActive }) =>
     isActive
@@ -20,6 +22,7 @@ const Navbar = () => {
       <nav className="flex justify-between items-center w-[82%] mx-auto ">
         <div>
           <img
+            onClick={() => navigate("/")}
             className="w-16 cursor-pointer"
             src={assets.img_placeholder}
             alt="B2HTV Academy"
