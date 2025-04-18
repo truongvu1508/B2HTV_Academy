@@ -32,6 +32,7 @@ export const AppContextProvider = (props) => {
   // Function to Calculate Course Chapter Time
   const calculateChapterTime = (chapter) => {
     let time = 0;
+
     chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration));
     return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
   };
@@ -39,11 +40,24 @@ export const AppContextProvider = (props) => {
   // Function to Calculate Course duration
   const calculateCourseDuration = (course) => {
     let time = 0;
+
     course.courseContent.map((chapter) =>
       chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
     );
 
     return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
+  };
+
+  // Function to No of Lectures in the course
+  const calculateNoOfLectures = (course) => {
+    let totalLectures = 0;
+
+    course.courseContent.forEach((chapter) => {
+      if (Array.isArray(chapter.chapterContent)) {
+        totalLectures += chapter.chapterContent.length;
+      }
+    });
+    return totalLectures;
   };
 
   useEffect(() => {
