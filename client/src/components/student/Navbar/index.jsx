@@ -10,7 +10,7 @@ import { AppContext } from "../../../context/AppContext";
 const Navbar = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
-  const { navigate } = useContext(AppContext);
+  const { navigate, isEducator } = useContext(AppContext);
 
   const navLinkStyles = ({ isActive }) =>
     isActive
@@ -61,6 +61,14 @@ const Navbar = () => {
             </li>
             {user && (
               <li className="my-enrollments bg-green-1">
+                <button
+                  onClick={() => {
+                    navigate("/educator");
+                  }}
+                >
+                  {isEducator ? "Educator Dashboard" : "Become Educator"}
+                </button>{" "}
+                |
                 <NavLink
                   className={({ isActive }) =>
                     isActive
