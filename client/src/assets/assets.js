@@ -209,7 +209,7 @@ export const dummyCourses = [
   },
   {
     _id: "605c72efb3fic2b1f8e4ela3",
-    courseTitle: "Introduction to JavaScript",
+    courseTitle: "Introduction to C/C++",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
     coursePrice: 49.99,
@@ -252,7 +252,7 @@ export const dummyCourses = [
   },
   {
     _id: "605c72efb3fic2b1f8e4ela4",
-    courseTitle: "Introduction to JavaScript",
+    courseTitle: "Introduction to Python",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
     coursePrice: 49.99,
