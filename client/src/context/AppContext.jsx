@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import humanizeDuration from "humanize-duration";
 
 export const AppContext = createContext();
 
@@ -26,6 +27,13 @@ export const AppContextProvider = (props) => {
       totalRating += rating.rating;
     });
     return totalRating / course.courseRatings.length;
+  };
+
+  // Function to Calculate Course Chapter Time
+  const calculateChapterTime = (chapter) => {
+    let time = 0;
+    chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration));
+    return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
   };
 
   useEffect(() => {
