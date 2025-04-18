@@ -9,13 +9,12 @@ const CoursesSection = () => {
   return (
     <div className="py-16 md:px-40 px-8 text-center">
       <h2 className="text-3xl font-medium text-gray-800 mb-3">
-        Learn from the best
+        Khóa học nổi bật
       </h2>
       <p className="text-sm md:text-base text-gray-500">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illum dolor
-        fugiat laborum cupiditate quae laudantium voluptate? Soluta iste animi,
-        illum fugiat consectetur necessitatibus voluptatem et recusandae ipsa
-        velit, minima eveniet!
+        Những khóa học nổi bật dành cho lập trình viên! Học kiến thức chuyên
+        sâu, công nghệ hiện đại, thực hành dự án thực tế từ chuyên gia, sẵn sàng
+        bứt phá trong sự nghiệp công nghệ!
       </p>
       <div className="grid grid-cols-auto px-4 md:px-0 md:my-16 my-10 gap-4">
         {allCourses && Array.isArray(allCourses) && allCourses.length > 0 ? (
