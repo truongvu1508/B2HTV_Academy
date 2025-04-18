@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { assets } from "../../../assets/assets";
+import { CiSearch } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 
 const SearchBar = ({ data }) => {
@@ -25,13 +25,9 @@ const SearchBar = ({ data }) => {
       />
       <button
         type="submit"
-        className="bg-blue-600 rounded text-white md:px-10 px-7 md:py-3 py-2 mx-1"
+        className="bg-blue-600 rounded text-white md:px-3 px-7 md:py-3 py-2 mx-1"
       >
-        <img
-          src={assets.search_icon}
-          alt="Search Icon"
-          className="md:w-auto w-10 px-3"
-        />
+        <CiSearch />
       </button>
     </form>
   );
