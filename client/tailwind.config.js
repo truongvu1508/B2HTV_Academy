@@ -22,6 +22,9 @@ export default {
       container: {
         center: true,
       },
+      spacing: {
+        "section-height": "500px",
+      },
     },
   },
   plugins: [],
