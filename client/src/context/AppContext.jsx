@@ -3,6 +3,7 @@ import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
@@ -71,6 +72,9 @@ export const AppContextProvider = (props) => {
     calculateRating,
     isEducator,
     setIsEducator,
+    calculateChapterTime,
+    calculateCourseDuration,
+    calculateNoOfLectures,
   };
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
