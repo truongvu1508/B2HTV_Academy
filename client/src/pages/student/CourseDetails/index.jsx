@@ -7,12 +7,17 @@ import { AppContext } from "../../../context/AppContext";
 import { assets } from "../../../assets/assets";
 import { FaAngleDown, FaPlayCircle } from "react-icons/fa";
 import humanizeDuration from "humanize-duration";
+import { CiClock1 } from "react-icons/ci";
+import { LuAlarmClock } from "react-icons/lu";
+import { FaBookOpenReader } from "react-icons/fa6";
+import BackToTop from "../../../components/client/BackToTop";
 
 const CourseDetails = () => {
   const { id } = useParams();
 
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
+  const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
 
   const {
     allCourses,
@@ -20,6 +25,7 @@ const CourseDetails = () => {
     calculateChapterTime,
     calculateCourseDuration,
     calculateNoOfLectures,
+    currency,
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
@@ -156,9 +162,66 @@ const CourseDetails = () => {
         </div>
 
         {/* Right column */}
-        <div></div>
+        <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-3">
+          <img src={courseData.courseThumbnail} alt="" />
+          <div>
+            <div className="flex items-center gap-2">
+              <LuAlarmClock className="w-3.5 text-red-500" />
+              <p className="text-red-500">
+                <span className="font-medium">5 days</span> left at this price!
+              </p>
+            </div>
+            <div className="flex gap-3 items-center pt-2">
+              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
+                {(
+                  courseData.coursePrice -
+                  (courseData.discount * courseData.coursePrice) / 100
+                ).toFixed(0)}{" "}
+                {currency}
+              </p>
+              <p className="md:text-lg text-gray-500 line-through">
+                {courseData.coursePrice} {currency}
+              </p>
+              <p className="md:text-lg text-gray-500">
+                {courseData.discount} %
+              </p>
+            </div>
+            <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
+              <div className="flex items-center gap-1">
+                <img src={assets.star} alt="star" />
+                <p>{calculateRating(courseData)}</p>
+              </div>
+              <div className="h-4 w-px bg-gray-500/40"></div>
+              <div className="flex items-center gap-1">
+                <CiClock1 />
+                <p>{calculateCourseDuration(courseData)}</p>
+              </div>
+              <div className="h-4 w-px bg-gray-500/40"></div>
+              <div className="flex items-center gap-1">
+                <FaBookOpenReader />
+                <p>{calculateNoOfLectures(courseData)} lessons</p>
+              </div>
+            </div>
+
+            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
+              {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
+            </button>
+
+            <div>
+              <p>What's in the course</p>
+              <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
+                <li>Lifetime access with free updates.</li>
+                <li>Step-by-step, hands-on project guidance.</li>
+                <li>Downloadable resources and source code.</li>
+                <li>Lifetime access with free updates</li>
+                <li>Lifetime access with free updates</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
       <Footer />
+      <BackToTop />
     </>
   ) : (
     <Loading />

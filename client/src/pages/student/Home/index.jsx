@@ -20,7 +20,8 @@ const Home = () => {
       <Navbar />
       <MastHead />
       <MastMiddle />
-      <MastContent /> <CoursesSection />
+      <MastContent />
+      <CoursesSection />
       <MastSteps />
       <MastFeedback />
       <MastCountUp />

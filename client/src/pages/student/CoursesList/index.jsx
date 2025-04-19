@@ -6,6 +6,7 @@ import { AppContext } from "../../../context/AppContext";
 import { useParams } from "react-router-dom";
 import CourseCard from "../../../components/student/CourseCard";
 import { BiX } from "react-icons/bi";
+import BackToTop from "../../../components/client/BackToTop";
 
 const CoursesList = () => {
   const { navigate, allCourses } = useContext(AppContext);
@@ -65,6 +66,7 @@ const CoursesList = () => {
         </div>
       </div>
       <Footer />
+      <BackToTop />
     </>
   );
 };
