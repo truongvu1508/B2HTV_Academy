@@ -4,9 +4,11 @@ import Footer from "../../../components/student/Footer";
 import BackToTop from "../../../components/client/BackToTop";
 import { AppContext } from "../../../context/AppContext";
 import { Button } from "antd";
+import { Line } from "rc-progress";
 
 const MyEnrollments = () => {
-  const { enrolledCourses, calculateCourseDuration } = useContext(AppContext);
+  const { enrolledCourses, calculateCourseDuration, navigate } =
+    useContext(AppContext);
 
   const [progressArray, setProgressArray] = useState([
     { lectureCompleted: 2, totalLectures: 4 },
@@ -31,7 +33,7 @@ const MyEnrollments = () => {
 
       <div className="md:px-36 px-8 pt-10">
         <h1 className="text-2xl font-semibold">My Enrollments Page</h1>
-        <table className="md:table-auto  table-fixed w-full overflow-hidden border-mt-10">
+        <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10">
           <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left max-sm:hidden">
             <tr>
               <th className="px-4 py-3 font-semibold truncate">Course</th>
@@ -51,6 +53,16 @@ const MyEnrollments = () => {
                   />
                   <div className="flex-1">
                     <p className="mb-1 max-sm:text-sm">{course.courseTitle}</p>
+                    <Line
+                      strokeWidth={2}
+                      percent={
+                        progressArray[index]
+                          ? (progressArray[index].lectureCompleted * 100) /
+                            progressArray[index].totalLectures
+                          : 0
+                      }
+                      className="bg-gray-300 rounded-full"
+                    />
                   </div>
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">
@@ -62,7 +74,10 @@ const MyEnrollments = () => {
                   <span>lectures</span>
                 </td>
                 <td className="px-4 py-3 max-sm:text-right">
-                  <Button type="primary">
+                  <Button
+                    type="primary"
+                    onClick={() => navigate("/player/" + course._id)}
+                  >
                     {progressArray[index] &&
                     progressArray[index].lectureCompleted /
                       progressArray[index].totalLectures ===
