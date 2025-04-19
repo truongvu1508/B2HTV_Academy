@@ -5,6 +5,7 @@ import humanizeDuration from "humanize-duration";
 import Navbar from "../../../components/student/Navbar";
 import Footer from "../../../components/student/Footer";
 import { FaAngleDown, FaPlayCircle } from "react-icons/fa";
+import YouTube from "react-youtube";
 
 const Player = () => {
   const { enrolledCourses, calculateChapterTime } = useContext(AppContext);
@@ -32,7 +33,7 @@ const Player = () => {
   return (
     <>
       <Navbar />
-      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid-cols-2 gap-10 md:px-36">
+      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36 ">
         {/* left column */}
         <div className="text-gray-800">
           <h2 className="text-xl font-semibold">Course Structure</h2>
@@ -105,7 +106,27 @@ const Player = () => {
           </div>
         </div>
         {/* right column */}
-        <div></div>
+        <div className="md:mt-10">
+          {playerData ? (
+            <div>
+              <YouTube
+                videoId={playerData.lectureUrl.split("/").pop()}
+                iframeClassName="w-full aspect-video"
+              />
+              <div className="flex justify-between items-center mt-1">
+                <p>
+                  {playerData.chapter}.{playerData.lecture}{" "}
+                  {playerData.lectureTitle}
+                </p>
+                <button className="text-blue-600">
+                  {false ? "Completed" : "Mark Complete"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <img src={courseData ? courseData.courseThumbnail : ""} alt="" />
+          )}
+        </div>
       </div>
       <Footer />
     </>
