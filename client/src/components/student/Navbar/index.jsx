@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { assets } from "../../../assets/assets";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import Home from "../../../pages/student/Home";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
@@ -11,12 +11,19 @@ const Navbar = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
   const { navigate, isEducator } = useContext(AppContext);
+  const location = useLocation();
 
   const navLinkStyles = ({ isActive }) =>
     isActive
       ? "text-green-1 font-bold"
       : "text-white font-bold hover:text-green-1";
-
+  const isCourseActive = () => {
+    return (
+      location.pathname === "/course-list" ||
+      location.pathname.startsWith("/course-list/") ||
+      location.pathname.startsWith("/course/")
+    );
+  };
   return (
     <header className="bg-dark-1 pb-3 pt-3">
       <nav className="flex justify-between items-center w-[82%] mx-auto ">
@@ -37,7 +44,12 @@ const Navbar = () => {
             </li>
 
             <li>
-              <NavLink className={navLinkStyles} to={"/course-list"}>
+              <NavLink
+                className={({ isActive }) =>
+                  navLinkStyles({ isActive: isActive || isCourseActive() })
+                }
+                to={"/course-list"}
+              >
                 Khóa học
               </NavLink>
             </li>
