@@ -11,6 +11,8 @@ import { CiClock1 } from "react-icons/ci";
 import { LuAlarmClock } from "react-icons/lu";
 import { FaBookOpenReader } from "react-icons/fa6";
 import BackToTop from "../../../components/client/BackToTop";
+import YouTube from "react-youtube";
+import { Helmet } from "react-helmet";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -18,6 +20,7 @@ const CourseDetails = () => {
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
+  const [playerData, setPlayerData] = useState(null);
 
   const {
     allCourses,
@@ -44,6 +47,9 @@ const CourseDetails = () => {
 
   return courseData ? (
     <>
+      <Helmet>
+        <title>{courseData.courseTitle}</title>
+      </Helmet>
       <Navbar />
       <div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:pt-30 pt-20 text-left">
         <div className="absolute top-0 left-0 w-full h-section-height -z-1 "></div>
@@ -128,7 +134,16 @@ const CourseDetails = () => {
                             <p>{lecture.lectureTitle}</p>
                             <div className="flex gap-2">
                               {lecture.isPreviewFree && (
-                                <p className="text-blue-500 cursor-pointer">
+                                <p
+                                  onClick={() =>
+                                    setPlayerData({
+                                      videoId: lecture.lectureUrl
+                                        .split("/")
+                                        .pop(),
+                                    })
+                                  }
+                                  className="text-blue-500 cursor-pointer"
+                                >
                                   Preview
                                 </p>
                               )}
@@ -163,8 +178,17 @@ const CourseDetails = () => {
 
         {/* Right column */}
         <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-3">
-          <img src={courseData.courseThumbnail} alt="" />
-          <div>
+          {playerData ? (
+            <YouTube
+              videoId={playerData.videoId}
+              opts={{ playerVars: { autoplay: 1 } }}
+              iframeClassName="w-full aspect-video"
+            />
+          ) : (
+            <img src={courseData.courseThumbnail} alt="" />
+          )}
+
+          <div className="p-3">
             <div className="flex items-center gap-2">
               <LuAlarmClock className="w-3.5 text-red-500" />
               <p className="text-red-500">

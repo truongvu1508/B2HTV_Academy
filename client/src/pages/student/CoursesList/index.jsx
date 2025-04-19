@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import CourseCard from "../../../components/student/CourseCard";
 import { BiX } from "react-icons/bi";
 import BackToTop from "../../../components/client/BackToTop";
+import { Helmet } from "react-helmet";
 
 const CoursesList = () => {
   const { navigate, allCourses } = useContext(AppContext);
@@ -29,6 +30,9 @@ const CoursesList = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Khóa học</title>
+      </Helmet>
       <Navbar />
       <div className="relative md:px-36 px-8 pt-20 text-left">
         <div className="flex md:flex-row flex-col gap-6 items-start justify-between w-full">
