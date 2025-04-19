@@ -39,7 +39,7 @@ const CourseDetails = () => {
   useEffect(() => {
     fetchCourseData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [allCourses]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
