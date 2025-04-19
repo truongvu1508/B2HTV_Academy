@@ -6,3 +6,13 @@
 * {
   font-family: "Be Vietnam Pro", sans-serif;
 }
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
