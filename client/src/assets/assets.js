@@ -114,9 +114,9 @@ export const dummyStudentEnrolled = [
   {
     student: {
       _id: "user_2qQlvXyr02B4Bq6hT0Gvaa5fT9V",
-      name: "GreatStack",
+      name: "Vũ Nguyễn",
       imageUrl:
-        "https://img.clerk.com/eyJ0eXB1IjoichJvehk1LCJzcmMiOiJodHRwczovL21tYWd1cy5jbGVyay5kZXYvb2F1dGhrZ29vZ2x1L21tZ18ycVFsdmFM5kw3ckIxNHZMU2o4ZURWNEtmR2IifQ",
+        "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydlkwNEZDbTFqSjFFeG9qUWZBNGlSRXo2ODIifQ?width=160",
     },
     courseTitle: "Introduction to JavaScript",
     purchaseDate: "2024-12-20T08:39:55.509Z",
