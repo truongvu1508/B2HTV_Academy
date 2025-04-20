@@ -1,11 +1,7 @@
 import React from "react";
 import { Layout } from "antd";
-import "./LayoutDefault.css";
-import {
-  SearchOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import "./LayoutDefault.scss";
+import { MenuUnfoldOutlined, UserOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 import { Outlet } from "react-router-dom";
@@ -39,14 +35,17 @@ function LayoutDefault() {
               </div>
             </div>
             <div className="header__nav-right">
+              <p className="mr-2">
+                Xin chào!{" "}
+                <span className="text-dark-1 font-bold">
+                  {user ? user.fullName : "Developer"}
+                </span>
+              </p>
               {user ? (
-                <UserButton />
+                <UserButton className="icon-user" />
               ) : (
-                <button
-                  onClick={() => openSignIn()}
-                  className="hover:text-blue-1 text-white"
-                >
-                  <UserOutlined className="user" />
+                <button onClick={() => openSignIn()}>
+                  <UserOutlined className="icon-user" />
                 </button>
               )}
             </div>

@@ -1,0 +1,56 @@
+.header {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+
+  &__logo {
+    width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #ddd;
+    transition: all 0.2s;
+
+    &--collapsed {
+      width: 80px;
+      transition: all 0.2s;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+
+    &-left {
+      display: flex;
+      align-items: center;
+      font-size: 20px;
+    }
+
+    &-right {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+  }
+
+  &__collapse {
+    margin-right: 20px;
+    cursor: pointer;
+  }
+}
+
+.content {
+  padding: 20px;
+}
+
+.icon-user {
+  font-size: 20px;
+  padding: 3px;
+  background: blue;
+  color: #fff;
+  border-radius: 50%;
+}
