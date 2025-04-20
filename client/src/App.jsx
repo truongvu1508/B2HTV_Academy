@@ -18,6 +18,7 @@ import Contact from "./pages/client/Contact";
 
 import Error404 from "./pages/Error404";
 import AllRoute from "./components/AllRoute";
+import "quill/dist/quill.snow.css";
 
 const App = () => {
   return (
