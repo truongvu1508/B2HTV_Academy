@@ -17,11 +17,12 @@ import Blog from "./pages/client/Blog";
 import Contact from "./pages/client/Contact";
 
 import Error404 from "./pages/Error404";
+import AllRoute from "./components/AllRoute";
 
 const App = () => {
   return (
     <div>
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/course-list/:input" element={<CoursesList />} />
         <Route path="/course-list" element={<CoursesList />} />
@@ -39,7 +40,8 @@ const App = () => {
           <Route path="student-enrolled" element={<StudentsEnrolled />} />
         </Route>
         <Route path="*" element={<Error404 />} />
-      </Routes>
+      </Routes> */}
+      <AllRoute />
     </div>
   );
 };

@@ -23,6 +23,8 @@ import bg_student_learn from "./student_learn.png";
 import search_icon from "./search_icon.svg";
 import star from "./star.svg";
 import star_blank from "./star_blank.svg";
+import logo from "./logo.png";
+import logo_fold from "./logo-fold.png";
 
 export const assets = {
   background,
@@ -50,6 +52,8 @@ export const assets = {
   search_icon,
   star,
   star_blank,
+  logo,
+  logo_fold,
 };
 
 export const dummyEducatorData = {
