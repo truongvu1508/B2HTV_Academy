@@ -1,0 +1,25 @@
+# Bỏ qua thư mục node_modules
+node_modules/
+
+# Bỏ qua file môi trường
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Bỏ qua file log
+*.log
+npm-debug.log*
+
+# Bỏ qua thư mục build (nếu có)
+dist/
+build/
+
+# Bỏ qua file IDE
+.vscode/
+.idea/
+
+# Bỏ qua file tạm
+*.tmp
+*.temp
