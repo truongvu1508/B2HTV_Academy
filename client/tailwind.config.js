@@ -18,6 +18,7 @@ export default {
         "dark-1": "#00175D",
         "dark-2": "#001e78",
         "blue-1": "#0d6efd",
+        "yellow-cs": "#FFB822",
       },
       container: {
         center: true,
