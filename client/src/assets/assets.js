@@ -95,7 +95,7 @@ export const dummyTestimonial = [
 ];
 
 export const dummyDashboardData = {
-  totalEarnings: 707.38,
+  totalEarnings: 19000000,
   enrolledStudentsData: [
     {
       courseTitle: "Introduction to JavaScript",
@@ -129,12 +129,104 @@ export const dummyCourses = [
     courseTitle: "Introduction to JavaScript",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
-    coursePrice: 49.99,
+    coursePrice: 4000000,
     isPublished: true,
     discount: 20,
     courseContent: [
       {
         chapterId: "chapter1",
+        chapterOrder: 1,
+        chapterTitle: "Getting Started with JavaScript",
+        chapterContent: [
+          {
+            lectureId: "lecture1",
+            lectureTitle: "What is JavaScript?",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: true,
+            lectureOrder: 1,
+          },
+          {
+            lectureId: "lecture2",
+            lectureTitle: "Test 1",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: false,
+            lectureOrder: 1,
+          },
+        ],
+      },
+      {
+        chapterId: "chapter2",
+        chapterOrder: 2,
+        chapterTitle: "Getting Started with JavaScript",
+        chapterContent: [
+          {
+            lectureId: "lecture1",
+            lectureTitle: "What is JavaScript?",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: true,
+            lectureOrder: 1,
+          },
+          {
+            lectureId: "lecture2",
+            lectureTitle: "Test 1",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: false,
+            lectureOrder: 1,
+          },
+        ],
+      },
+      {
+        chapterId: "chapter3",
+        chapterOrder: 3,
+        chapterTitle: "Getting Started with JavaScript",
+        chapterContent: [
+          {
+            lectureId: "lecture1",
+            lectureTitle: "What is JavaScript?",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: true,
+            lectureOrder: 1,
+          },
+          {
+            lectureId: "lecture2",
+            lectureTitle: "Test 1",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: false,
+            lectureOrder: 1,
+          },
+        ],
+      },
+      {
+        chapterId: "chapter4",
+        chapterOrder: 1,
+        chapterTitle: "Getting Started with JavaScript",
+        chapterContent: [
+          {
+            lectureId: "lecture1",
+            lectureTitle: "What is JavaScript?",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: true,
+            lectureOrder: 1,
+          },
+          {
+            lectureId: "lecture2",
+            lectureTitle: "Test 1",
+            lectureDuration: 16,
+            lectureUrl: "https://youtu.be/CBWnBi-awSA",
+            isPreviewFree: false,
+            lectureOrder: 1,
+          },
+        ],
+      },
+      {
+        chapterId: "chapter5",
         chapterOrder: 1,
         chapterTitle: "Getting Started with JavaScript",
         chapterContent: [
@@ -181,7 +273,7 @@ export const dummyCourses = [
     courseTitle: "Introduction to JavaScript",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
-    coursePrice: 49.99,
+    coursePrice: 4000000,
     isPublished: true,
     discount: 20,
     courseContent: [
@@ -224,7 +316,7 @@ export const dummyCourses = [
     courseTitle: "Introduction to C/C++",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
-    coursePrice: 49.99,
+    coursePrice: 4000000,
     isPublished: true,
     discount: 20,
     courseContent: [
@@ -267,7 +359,7 @@ export const dummyCourses = [
     courseTitle: "Introduction to Python",
     courseDescription:
       "<h2>Learn the Basics of JavaScript</h2><p>JavaScript is a versatile programming language that powers the web. In this course, you will learn the fundamentals of JavaScript, including syntax, data types, and control structures.</p><p>This course is perfect for beginners who want to start their journey in web development. By the end of this course, you will be able to create interactive web pages and understand the core concepts of JavaScript.</p><ul><li>Understand the basics of programming</li><li>Learn how to manipulate the DOM</li><li>Create dynamic web applications</li></ul>",
-    coursePrice: 49.99,
+    coursePrice: 4000000,
     isPublished: true,
     discount: 20,
     courseContent: [

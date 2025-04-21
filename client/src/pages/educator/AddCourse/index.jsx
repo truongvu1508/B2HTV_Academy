@@ -34,7 +34,7 @@ const AddCourse = () => {
   return (
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <form action="">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-5">
           <p>Course Title</p>
           <input
             type="text"

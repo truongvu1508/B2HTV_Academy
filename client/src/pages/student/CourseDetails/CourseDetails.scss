@@ -1,0 +1,14 @@
+$dark-1: #00175d;
+$purple-1: #00adef;
+
+.courseDetails__button {
+  border: 2px solid $purple-1 !important;
+  color: white;
+  background: $purple-1;
+  padding: 30px;
+  margin-top: 20px;
+  &:hover {
+    background: white !important;
+    color: $purple-1 !important;
+  }
+}

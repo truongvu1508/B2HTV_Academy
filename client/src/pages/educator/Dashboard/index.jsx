@@ -21,7 +21,7 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="space-y-5">
         <div className="flex flex-wrap gap-5 items-center">
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
             <div className="flex items-center">
               <FaUser className="text-dark-2 text-3xl mr-[10px]" />
               <div>
@@ -32,7 +32,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
             <div className="flex items-center">
               <FaBook className="text-dark-2 text-3xl mr-[10px]" />
               <div>
@@ -43,7 +43,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-56 rounded-md">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
             <div className="flex items-center">
               <FaMoneyCheckAlt className="text-dark-2 text-3xl mr-[10px]" />
               <div>
