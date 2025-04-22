@@ -69,6 +69,36 @@ const AddCourse = () => {
     }
   };
 
+  const addLecture = () => {
+    setChapters(
+      chapters.map((chapter) => {
+        if (chapter.chapterId === currentChapterId) {
+          const newLecture = {
+            ...lectureDetails,
+            lectureOrder:
+              chapter.chapterContent.length > 0
+                ? chapter.chapterContent.slice(-1)[0].lectureOrder + 1
+                : 1,
+            lectureId: uniqid(),
+          };
+          chapter.chapterContent.push(newLecture);
+        }
+        return chapter;
+      })
+    );
+    setShowPopup(false);
+    setLectureDetails({
+      lectureTitle: "",
+      lectureDuration: "",
+      lectureUrl: "",
+      isPreviewFree: false,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  };
+
   useEffect(() => {
     //Initiate Quill only once
     if (!quillRef.current && editorRef.current) {
@@ -80,7 +110,7 @@ const AddCourse = () => {
 
   return (
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <form action="">
+      <form onSubmit={handleSubmit} action="">
         <div className="flex flex-col gap-5">
           <p>Course Title</p>
           <input
@@ -273,6 +303,7 @@ const AddCourse = () => {
                   />
                 </div>
                 <button
+                  onClick={addLecture}
                   type="button"
                   className="w-full bg-blue-400 text-white px-4 py-2 rounded"
                 >
