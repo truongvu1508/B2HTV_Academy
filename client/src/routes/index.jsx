@@ -17,6 +17,7 @@ import Contact from "../pages/client/Contact";
 
 import Error404 from "../pages/Error404";
 import LayoutDefault from "../layouts/LayoutDefault";
+import UpdateCourse from "../pages/educator/UpdateCourse";
 
 const routes = [
   {
@@ -70,6 +71,10 @@ const routes = [
       {
         path: "add-course",
         element: <AddCourse />,
+      },
+      {
+        path: "update-course/:courseId",
+        element: <UpdateCourse />,
       },
       {
         path: "my-course",

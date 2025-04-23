@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
 
@@ -12,7 +13,7 @@ const MyCourses = () => {
 
   useEffect(() => {
     fetchEducatorCourses();
-  }, []);
+  }, [allCourses]);
 
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -30,11 +31,12 @@ const MyCourses = () => {
                 <th className="px-4 py-3 font-semibold truncate">
                   Published On
                 </th>
+                <th className="px-4 py-3 font-semibold truncate">Actions</th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
               {courses.map((course) => (
-                <tr key={course.id} className="border-b border-gray-500/20">
+                <tr key={course._id} className="border-b border-gray-500/20">
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                     <img
                       src={course.courseThumbnail}
@@ -57,6 +59,16 @@ const MyCourses = () => {
                   </td>
                   <td className="px-4 py-3">
                     {new Date(course.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex space-x-2">
+                      <Link
+                        to={`/educator/update-course/${course._id}`} // Changed from course.id to course._id
+                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+                      >
+                        Cập nhật
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}
