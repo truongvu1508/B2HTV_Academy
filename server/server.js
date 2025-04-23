@@ -4,31 +4,22 @@ import "dotenv/config";
 import connectDB from "./configs/mongodb.js";
 import { clerkWebhooks } from "./controllers/webhooks.js";
 
-// Initialize Express
+//Initialize Express
 const app = express();
 
-// Middleware để kết nối database
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    console.error("Database connection error:", error);
-    res.status(500).json({ error: "Không thể kết nối database" });
-  }
-});
+//Connect to database
+await connectDB();
 
-// Middlewares
+//Middlewares
 app.use(cors());
-app.use(express.json());
 
-// Routes
+//Routes
 app.get("/", (req, res) => res.send("API Working"));
-app.post("/clerk", clerkWebhooks);
+app.post("/clerk", express.json(), clerkWebhooks);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: "Lỗi server" });
+//Port
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
-
-module.exports = app;
