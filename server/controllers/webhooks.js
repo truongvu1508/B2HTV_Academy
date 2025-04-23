@@ -3,13 +3,13 @@ import User from "../models/User";
 
 // API Controller Function to Manage Clerk User with database
 
-export const clerkWebhooks = async (requestAnimationFrame, res) => {
+export const clerkWebhooks = async (req, res) => {
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     await whook.verify(JSON.stringify(requestAnimationFrame.body), {
-      "svix-id": requestAnimationFrame.headers["svix-id"],
-      "svix-timestamp": requestAnimationFrame.headers["svix-timestamp"],
-      "svix-signature": requestAnimationFrame.headers["svix-signature"],
+      "svix-id": req.headers["svix-id"],
+      "svix-timestamp": req.headers["svix-timestamp"],
+      "svix-signature": req.headers["svix-signature"],
     });
 
     const { data, type } = req.body;
