@@ -3,7 +3,7 @@ import User from "../models/User";
 
 // API Controller Function to Manage Clerk User with database
 
-const clerkWebhooks = async (requestAnimationFrame, res) => {
+export const clerkWebhooks = async (requestAnimationFrame, res) => {
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
     await whook.verify(JSON.stringify(requestAnimationFrame.body), {
