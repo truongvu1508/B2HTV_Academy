@@ -18,11 +18,11 @@ function MenuSider() {
       icon: <DashboardOutlined />,
       key: "/educator/dashboard",
     },
-    {
-      label: <Link to="/educator/add-course">Add Course</Link>,
-      icon: <BiSolidBookAdd />,
-      key: "/educator/add-course",
-    },
+    // {
+    //   label: <Link to="/educator/add-course">Add Course</Link>,
+    //   icon: <BiSolidBookAdd />,
+    //   key: "/educator/add-course",
+    // },
     {
       label: <Link to="/educator/my-course">My Courses</Link>,
       icon: <LuBookMarked />,
