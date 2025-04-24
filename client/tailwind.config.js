@@ -20,6 +20,7 @@ export default {
         "blue-1": "#0d6efd",
         "blue-2": "#009EDA",
         "yellow-cs": "#FFB822",
+        light: "#E5F0FD",
       },
       container: {
         center: true,
