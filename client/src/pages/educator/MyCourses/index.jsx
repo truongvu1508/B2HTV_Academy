@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
+import { FaEye } from "react-icons/fa";
 
 const MyCourses = () => {
   const { currency, allCourses } = useContext(AppContext);
@@ -18,7 +19,13 @@ const MyCourses = () => {
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="w-full ">
-        <h2 className="pb-4 text-lg font-medium"> Danh sách khóa học</h2>
+        <Link to={`/educator/add-course`}>
+          <button className="bg-black text-white w-max py-2.5 px-8 rounded my-4">
+            Thêm khóa học
+          </button>
+        </Link>
+
+        <h2 className="text-lg font-medium"> Danh sách khóa học</h2>
         <div>
           <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10 bg-white">
             <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
@@ -63,10 +70,10 @@ const MyCourses = () => {
                   <td className="px-4 py-3">
                     <div className="flex space-x-2">
                       <Link
-                        to={`/educator/update-course/${course._id}`} // Changed from course.id to course._id
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+                        to={`/educator/update-course/${course._id}`}
+                        className="bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 text-xs"
                       >
-                        Cập nhật
+                        <FaEye />
                       </Link>
                     </div>
                   </td>
