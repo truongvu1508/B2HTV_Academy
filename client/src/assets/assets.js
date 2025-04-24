@@ -25,6 +25,9 @@ import star from "./star.svg";
 import star_blank from "./star_blank.svg";
 import logo from "./logo.png";
 import logo_fold from "./logo-fold.png";
+import icon_address from "./icon-address.svg";
+import icon_mail from "./icon-mail.svg";
+import icon_phone from "./icon-phone.svg";
 
 export const assets = {
   background,
@@ -54,6 +57,9 @@ export const assets = {
   star_blank,
   logo,
   logo_fold,
+  icon_address,
+  icon_phone,
+  icon_mail,
 };
 
 export const dummyEducatorData = {
