@@ -1,0 +1,27 @@
+$purple-1: #00adef;
+.input-cus {
+  margin-top: 5px;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 15px 22px;
+  transition: all 0.15s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.button {
+  background: transparent;
+  border: 1px solid $purple-1;
+  color: white;
+  background: $purple-1;
+  padding: 20px 50px;
+  border-radius: 12px;
+  margin-top: 20px;
+  &:hover {
+    background: white !important;
+    color: $purple-1 !important;
+  }
+}
