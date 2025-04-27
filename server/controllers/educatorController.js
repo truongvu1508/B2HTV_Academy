@@ -1,5 +1,5 @@
 import { clerkClient } from "@clerk/express";
-import Course from "../models/Course";
+import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 // Update role to educator
 export const updateRoleToEducator = async (req, res) => {
