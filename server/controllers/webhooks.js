@@ -21,8 +21,8 @@ export const clerkWebhooks = async (req, res) => {
           name: data.first_name + " " + data.last_name,
           imageUrl: data.image_url,
         };
-        const newUser = await User.create(userData);
-        console.log("New user created:", newUser);
+        await User.create(userData);
+
         res.json({});
         break;
       }
@@ -48,7 +48,6 @@ export const clerkWebhooks = async (req, res) => {
         break;
     }
   } catch (error) {
-    console.error("Webhook error:", error.message);
     res.json({ success: false, message: error.message });
   }
 };
