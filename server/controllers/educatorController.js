@@ -1,4 +1,4 @@
-import { clerkClient } from "@clerk/express";
+import { clerkClient, User } from "@clerk/express";
 import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 import { Purchase } from "../models/Purchase.js";
@@ -78,5 +78,33 @@ const educatorDashboardData = async () => {
       (sum, purchase) => sum + purchase.amount,
       0
     );
-  } catch (error) {}
+
+    // Collect unique enrolled student
+    const enrolledStudentsData = [];
+    for (const course of courses) {
+      const students = await User.find(
+        {
+          _id: { $in: course.enrolledStudents },
+        },
+        "name imageUrl"
+      );
+
+      students.forEach((student) => {
+        enrolledStudentsData.push({
+          courseTitle: course.courseTitle,
+          student,
+        });
+      });
+    }
+    res.json({
+      success: true,
+      dashboardData: {
+        totalEarnings,
+        enrolledStudentsData,
+        totalCourses,
+      },
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
