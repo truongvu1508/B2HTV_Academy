@@ -52,5 +52,33 @@ export const purchaseCourse = async (req, res) => {
 
     //Stripe Gateway Init
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-  } catch (error) {}
+    const currency = process.env.CURRENCY.toLowerCase();
+
+    //Create line items to for Stripe
+    const line_items = [
+      {
+        price_data: {
+          currency,
+          product_data: {
+            name: courseData.courseTitle,
+          },
+          unit_amount: Math.floor(newPurchase.amount) * 100,
+        },
+        quantity: 1,
+      },
+    ];
+
+    const session = await stripeInstance.checkout.sessions.create({
+      success_url: `${origin}/loading/my-enrollments`,
+      cancel_url: `${origin}/`,
+      line_items: line_items,
+      mode: "payment",
+      metadata: {
+        purchaseId: newPurchase._id.toString(),
+      },
+    });
+    res.json({ success: true, session_url: session.url });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
