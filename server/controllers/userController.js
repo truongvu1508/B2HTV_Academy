@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
+import Course from "../models/Course.js";
 
 export const getUserData = async (req, res) => {
   try {
@@ -62,7 +63,7 @@ export const purchaseCourse = async (req, res) => {
           product_data: {
             name: courseData.courseTitle,
           },
-          unit_amount: Math.floor(newPurchase.amount) * 100,
+          unit_amount: newPurchase.amount,
         },
         quantity: 1,
       },
