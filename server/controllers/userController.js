@@ -105,5 +105,9 @@ export const updateUserCourseProgress = async (req, res) => {
         lectureCompleted: [lectureId],
       });
     }
-  } catch (error) {}
+
+    res.json({ success: true, message: "Cập nhật tiến trình" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
