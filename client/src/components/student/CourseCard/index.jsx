@@ -10,18 +10,23 @@ const CourseCard = ({ course }) => {
     <Link
       to={"/course/" + course._id}
       onClick={() => scrollTo(0, 0)}
-      className="border border-gray-500/30 pb-6 overflow-hidden rounded-lg"
+      className="border border-gray-500/30 overflow-hidden rounded-lg flex flex-col h-full"
     >
-      <img className="w-full" src={course.courseThumbnail} alt="" />
-      <div className="p-3 text-left">
+      {/* Fixed height for the image container */}
+      <div className="w-full h-80 overflow-hidden">
+        <img
+          className="w-full h-full object-cover"
+          src={course.courseThumbnail}
+          alt={course.title || "Course thumbnail"}
+        />
+      </div>
+      <div className="p-3 text-left flex-grow flex flex-col">
         <h3 className="text-base font-semibold">B2HTV Academy</h3>
         <p className="text-gray-500">{course.educator.name}</p>
         <div className="flex items-center space-x-2">
-          {/* <p>{calculateRating(course)}</p> */}
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <span key={i}>
-                {" "}
                 {i < Math.floor(calculateRating(course)) ? (
                   <FaStar className="text-yellow-cs" />
                 ) : (
@@ -32,7 +37,8 @@ const CourseCard = ({ course }) => {
           </div>
           <p className="text-gray-500">({course.courseRatings.length})</p>
         </div>
-        <div className="flex justify-between mt-2">
+        {/* Push the price information to bottom with flex-grow */}
+        <div className="flex justify-between mt-auto pt-3">
           <p className="text-base font-bold text-dark-1">
             {(
               course.coursePrice -

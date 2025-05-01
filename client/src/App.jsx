@@ -19,6 +19,7 @@ import Contact from "./pages/client/Contact";
 import Error404 from "./pages/Error404";
 import AllRoute from "./components/AllRoute";
 import "quill/dist/quill.snow.css";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
         </Route>
         <Route path="*" element={<Error404 />} />
       </Routes> */}
+      <ToastContainer />
       <AllRoute />
     </div>
   );

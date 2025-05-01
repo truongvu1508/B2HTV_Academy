@@ -13,6 +13,7 @@
     "@clerk/clerk-react": "^5.26.2",
     "antd": "^5.24.6",
     "aos": "^2.3.4",
+    "axios": "^1.9.0",
     "humanize-duration": "^3.32.1",
     "quill": "^2.0.3",
     "rc-progress": "^4.0.0",
@@ -24,6 +25,7 @@
     "react-router-dom": "^7.5.0",
     "react-scroll-trigger": "^0.6.14",
     "react-simple-star-rating": "^5.1.7",
+    "react-toastify": "^11.0.5",
     "react-youtube": "^10.1.0",
     "sass": "^1.86.3",
     "uniqid": "^5.4.0"
