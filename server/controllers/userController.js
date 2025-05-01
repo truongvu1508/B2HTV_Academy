@@ -124,3 +124,21 @@ export const getUserCourseProgress = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// Add User Ratings to Course
+export const addUserRating = async (req, res) => {
+  const userId = req.auth.userId;
+  const { courseId, rating } = req.body;
+
+  if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
+    return res.json({ success: false, message: "Không hợp lệ" });
+  }
+
+  try {
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return res.json({ success: false, message: "Không tìm thấy khóa học." });
+    }
+  } catch (error) {}
+};
