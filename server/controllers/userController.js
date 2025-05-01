@@ -149,5 +149,20 @@ export const addUserRating = async (req, res) => {
         message: "Người dùng không mua khóa học này",
       });
     }
-  } catch (error) {}
+
+    const existingRatingIndex = course.courseRatings.findIndex(
+      (r) => r.userId === userId
+    );
+
+    if (existingRatingIndex > -1) {
+      course.courseRatings[existingRatingIndex].rating = rating;
+    } else {
+      course.courseRatings.push({ userId, rating });
+    }
+
+    await course.save();
+    return res.json({ success: true, message: "Đã thêm đánh giá" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
 };
