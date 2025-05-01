@@ -140,5 +140,14 @@ export const addUserRating = async (req, res) => {
     if (!course) {
       return res.json({ success: false, message: "Không tìm thấy khóa học." });
     }
+
+    const user = await User.findById(userId);
+
+    if (!user || !user.enrolledCourses.includes(courseId)) {
+      return res.json({
+        success: false,
+        message: "Người dùng không mua khóa học này",
+      });
+    }
   } catch (error) {}
 };
