@@ -14,6 +14,21 @@ import YouTube from "react-youtube";
 import { Helmet } from "react-helmet";
 import { Button } from "antd";
 import "./CourseDetails.scss";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+// Cấu hình humanizeDuration cho tiếng Việt
+const vietnameseHumanizer = humanizeDuration.humanizer({
+  language: "vi",
+  languages: {
+    vi: {
+      h: () => " giờ",
+      m: () => " phút",
+    },
+  },
+  delimiter: " ",
+  spacer: "",
+});
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -30,17 +45,61 @@ const CourseDetails = () => {
     calculateCourseDuration,
     calculateNoOfLectures,
     currency,
+    backendUrl,
+    userData,
+    getToken,
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
-    const findCourse = allCourses.find((course) => course._id === id);
-    setCourseData(findCourse);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/" + id);
+      if (data.success) {
+        setCourseData(data.courseData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const enrollCourse = async () => {
+    try {
+      if (!userData) {
+        return toast.warn("Đăng nhập để mua khóa học");
+      }
+      if (isAlreadyEnrolled) {
+        return toast.warn("Đã mua");
+      }
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        backendUrl + "/api/user/purchase",
+        { courseId: courseData._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        const { session_url } = data;
+        window.location.replace(session_url);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
     fetchCourseData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allCourses]);
+  }, []);
+
+  useEffect(() => {
+    if (userData && courseData) {
+      setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  }, [userData, courseData]);
 
   const toggleSection = (index) => {
     setOpenSections((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -160,7 +219,7 @@ const CourseDetails = () => {
                                 </p>
                               )}
                               <p>
-                                {humanizeDuration(
+                                {vietnameseHumanizer(
                                   lecture.lectureDuration * 60 * 1000,
                                   { units: ["h", "m"] }
                                 )}
@@ -186,7 +245,11 @@ const CourseDetails = () => {
               iframeClassName="w-full aspect-video"
             />
           ) : (
-            <img src={courseData.courseThumbnail} alt="" />
+            <img
+              className="w-full h-72 object-cover"
+              src={courseData.courseThumbnail}
+              alt=""
+            />
           )}
 
           <div className="p-3">
@@ -230,8 +293,13 @@ const CourseDetails = () => {
               </div>
             </div>
 
-            <Button className="courseDetails__button w-full bg-blue-2">
-              {isAlreadyEnrolled ? "Mua ngay" : "Đăng ký ngay"}
+            <Button
+              onClick={enrollCourse}
+              className={`courseDetails__button w-full text-white ${
+                isAlreadyEnrolled ? "bg-green-500 !important" : "bg-blue-2"
+              }`}
+            >
+              {isAlreadyEnrolled ? "Đã mua" : "Đăng ký ngay"}
             </Button>
 
             {/* <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
