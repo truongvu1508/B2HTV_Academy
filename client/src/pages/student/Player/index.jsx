@@ -8,6 +8,19 @@ import { FaAngleDown, FaPlayCircle } from "react-icons/fa";
 import YouTube from "react-youtube";
 import Rating from "../../../components/student/Rating";
 
+// Cấu hình humanizeDuration cho tiếng Việt
+const vietnameseHumanizer = humanizeDuration.humanizer({
+  language: "vi",
+  languages: {
+    vi: {
+      h: () => " giờ",
+      m: () => " phút",
+    },
+  },
+  delimiter: " ",
+  spacer: "",
+});
+
 const Player = () => {
   const { enrolledCourses, calculateChapterTime } = useContext(AppContext);
   const { courseId } = useParams();
@@ -87,11 +100,11 @@ const Player = () => {
                                   }
                                   className="text-blue-500 cursor-pointer"
                                 >
-                                  Watch
+                                  Xem
                                 </p>
                               )}
                               <p>
-                                {humanizeDuration(
+                                {vietnameseHumanizer(
                                   lecture.lectureDuration * 60 * 1000,
                                   { units: ["h", "m"] }
                                 )}
@@ -129,7 +142,11 @@ const Player = () => {
               </div>
             </div>
           ) : (
-            <img src={courseData ? courseData.courseThumbnail : ""} alt="" />
+            <img
+              className="w-full h-80 object-cover"
+              src={courseData ? courseData.courseThumbnail : ""}
+              alt=""
+            />
           )}
         </div>
       </div>

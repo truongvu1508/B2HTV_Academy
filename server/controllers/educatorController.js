@@ -15,7 +15,7 @@ export const updateRoleToEducator = async (req, res) => {
     });
     res.json({
       success: true,
-      message: "Bạn có thể đăng khóa học ngay bây giờ.",
+      message: "Đã cập nhật vai trò educator",
     });
   } catch (error) {
     res.json({ success: false, message: error.message });

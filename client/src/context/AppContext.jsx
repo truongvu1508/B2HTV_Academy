@@ -6,6 +6,19 @@ import { useAuth, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Cấu hình humanizeDuration cho tiếng Việt
+const vietnameseHumanizer = humanizeDuration.humanizer({
+  language: "vi",
+  languages: {
+    vi: {
+      h: () => " giờ",
+      m: () => " phút",
+    },
+  },
+  delimiter: " ",
+  spacer: "",
+});
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const AppContext = createContext();
 
@@ -69,7 +82,7 @@ export const AppContextProvider = (props) => {
     course.courseRatings.forEach((rating) => {
       totalRating += rating.rating;
     });
-    return totalRating / course.courseRatings.length;
+    return Math.floor(totalRating / course.courseRatings.length);
   };
 
   // Function to Calculate Course Chapter Time
@@ -77,7 +90,7 @@ export const AppContextProvider = (props) => {
     let time = 0;
 
     chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration));
-    return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
+    return vietnameseHumanizer(time * 60 * 1000, { units: ["h", "m"] });
   };
 
   // Function to Calculate Course duration
@@ -88,7 +101,7 @@ export const AppContextProvider = (props) => {
       chapter.chapterContent.map((lecture) => (time += lecture.lectureDuration))
     );
 
-    return humanizeDuration(time * 60 * 1000, { units: ["h", "m"] });
+    return vietnameseHumanizer(time * 60 * 1000, { units: ["h", "m"] });
   };
 
   // Function to No of Lectures in the course
@@ -130,6 +143,7 @@ export const AppContextProvider = (props) => {
   useEffect(() => {
     if (user) {
       fetchUserData();
+      fetchUserEnrolledCourses();
     }
   }, [user]);
 
