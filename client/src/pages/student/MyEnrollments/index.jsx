@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../../components/student/Navbar";
 import Footer from "../../../components/student/Footer";
 import BackToTop from "../../../components/client/BackToTop";
@@ -46,6 +47,18 @@ const MyEnrollments = () => {
       toast.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (userData) {
+      fetchUserEnrolledCourses();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (enrolledCourses.length > 0) {
+      getCourseProgress();
+    }
+  }, [enrolledCourses]);
 
   return (
     <>
