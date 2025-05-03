@@ -86,11 +86,11 @@ const Navbar = () => {
               </NavLink>
             </li>
 
-            <li>
+            {/* <li>
               <NavLink className={navLinkStyles} to={"/blog"}>
                 Blog
               </NavLink>
-            </li>
+            </li> */}
 
             <li>
               <NavLink className={navLinkStyles} to={"/contact"}>

@@ -80,23 +80,39 @@ export const educatorDashboardData = async (req, res) => {
       0
     );
 
-    // Collect unique enrolled student
-    const enrolledStudentsData = [];
-    for (const course of courses) {
-      const students = await User.find(
-        {
-          _id: { $in: course.enrolledStudents },
-        },
-        "name imageUrl"
-      );
+    // Collect unique enrolled students
+    // Step 1: Get all unique student IDs
+    const allStudentIds = new Set();
+    courses.forEach((course) => {
+      course.enrolledStudents.forEach((studentId) => {
+        allStudentIds.add(studentId.toString());
+      });
+    });
 
-      students.forEach((student) => {
-        enrolledStudentsData.push({
-          courseTitle: course.courseTitle,
-          student,
-        });
+    // Step 2: Fetch student details
+    const students = await User.find(
+      { _id: { $in: Array.from(allStudentIds) } },
+      "name imageUrl"
+    );
+
+    // Step 3: Create enrolledStudentsData with course titles
+    const enrolledStudentsData = [];
+    for (const student of students) {
+      // Find courses this student enrolled in
+      const enrolledCourses = courses
+        .filter((course) => course.enrolledStudents.includes(student._id))
+        .map((course) => course.courseTitle);
+
+      enrolledStudentsData.push({
+        student: {
+          _id: student._id,
+          name: student.name,
+          imageUrl: student.imageUrl,
+        },
+        courseTitles: enrolledCourses, // List of course titles
       });
     }
+
     res.json({
       success: true,
       dashboardData: {
@@ -106,6 +122,7 @@ export const educatorDashboardData = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error in educatorDashboardData:", error);
     res.json({ success: false, message: error.message });
   }
 };

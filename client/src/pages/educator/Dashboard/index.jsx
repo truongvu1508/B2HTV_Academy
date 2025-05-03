@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
-import { dummyDashboardData } from "../../../assets/assets";
 import Loading from "../../../components/student/Loading";
 import { FaBook, FaMoneyCheckAlt, FaUser } from "react-icons/fa";
 import "./Dashboard.scss";
