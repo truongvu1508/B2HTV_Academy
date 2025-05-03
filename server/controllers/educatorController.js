@@ -122,7 +122,7 @@ export const getEnrolledStudentsData = async (req, res) => {
       status: "completed",
     })
       .populate("userId", "name imageUrl")
-      .populate("courseId", "CourseTitle");
+      .populate("courseId", "courseTitle");
     const enrolledStudents = purchases.map((purchase) => ({
       student: purchase.userId,
       courseTitle: purchase.courseId.courseTitle,
