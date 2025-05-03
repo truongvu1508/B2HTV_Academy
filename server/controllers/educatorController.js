@@ -80,36 +80,30 @@ export const educatorDashboardData = async (req, res) => {
       0
     );
 
-    // Collect unique enrolled students
-    // Step 1: Get all unique student IDs
+    // Collect unique enrolled student IDs for counting
     const allStudentIds = new Set();
     courses.forEach((course) => {
       course.enrolledStudents.forEach((studentId) => {
         allStudentIds.add(studentId.toString());
       });
     });
+    const totalStudents = allStudentIds.size; // Count unique students
 
-    // Step 2: Fetch student details
-    const students = await User.find(
-      { _id: { $in: Array.from(allStudentIds) } },
-      "name imageUrl"
-    );
-
-    // Step 3: Create enrolledStudentsData with course titles
+    // Collect enrolled students data (keep original logic)
     const enrolledStudentsData = [];
-    for (const student of students) {
-      // Find courses this student enrolled in
-      const enrolledCourses = courses
-        .filter((course) => course.enrolledStudents.includes(student._id))
-        .map((course) => course.courseTitle);
-
-      enrolledStudentsData.push({
-        student: {
-          _id: student._id,
-          name: student.name,
-          imageUrl: student.imageUrl,
+    for (const course of courses) {
+      const students = await User.find(
+        {
+          _id: { $in: course.enrolledStudents },
         },
-        courseTitles: enrolledCourses, // List of course titles
+        "name imageUrl"
+      );
+
+      students.forEach((student) => {
+        enrolledStudentsData.push({
+          courseTitle: course.courseTitle,
+          student,
+        });
       });
     }
 
@@ -119,6 +113,7 @@ export const educatorDashboardData = async (req, res) => {
         totalEarnings,
         enrolledStudentsData,
         totalCourses,
+        totalStudents, // Add new variable
       },
     });
   } catch (error) {
