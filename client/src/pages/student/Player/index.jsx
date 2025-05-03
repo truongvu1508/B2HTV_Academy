@@ -7,6 +7,8 @@ import Footer from "../../../components/student/Footer";
 import { FaAngleDown, FaPlayCircle } from "react-icons/fa";
 import YouTube from "react-youtube";
 import Rating from "../../../components/student/Rating";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Cấu hình humanizeDuration cho tiếng Việt
 const vietnameseHumanizer = humanizeDuration.humanizer({
@@ -60,6 +62,24 @@ const Player = () => {
       getCourseData();
     }
   }, [enrolledCourses]);
+
+  const markLectureAsCompleted = async (lectureId) => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.post(
+        backendUrl + "/api/user/update-course-progress",
+        { courseId, lectureId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <>
