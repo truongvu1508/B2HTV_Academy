@@ -42,7 +42,7 @@ const Dashboard = () => {
               <FaUser className="text-dark-2 text-3xl mr-[10px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
-                  {dashboardData.enrolledStudentsData.length}
+                  {dashboardData.totalStudents}
                 </p>
                 <p className="text-base text-gray-500">Học viên</p>
               </div>
