@@ -89,7 +89,7 @@ export const purchaseCourse = async (req, res) => {
 export const updateUserCourseProgress = async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const { courseId, lectureId } = req.body;
+    const { courseId, lectureId, completed } = req.body;
     const progressData = await CourseProgress.findOne({ userId, courseId });
 
     if (progressData) {
@@ -102,6 +102,7 @@ export const updateUserCourseProgress = async (req, res) => {
       await CourseProgress.create({
         userId,
         courseId,
+        completed: completed || false,
         lectureCompleted: [lectureId],
       });
     }

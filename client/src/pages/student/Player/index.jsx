@@ -4,11 +4,12 @@ import { useParams } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import Navbar from "../../../components/student/Navbar";
 import Footer from "../../../components/student/Footer";
-import { FaAngleDown, FaPlayCircle } from "react-icons/fa";
+import { FaAngleDown, FaCheckCircle, FaPlayCircle } from "react-icons/fa";
 import YouTube from "react-youtube";
 import Rating from "../../../components/student/Rating";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Loading from "../../../components/student/Loading";
 
 // Cấu hình humanizeDuration cho tiếng Việt
 const vietnameseHumanizer = humanizeDuration.humanizer({
@@ -68,7 +69,7 @@ const Player = () => {
       const token = await getToken();
       const { data } = await axios.post(
         backendUrl + "/api/user/update-course-progress",
-        { courseId, lectureId },
+        { courseId, lectureId, completed: true },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (data.success) {
@@ -81,7 +82,6 @@ const Player = () => {
       toast.error(error.message);
     }
   };
-
   const getCourseProgress = async () => {
     try {
       const token = await getToken();
@@ -120,13 +120,17 @@ const Player = () => {
     }
   };
 
-  return (
+  useEffect(() => {
+    getCourseProgress();
+  }, []);
+
+  return courseData ? (
     <>
       <Navbar />
       <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36 ">
         {/* left column */}
         <div className="text-gray-800">
-          <h2 className="text-xl font-semibold">Course Structure</h2>
+          <h2 className="text-xl font-semibold">Nội dung khóa học</h2>
           <div className="pt-5">
             {courseData &&
               courseData.courseContent.map((chapter, index) => (
@@ -149,7 +153,7 @@ const Player = () => {
                       </p>
                     </div>
                     <p className="text-sm md:text-default">
-                      {chapter.chapterContent.length} lectures -{" "}
+                      {chapter.chapterContent.length} bài giảng -{" "}
                       {calculateChapterTime(chapter)}
                     </p>
                   </div>
@@ -161,7 +165,15 @@ const Player = () => {
                     <ul className="list-disc md:pl-10 pl-4 pr-4 py-2 text-gray-600 border-t border-gray-300">
                       {chapter.chapterContent.map((lecture, i) => (
                         <li key={i} className="flex items-start gap-2 py-1">
-                          <FaPlayCircle className="w-4 h-4 mt-1" />
+                          {progressData &&
+                          progressData.lectureCompleted.includes(
+                            playerData.lectureId
+                          ) ? (
+                            <FaCheckCircle className="w-4 h-4 mt-1 !text-green-500" />
+                          ) : (
+                            <FaPlayCircle className="w-4 h-4 mt-1" />
+                          )}
+
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
                             <p>{lecture.lectureTitle}</p>
                             <div className="flex gap-2">
@@ -195,8 +207,8 @@ const Player = () => {
               ))}
           </div>
           <div className="flex items-center gap-2 py-3 mt-10">
-            <h1 className="text-xl font-bold">Rate this Course:</h1>
-            <Rating initialRating={0} />
+            <h1 className="text-xl font-bold">Đánh giá khóa học này:</h1>
+            <Rating initialRating={initialRating} onRate={handleRate} />
           </div>
         </div>
         {/* right column */}
@@ -212,8 +224,14 @@ const Player = () => {
                   {playerData.chapter}.{playerData.lecture}{" "}
                   {playerData.lectureTitle}
                 </p>
-                <button className="text-blue-600">
-                  {false ? "Completed" : "Mark Complete"}
+                <button
+                  onClick={() => markLectureAsCompleted(playerData.lectureId)}
+                  className="text-blue-600"
+                >
+                  {progressData &&
+                  progressData.lectureCompleted.includes(playerData.lectureId)
+                    ? "Đã hoàn thành"
+                    : "Đánh dấu hoàn thành"}
                 </button>
               </div>
             </div>
@@ -228,6 +246,8 @@ const Player = () => {
       </div>
       <Footer />
     </>
+  ) : (
+    <Loading />
   );
 };
 
