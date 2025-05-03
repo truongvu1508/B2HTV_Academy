@@ -3,18 +3,32 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
 import { FaEye } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyCourses = () => {
-  const { currency, allCourses } = useContext(AppContext);
+  const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
+
   const [courses, setCourses] = useState(null);
 
   const fetchEducatorCourses = async () => {
-    setCourses(allCourses);
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(backendUrl + "/api/educator/courses", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      data.success && setCourses(data.courses);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   useEffect(() => {
-    fetchEducatorCourses();
-  }, [allCourses]);
+    if (isEducator) {
+      fetchEducatorCourses();
+    }
+  }, [isEducator]);
 
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -31,35 +45,37 @@ const MyCourses = () => {
             <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
               <tr>
                 <th className="px-4 py-3 font-semibold truncate">
-                  All Courses
+                  Tất cả khóa học
                 </th>
-                <th className="px-4 py-3 font-semibold truncate">Earnings</th>
-                <th className="px-4 py-3 font-semibold truncate">Students</th>
-                <th className="px-4 py-3 font-semibold truncate">
-                  Published On
-                </th>
-                <th className="px-4 py-3 font-semibold truncate">Actions</th>
+                <th className="px-4 py-3 font-semibold truncate">Doanh thu</th>
+                <th className="px-4 py-3 font-semibold truncate">Học viên</th>
+                <th className="px-4 py-3 font-semibold truncate">Ngày đăng</th>
+                <th className="px-4 py-3 font-semibold truncate"></th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-500">
               {courses.map((course) => (
                 <tr key={course._id} className="border-b border-gray-500/20">
                   <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
-                    <img
-                      src={course.courseThumbnail}
-                      alt="Course Image"
-                      className="w-16"
-                    />
+                    <div className="w-32 h-24 aspect-square overflow-hidden">
+                      <img
+                        src={course.courseThumbnail}
+                        alt="Course Image"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                     <span className="truncate hidden md:block">
                       {course.courseTitle}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {Math.floor(
-                      course.enrolledStudents.length * course.coursePrice -
-                        (course.discount * course.coursePrice) / 100
-                    )}{" "}
-                    {currency}
+                    {course.enrolledStudents.length === 0
+                      ? `0 ${currency}`
+                      : `${(
+                          course.enrolledStudents.length *
+                          (course.coursePrice *
+                            (1 - (course.discount || 0) / 100))
+                        ).toFixed(0)} ${currency}`}
                   </td>
                   <td className="px-4 py-3">
                     {course.enrolledStudents.length}
