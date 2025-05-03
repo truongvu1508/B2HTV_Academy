@@ -65,14 +65,16 @@ const MyEnrollments = () => {
       <Navbar />
 
       <div className="md:px-36 px-8 pt-10 min-h-screen">
-        <h1 className="text-2xl font-semibold">My Enrollments Page</h1>
+        <h1 className="text-2xl font-semibold">Khóa học của tôi</h1>
         <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10">
           <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left max-sm:hidden">
             <tr>
-              <th className="px-4 py-3 font-semibold truncate">Course</th>
-              <th className="px-4 py-3 font-semibold truncate">Duration</th>
-              <th className="px-4 py-3 font-semibold truncate">Completed</th>
-              <th className="px-4 py-3 font-semibold truncate">Status</th>
+              <th className="px-4 py-3 font-semibold truncate">Khóa học</th>
+              <th className="px-4 py-3 font-semibold truncate">Thời gian</th>
+              <th className="px-4 py-3 font-semibold truncate">
+                Đã hoàn thành
+              </th>
+              <th className="px-4 py-3 font-semibold truncate">Trạng thái</th>
             </tr>
           </thead>
           <tbody className="text-gray-700">
@@ -115,8 +117,8 @@ const MyEnrollments = () => {
                     progressArray[index].lectureCompleted /
                       progressArray[index].totalLectures ===
                       1
-                      ? "Completed"
-                      : "On Going"}
+                      ? "Hoàn thành"
+                      : "Đang học"}
                   </Button>
                 </td>
               </tr>

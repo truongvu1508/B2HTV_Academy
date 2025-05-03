@@ -164,14 +164,17 @@ const Player = () => {
                   >
                     <ul className="list-disc md:pl-10 pl-4 pr-4 py-2 text-gray-600 border-t border-gray-300">
                       {chapter.chapterContent.map((lecture, i) => (
-                        <li key={i} className="flex items-start gap-2 py-1">
+                        <li
+                          key={i}
+                          className="flex items-start items-center gap-2 py-1"
+                        >
                           {progressData &&
                           progressData.lectureCompleted.includes(
-                            playerData.lectureId
+                            lecture.lectureId
                           ) ? (
-                            <FaCheckCircle className="w-4 h-4 mt-1 !text-green-500" />
+                            <FaCheckCircle className="w-5 h-5 !text-green-500" />
                           ) : (
-                            <FaPlayCircle className="w-4 h-4 mt-1" />
+                            <FaPlayCircle className="w-5 h-5 " />
                           )}
 
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
