@@ -42,10 +42,10 @@ const StudentsEnrolled = () => {
               <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
                 #
               </th>
-              <th className="px-4 py-3 font-semibold">Student Name</th>
-              <th className="px-4 py-3 font-semibold">Course Title</th>
+              <th className="px-4 py-3 font-semibold">Tên học viên</th>
+              <th className="px-4 py-3 font-semibold">Tên khóa học</th>
               <th className="px-4 py-3 font-semibold hidden sm:table-cell">
-                Date
+                Ngày đăng ký
               </th>
             </tr>
           </thead>
