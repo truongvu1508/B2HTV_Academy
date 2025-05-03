@@ -99,14 +99,14 @@ const Navbar = () => {
             </li>
             {user && (
               <li className="my-enrollments bg-green-1">
-                <button
+                {/* <button
                   onClick={() => {
                     navigate("/educator");
                   }}
                 >
-                  {isEducator ? "Educator Dashboard" : "Become Educator"}
+                  
                 </button>{" "}
-                |
+                | */}
                 <NavLink
                   className={({ isActive }) =>
                     isActive
@@ -115,7 +115,7 @@ const Navbar = () => {
                   }
                   to={"/my-enrollments"}
                 >
-                  Khóa học của tôi
+                  {isEducator ? "Educator Dashboard" : "Khóa học của tôi"}
                 </NavLink>
               </li>
             )}

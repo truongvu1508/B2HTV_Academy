@@ -6,7 +6,7 @@ import { FaBook, FaMoneyCheckAlt, FaUser } from "react-icons/fa";
 import "./Dashboard.scss";
 
 const Dashboard = () => {
-  const { currency } = useContext(AppContext);
+  const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
 
   const fetchDashboardData = async () => {
