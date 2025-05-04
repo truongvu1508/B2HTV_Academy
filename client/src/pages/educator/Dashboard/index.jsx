@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
@@ -23,12 +24,10 @@ const Dashboard = () => {
       if (data.success) {
         setDashboardData(data.dashboardData);
 
-        // Xử lý dữ liệu cho biểu đồ
         if (data.dashboardData.salesByMonth) {
           setSalesData(data.dashboardData.salesByMonth);
         }
 
-        // Tạo dữ liệu biểu đồ tròn cho phân bố học viên
         if (data.dashboardData.enrollmentByMonth) {
           setEnrollmentData(data.dashboardData.enrollmentByMonth);
         }

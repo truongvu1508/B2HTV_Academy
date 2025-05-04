@@ -116,7 +116,7 @@ const CourseDetails = () => {
         <div className="absolute top-0 left-0 w-full h-section-height -z-1 "></div>
         {/* Left column */}
         <div className="flex-[6] w-full z-10 text-gray-500">
-          <h1 className="md:text-course-details-heading-large text-course-details-heading-small font-semibold text-gray-800">
+          <h1 className="md:text-course-details-heading-large text-course-details-heading-small font-extrabold text-dark-1">
             {courseData.courseTitle}
           </h1>
           {/* <p
@@ -156,7 +156,7 @@ const CourseDetails = () => {
           </p>
 
           <div className="py-20 text-sm md:text-default">
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-extrabold text-dark-1">
               Giới thiệu khóa học
             </h3>
             {/* <p
@@ -184,7 +184,9 @@ const CourseDetails = () => {
             </div>
           </div>
           <div className="pb-10 mb-10 text-gray-800">
-            <h2 className="text-xl font-semibold">Nội dung khóa học</h2>
+            <h2 className="text-xl font-extrabold text-dark-1">
+              Nội dung khóa học
+            </h2>
             <div className="pt-5">
               {courseData.courseContent.map((chapter, index) => (
                 <div
@@ -257,7 +259,7 @@ const CourseDetails = () => {
         </div>
 
         {/* Right column */}
-        <div className="flex-[4] w-full z-10 md:sticky md:top-5 pb-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
+        <div className="relative flex-[4] w-full z-10 md:sticky md:top-5 pb-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
           {playerData ? (
             <YouTube
               videoId={playerData.videoId}
@@ -281,7 +283,7 @@ const CourseDetails = () => {
               </p>
             </div>
             <div className="flex gap-3 items-center pt-2 justify-between">
-              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
+              <p className="text-dark-1 md:text-4xl text-2xl font-semibold">
                 {(
                   courseData.coursePrice -
                   (courseData.discount * courseData.coursePrice) / 100
@@ -289,12 +291,12 @@ const CourseDetails = () => {
                 {currency}
               </p>
               <div>
-                <p className="md:text-lg text-gray-500 line-through">
+                <p className="md:text-lg text-gray-500  line-through">
                   {courseData.coursePrice} {currency}
                 </p>
-                <p className="md:text-lg text-gray-500">
+                {/* <p className="md:text-lg text-gray-500">
                   {courseData.discount} %
-                </p>
+                </p> */}
               </div>
             </div>
             <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
@@ -336,6 +338,9 @@ const CourseDetails = () => {
                 <li>Lifetime access with free updates</li>
                 <li>Lifetime access with free updates</li>
               </ul>
+            </div>
+            <div className="absolute top-2 right-2 text-xs px-4 py-1 rounded-xl bg-green-1 text-dark-1 font-semibold">
+              {courseData.discount} %
             </div>
           </div>
         </div>

@@ -13,8 +13,6 @@ const CourseCard = ({ course, courseData }) => {
     calculateNoOfLectures,
   } = useContext(AppContext);
 
-  console.log(courseData);
-
   return (
     <Link
       to={"/course/" + course._id}
@@ -30,7 +28,9 @@ const CourseCard = ({ course, courseData }) => {
         />
       </div>
       <div className="p-3 text-left flex-grow flex flex-col">
-        <h3 className="text-base font-semibold">{course.courseTitle}</h3>
+        <h3 className="text-base font-extrabold text-dark-1">
+          {course.courseTitle}
+        </h3>
         <p className="text-gray-500">{course.educator.name}</p>
         <div className="flex items-center space-x-2">
           <div className="flex">

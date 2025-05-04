@@ -95,9 +95,9 @@ const CoursesList = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 my-16 gap-3 px-2 md:p-0">
           {filteredCourse.map((course, index) => (
             <CourseCard
-              key={course._id} // Sử dụng _id thay vì index để đảm bảo key duy nhất
+              key={course._id}
               course={course}
-              courseData={detailedCourses[index]} // Truyền courseData
+              courseData={detailedCourses[index]}
             />
           ))}
         </div>
