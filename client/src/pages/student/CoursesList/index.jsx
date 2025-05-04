@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import Navbar from "../../../components/student/Navbar";
 import Footer from "../../../components/student/Footer";
@@ -17,7 +18,6 @@ const CoursesList = () => {
   const [filteredCourse, setFilteredCourse] = useState([]);
   const [detailedCourses, setDetailedCourses] = useState([]);
 
-  // Hàm lấy dữ liệu chi tiết cho tất cả khóa học
   const fetchDetailedCourses = async (courses) => {
     try {
       const courseDataPromises = courses.map((course) =>
@@ -32,7 +32,7 @@ const CoursesList = () => {
           return null;
         }
       });
-      return detailedData.filter((data) => data !== null); // Loại bỏ dữ liệu lỗi
+      return detailedData.filter((data) => data !== null);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu khóa học:", error);
       toast.error("Lỗi khi lấy dữ liệu khóa học");
@@ -44,14 +44,12 @@ const CoursesList = () => {
     if (allCourses && allCourses.length > 0) {
       const tempCourses = allCourses.slice();
 
-      // Lọc khóa học theo input
       const filtered = input
         ? tempCourses.filter((item) =>
             item.courseTitle.toLowerCase().includes(input.toLowerCase())
           )
         : tempCourses;
 
-      // Lấy dữ liệu chi tiết
       fetchDetailedCourses(filtered).then((detailedData) => {
         setFilteredCourse(filtered);
         setDetailedCourses(detailedData);

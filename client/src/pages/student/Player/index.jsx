@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
 import { useParams } from "react-router-dom";
@@ -149,7 +150,7 @@ const Player = () => {
                         }`}
                       />
                       <p className="font-medium md:text-base text-sm">
-                        {playerData.chapter}. {chapter.chapterTitle}
+                        {index + 1}. {chapter.chapterTitle}
                       </p>
                     </div>
                     <p className="text-sm md:text-default">
@@ -179,8 +180,7 @@ const Player = () => {
 
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
                             <p>
-                              {playerData.chapter}.{playerData.lecture}{" "}
-                              {lecture.lectureTitle}
+                              {index + 1}.{i + 1}. {lecture.lectureTitle}
                             </p>
                             <div className="flex gap-2">
                               {lecture.lectureUrl && (
