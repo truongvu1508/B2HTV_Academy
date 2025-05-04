@@ -38,8 +38,9 @@ const CourseDetails = () => {
   const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
   const [playerData, setPlayerData] = useState(null);
 
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
   const {
-    allCourses,
     calculateRating,
     calculateChapterTime,
     calculateCourseDuration,
@@ -118,12 +119,12 @@ const CourseDetails = () => {
           <h1 className="md:text-course-details-heading-large text-course-details-heading-small font-semibold text-gray-800">
             {courseData.courseTitle}
           </h1>
-          <p
+          {/* <p
             className="pt-4 md:text-base text-sm"
             dangerouslySetInnerHTML={{
               __html: courseData.courseDescription.slice(0, 200),
             }}
-          ></p>
+          ></p> */}
 
           {/* review and rating */}
           <div className="flex items-center space-x-2 pt-3 pb-1 text-sm">
@@ -141,12 +142,12 @@ const CourseDetails = () => {
               ))}
             </div>
             <p className="text-blue-600">
-              ( {courseData.courseRatings.length}{" "}
-              {courseData.courseRatings.length > 1 ? "ratings" : "rating"})
+              {courseData.courseRatings.length} Đánh giá
+              {/* {courseData.courseRatings.length > 1 ? "ratings" : "rating"}) */}
             </p>
             <p>
-              {courseData.enrolledStudents.length}{" "}
-              {courseData.enrolledStudents.length > 1 ? "students" : "student"}
+              {courseData.enrolledStudents.length} học viên
+              {/* {courseData.enrolledStudents.length > 1 ? "students" : "student"} */}
             </p>
           </div>
           <p className="text-sm">
@@ -158,12 +159,29 @@ const CourseDetails = () => {
             <h3 className="text-xl font-semibold text-gray-800">
               Giới thiệu khóa học
             </h3>
-            <p
+            {/* <p
               className="pt-3 "
               dangerouslySetInnerHTML={{
                 __html: courseData.courseDescription,
               }}
-            ></p>
+            ></p> */}
+            <div className="pt-3">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: showFullDescription
+                    ? courseData.courseDescription
+                    : courseData.courseDescription.slice(0, 300) + "...",
+                }}
+              />
+              {courseData.courseDescription.length > 300 && (
+                <button
+                  className="text-blue-600 mt-2 underline text-sm"
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                >
+                  {showFullDescription ? "Thu gọn" : "Xem thêm"}
+                </button>
+              )}
+            </div>
           </div>
           <div className="pb-10 mb-10 text-gray-800">
             <h2 className="text-xl font-semibold">Nội dung khóa học</h2>
@@ -184,11 +202,11 @@ const CourseDetails = () => {
                         }`}
                       />
                       <p className="font-medium md:text-base text-sm">
-                        {chapter.chapterTitle}
+                        {index + 1}. {chapter.chapterTitle}
                       </p>
                     </div>
                     <p className="text-sm md:text-default">
-                      {chapter.chapterContent.length} lectures -{" "}
+                      {chapter.chapterContent.length} bài giảng -{" "}
                       {calculateChapterTime(chapter)}
                     </p>
                   </div>
@@ -202,7 +220,9 @@ const CourseDetails = () => {
                         <li key={i} className="flex items-start gap-2 py-1">
                           <FaPlayCircle className="w-4 h-4 mt-1" />
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
-                            <p>{lecture.lectureTitle}</p>
+                            <p>
+                              {index + 1}.{i + 1}. {lecture.lectureTitle}
+                            </p>
                             <div className="flex gap-2">
                               {lecture.isPreviewFree && (
                                 <p
@@ -254,9 +274,10 @@ const CourseDetails = () => {
 
           <div className="p-3">
             <div className="flex items-center gap-2">
-              <LuAlarmClock className="w-3.5 text-red-500" />
+              <LuAlarmClock className="w-4 text-red-500" />
               <p className="text-red-500">
-                <span className="font-medium">5 days</span> left at this price!
+                <span className="font-medium">5 ngày</span> còn lại cho mức giá
+                này!
               </p>
             </div>
             <div className="flex gap-3 items-center pt-2 justify-between">
@@ -289,14 +310,14 @@ const CourseDetails = () => {
               <div className="h-4 w-px bg-gray-500/40"></div>
               <div className="flex items-center gap-1">
                 <FaBookOpenReader />
-                <p>{calculateNoOfLectures(courseData)} lessons</p>
+                <p>{calculateNoOfLectures(courseData)} bài giảng</p>
               </div>
             </div>
 
             <Button
               onClick={enrollCourse}
-              className={`courseDetails__button w-full text-white ${
-                isAlreadyEnrolled ? "bg-green-500 !important" : "bg-blue-2"
+              className={`courseDetails__button w-full font-semibold text-base text-white bg-blue-2 ${
+                isAlreadyEnrolled && " isAlreadyEnrolled"
               }`}
             >
               {isAlreadyEnrolled ? "Đã mua" : "Đăng ký ngay"}

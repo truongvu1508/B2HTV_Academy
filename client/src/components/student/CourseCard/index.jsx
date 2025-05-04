@@ -2,9 +2,18 @@ import React, { useContext } from "react";
 import { AppContext } from "../../../context/AppContext";
 import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
+import { CiClock1 } from "react-icons/ci";
+import { FaBookOpenReader, FaUserGraduate } from "react-icons/fa6";
 
-const CourseCard = ({ course }) => {
-  const { currency, calculateRating } = useContext(AppContext);
+const CourseCard = ({ course, courseData }) => {
+  const {
+    currency,
+    calculateRating,
+    calculateCourseDuration,
+    calculateNoOfLectures,
+  } = useContext(AppContext);
+
+  console.log(courseData);
 
   return (
     <Link
@@ -36,6 +45,25 @@ const CourseCard = ({ course }) => {
             ))}
           </div>
           <p className="text-gray-500">({course.courseRatings.length})</p>
+        </div>
+        <div className="flex items-center text-sm md:text-default gap-4 pb-2 border-b border-gray md:pt-4 ">
+          <div className="flex items-center gap-1">
+            <FaUserGraduate className="mr-1" />
+            <p>
+              {courseData.enrolledStudents.length} học viên
+              {/* {courseData.enrolledStudents.length > 1 ?  "students": "student"} */}
+            </p>
+          </div>
+          <div className="h-4 w-px bg-gray-500/40"></div>
+          <div className="flex items-center gap-1">
+            <CiClock1 className="mr-1" />
+            <p>{calculateCourseDuration(courseData)}</p>
+          </div>
+          <div className="h-4 w-px bg-gray-500/40"></div>
+          <div className="flex items-center gap-1">
+            <FaBookOpenReader className="mr-1" />
+            <p>{calculateNoOfLectures(courseData)} bài giảng</p>
+          </div>
         </div>
         {/* Push the price information to bottom with flex-grow */}
         <div className="flex justify-between mt-auto pt-3">

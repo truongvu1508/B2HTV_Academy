@@ -139,7 +139,7 @@ const Player = () => {
                   className="border border-gray-300 bg-white mb-2 rounded"
                 >
                   <div
-                    className="flex items-center justify-between px-4 py-3 cursor-pointer select-none"
+                    className="flex items-center justify-between px-4 py-3 cursor-pointer select-none bg-blue-2 text-white"
                     onClick={() => toggleSection(index)}
                   >
                     <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ const Player = () => {
                         }`}
                       />
                       <p className="font-medium md:text-base text-sm">
-                        {chapter.chapterTitle}
+                        {playerData.chapter}. {chapter.chapterTitle}
                       </p>
                     </div>
                     <p className="text-sm md:text-default">
@@ -178,7 +178,10 @@ const Player = () => {
                           )}
 
                           <div className="flex items-center justify-between w-full text-gray-800 text-xs md:text-default">
-                            <p>{lecture.lectureTitle}</p>
+                            <p>
+                              {playerData.chapter}.{playerData.lecture}{" "}
+                              {lecture.lectureTitle}
+                            </p>
                             <div className="flex gap-2">
                               {lecture.lectureUrl && (
                                 <p

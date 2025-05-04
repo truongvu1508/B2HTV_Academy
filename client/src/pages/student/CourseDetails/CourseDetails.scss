@@ -1,5 +1,6 @@
 $dark-1: #00175d;
 $purple-1: #00adef;
+$green-1: #00d36d;
 
 .courseDetails__button {
   border: 2px solid $purple-1 !important;
@@ -10,5 +11,16 @@ $purple-1: #00adef;
   &:hover {
     background: white !important;
     color: $purple-1 !important;
+  }
+}
+
+.isAlreadyEnrolled {
+  border: 2px solid $green-1 !important;
+  color: white;
+  background: $green-1;
+
+  &:hover {
+    background: white !important;
+    color: $green-1 !important;
   }
 }
