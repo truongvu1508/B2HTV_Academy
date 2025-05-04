@@ -1,4 +1,66 @@
-// Cập nhật hàm educatorDashboardData để thêm dữ liệu cho biểu đồ
+import { clerkClient } from "@clerk/express";
+import Course from "../models/Course.js";
+import { v2 as cloudinary } from "cloudinary";
+import { Purchase } from "../models/Purchase.js";
+import User from "../models/User.js";
+// Update role to educator
+export const updateRoleToEducator = async (req, res) => {
+  try {
+    const userId = req.auth.userId;
+
+    await clerkClient.users.updateUserMetadata(userId, {
+      publicMetadata: {
+        role: "educator",
+      },
+    });
+    res.json({
+      success: true,
+      message: "Đã cập nhật vai trò educator",
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Add New Course
+export const addCourse = async (req, res) => {
+  try {
+    const { courseData } = req.body;
+    const imageFile = req.file;
+    const educatorId = req.auth.userId;
+
+    if (!imageFile) {
+      return res.json({ success: false, message: "Ảnh không được đính kèm" });
+    }
+
+    const parsedCourseData = await JSON.parse(courseData);
+    parsedCourseData.educator = educatorId;
+
+    const newCourse = await Course.create(parsedCourseData);
+    const imageUpload = await cloudinary.uploader.upload(imageFile.path);
+
+    newCourse.courseThumbnail = imageUpload.secure_url;
+
+    await newCourse.save();
+    res.json({ success: true, message: "Đã thêm khóa học" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get Educator Courses
+export const getEducatorCourses = async (req, res) => {
+  try {
+    const educator = req.auth.userId;
+    const courses = await Course.find({ educator });
+
+    res.json({ success: true, courses });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get Educator Dashboard Data
 export const educatorDashboardData = async (req, res) => {
   try {
     const educator = req.auth.userId;
@@ -45,10 +107,10 @@ export const educatorDashboardData = async (req, res) => {
       });
     }
 
-    // Tạo dữ liệu cho biểu đồ doanh thu theo tháng
+    // For Months
     const salesByMonth = await generateSalesByMonth(purchases);
 
-    // Tạo dữ liệu cho biểu đồ phân bố học viên theo khóa học
+    // For Courses
     const enrollmentByMonth = await generateEnrollmentData(courses);
 
     res.json({
@@ -68,11 +130,11 @@ export const educatorDashboardData = async (req, res) => {
   }
 };
 
-// Hàm tạo dữ liệu doanh thu theo tháng
+// revenue for months
 const generateSalesByMonth = async (purchases) => {
   const currentYear = new Date().getFullYear();
 
-  // Khởi tạo mảng với 12 tháng
+  //initialization months
   const months = [
     { month: "T1", sales: 0 },
     { month: "T2", sales: 0 },
@@ -88,15 +150,12 @@ const generateSalesByMonth = async (purchases) => {
     { month: "T12", sales: 0 },
   ];
 
-  // Chỉ xử lý các giao dịch hoàn thành
   const completedPurchases = purchases.filter((p) => p.status === "completed");
 
-  // Tính tổng doanh thu cho mỗi tháng
   completedPurchases.forEach((purchase) => {
     const purchaseDate = new Date(purchase.createdAt);
     const purchaseYear = purchaseDate.getFullYear();
 
-    // Chỉ tính cho năm hiện tại
     if (purchaseYear === currentYear) {
       const monthIndex = purchaseDate.getMonth(); // 0-11
       months[monthIndex].sales += purchase.amount;
@@ -106,10 +165,34 @@ const generateSalesByMonth = async (purchases) => {
   return months;
 };
 
-// Hàm tạo dữ liệu phân bố học viên theo khóa học
 const generateEnrollmentData = async (courses) => {
   return courses.map((course) => ({
     type: course.courseTitle,
     value: course.enrolledStudents.length,
   }));
+};
+
+// Get Enrolled Students Data
+export const getEnrolledStudentsData = async (req, res) => {
+  try {
+    const educator = req.auth.userId;
+    const courses = await Course.find({ educator });
+    const courseIds = courses.map((course) => course._id);
+
+    const purchases = await Purchase.find({
+      courseId: { $in: courseIds },
+      status: "completed",
+    })
+      .populate("userId", "name imageUrl")
+      .populate("courseId", "courseTitle");
+    const enrolledStudents = purchases.map((purchase) => ({
+      student: purchase.userId,
+      courseTitle: purchase.courseId.courseTitle,
+      purchaseDate: purchase.createdAt,
+    }));
+
+    res.json({ success: true, enrolledStudents });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
