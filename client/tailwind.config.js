@@ -19,6 +19,7 @@ export default {
         "dark-2": "#001e78",
         "blue-1": "#0d6efd",
         "blue-2": "#009EDA",
+        "blue-3": "#00ADEF",
         "yellow-cs": "#FFB822",
         light: "#E5F0FD",
       },

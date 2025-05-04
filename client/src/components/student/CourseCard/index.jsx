@@ -10,12 +10,12 @@ const CourseCard = ({ course }) => {
     <Link
       to={"/course/" + course._id}
       onClick={() => scrollTo(0, 0)}
-      className="border border-gray-500/30 overflow-hidden rounded-lg flex flex-col h-full"
+      className="relative overflow-hidden rounded-lg flex flex-col h-full"
     >
       {/* Fixed height for the image container */}
       <div className="w-full h-80 overflow-hidden">
         <img
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-md border border-gray/20"
           src={course.courseThumbnail}
           alt={course.title || "Course thumbnail"}
         />
@@ -43,13 +43,19 @@ const CourseCard = ({ course }) => {
             {(
               course.coursePrice -
               (course.coursePrice * course.discount) / 100
-            ).toFixed(2)}{" "}
+            ).toFixed(0)}{" "}
             {currency}
           </p>
           <p className="line-through">
             {course.coursePrice} {currency}
           </p>
         </div>
+      </div>
+      <div className="absolute top-2 left-2 text-xs px-4 py-1 rounded-xl bg-blue-3 text-white font-semibold">
+        Nổi bật
+      </div>
+      <div className="absolute top-2 right-2 text-xs px-4 py-1 rounded-xl bg-green-1 text-dark-1 font-semibold">
+        {course.discount} %
       </div>
     </Link>
   );
