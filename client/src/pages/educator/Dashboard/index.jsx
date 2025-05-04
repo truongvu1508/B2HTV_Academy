@@ -5,10 +5,13 @@ import { FaBook, FaMoneyCheckAlt, FaUser } from "react-icons/fa";
 import "./Dashboard.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Column, Pie } from "@ant-design/plots";
 
 const Dashboard = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+  const [enrollmentData, setEnrollmentData] = useState([]);
 
   const fetchDashboardData = async () => {
     try {
@@ -19,6 +22,16 @@ const Dashboard = () => {
 
       if (data.success) {
         setDashboardData(data.dashboardData);
+
+        // Xử lý dữ liệu cho biểu đồ
+        if (data.dashboardData.salesByMonth) {
+          setSalesData(data.dashboardData.salesByMonth);
+        }
+
+        // Tạo dữ liệu biểu đồ tròn cho phân bố học viên
+        if (data.dashboardData.enrollmentByMonth) {
+          setEnrollmentData(data.dashboardData.enrollmentByMonth);
+        }
       } else {
         toast.error(data.message);
       }
@@ -33,9 +46,71 @@ const Dashboard = () => {
     }
   }, [isEducator]);
 
+  // Cấu hình biểu đồ cột
+  const columnConfig = {
+    data:
+      salesData.length > 0
+        ? salesData
+        : [
+            { month: "T1", sales: 0 },
+            { month: "T2", sales: 0 },
+            { month: "T3", sales: 0 },
+            { month: "T4", sales: 0 },
+            { month: "T5", sales: 0 },
+            { month: "T6", sales: 0 },
+            { month: "T7", sales: 0 },
+            { month: "T8", sales: 0 },
+            { month: "T9", sales: 0 },
+            { month: "T10", sales: 0 },
+            { month: "T11", sales: 0 },
+            { month: "T12", sales: 0 },
+          ],
+    xField: "month",
+    yField: "sales",
+    label: {
+      position: "middle",
+      style: {
+        fill: "#FFFFFF",
+        opacity: 0.6,
+      },
+    },
+    color: "#1890ff",
+    meta: {
+      sales: {
+        alias: `Doanh thu (${currency})`,
+      },
+    },
+  };
+
+  // Cấu hình biểu đồ tròn
+  const pieConfig = {
+    appendPadding: 10,
+    data:
+      enrollmentData.length > 0
+        ? enrollmentData
+        : [
+            { type: "Khóa học A", value: 0 },
+            { type: "Khóa học B", value: 0 },
+            { type: "Khóa học C", value: 0 },
+          ],
+    angleField: "value",
+    colorField: "type",
+    radius: 0.9,
+    label: {
+      type: "inner",
+      offset: "-30%",
+      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+      style: {
+        fontSize: 14,
+        textAlign: "center",
+      },
+    },
+    interactions: [{ type: "element-active" }],
+  };
+
   return dashboardData ? (
     <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <div className="space-y-5">
+      <div className="space-y-5 w-full">
         <div className="flex flex-wrap gap-5 items-center justify-center">
           <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
             <div className="flex items-center">
@@ -71,6 +146,26 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Biểu đồ */}
+        <div className="grid md:grid-cols-2 grid-cols-1 gap-6 w-full">
+          <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
+            <h2 className="text-lg font-medium mb-4">Doanh thu theo tháng</h2>
+            <div className="h-80">
+              <Column {...columnConfig} />
+            </div>
+          </div>
+
+          <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
+            <h2 className="text-lg font-medium mb-4">
+              Phân bố học viên theo khóa học
+            </h2>
+            <div className="h-80">
+              <Pie {...pieConfig} />
+            </div>
+          </div>
+        </div>
+
         <div>
           <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
           <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
