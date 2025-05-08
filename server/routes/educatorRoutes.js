@@ -20,12 +20,22 @@ educatorRouter.post(
   protectEducator,
   addCourse
 );
+
+// Update Course
 educatorRouter.put(
   "/update-course/:courseId",
   upload.single("image"),
   protectEducator,
   updateCourse
 );
+
+//Delete Course
+educatorRouter.delete(
+  "/delete-course/:courseId",
+  protectEducator,
+  deleteCourse
+);
+
 educatorRouter.get("/courses", protectEducator, getEducatorCourses);
 educatorRouter.get("/dashboard", protectEducator, educatorDashboardData);
 educatorRouter.get(
