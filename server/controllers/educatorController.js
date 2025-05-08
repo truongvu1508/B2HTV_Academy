@@ -48,6 +48,71 @@ export const addCourse = async (req, res) => {
   }
 };
 
+// Update Course
+export const updateCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { courseData } = req.body;
+    const imageFile = req.file;
+    const educatorId = req.auth.userId;
+
+    // Validate courseId
+    if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid course ID" });
+    }
+
+    // Parse courseData
+    let parsedCourseData;
+    try {
+      parsedCourseData = JSON.parse(courseData);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid course data format" });
+    }
+
+    // Ensure the course exists and belongs to the educator
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
+    }
+    if (course.educator.toString() !== educatorId) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Unauthorized to update this course",
+        });
+    }
+
+    // Update course fields
+    course.courseTitle = parsedCourseData.courseTitle || course.courseTitle;
+    course.courseDescription =
+      parsedCourseData.courseDescription || course.courseDescription;
+    course.coursePrice = parsedCourseData.coursePrice ?? course.coursePrice;
+    course.discount = parsedCourseData.discount ?? course.discount;
+    course.courseContent =
+      parsedCourseData.courseContent || course.courseContent;
+
+    // Handle image upload if provided
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path);
+      course.courseThumbnail = imageUpload.secure_url;
+    }
+
+    // Save updated course
+    await course.save();
+
+    res.json({ success: true, message: "Khóa học đã được cập nhật" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get Educator Courses
 export const getEducatorCourses = async (req, res) => {
   try {
