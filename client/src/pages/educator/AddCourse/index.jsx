@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import uniqid from "uniqid";
 import Quill from "quill";
 import { FiUpload } from "react-icons/fi";
@@ -10,6 +11,7 @@ import axios from "axios";
 
 const AddCourse = () => {
   const { backendUrl, getToken } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const quillRef = useRef(null);
   const editorRef = useRef(null);
@@ -105,6 +107,7 @@ const AddCourse = () => {
       e.preventDefault();
       if (!image) {
         toast.error("Hình ảnh khóa học chưa được chọn");
+        return;
       }
 
       const courseData = {
@@ -134,6 +137,7 @@ const AddCourse = () => {
         setImage(null);
         setChapters([]);
         quillRef.current.root.innerHTML = "";
+        navigate("/educator/my-course");
       } else {
         toast.error(data.message);
       }
@@ -143,13 +147,13 @@ const AddCourse = () => {
   };
 
   useEffect(() => {
-    //Initiate Quill only once
+    // Initiate Quill only once
     if (!quillRef.current && editorRef.current) {
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
       });
     }
-  });
+  }, []);
 
   return (
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -255,6 +259,7 @@ const AddCourse = () => {
                             href={lecture.lectureUrl}
                             target="_blank"
                             className="text-blue-500"
+                            rel="noopener noreferrer"
                           >
                             Link
                           </a>{" "}
@@ -262,7 +267,11 @@ const AddCourse = () => {
                         </span>
                         <RiCloseFill
                           onClick={() =>
-                            handleLecture("remove", chapter.chapterId)
+                            handleLecture(
+                              "remove",
+                              chapter.chapterId,
+                              lectureIndex
+                            )
                           }
                           className="cursor-pointer"
                         />
@@ -280,7 +289,7 @@ const AddCourse = () => {
             ))}
           </div>
           <div
-            className=" flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer"
+            className="flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer"
             onClick={() => handleChapter("add")}
           >
             + Add Chapter
@@ -289,7 +298,7 @@ const AddCourse = () => {
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
               <div className="bg-white text-gray-700 p-4 rounded relative w-full max-w-80">
                 <h2 className="text-lg font-semibold mb-4">Add Lecture</h2>
-                <div className=" mb-2">
+                <div className="mb-2">
                   <p>Lecture Title</p>
                   <input
                     type="text"
@@ -303,7 +312,7 @@ const AddCourse = () => {
                     }
                   />
                 </div>
-                <div className=" mb-2">
+                <div className="mb-2">
                   <p>Duration (minutes)</p>
                   <input
                     type="number"
@@ -317,7 +326,7 @@ const AddCourse = () => {
                     }
                   />
                 </div>
-                <div className=" mb-2">
+                <div className="mb-2">
                   <p>Lecture URL</p>
                   <input
                     type="text"
@@ -331,16 +340,16 @@ const AddCourse = () => {
                     }
                   />
                 </div>
-                <div className=" flex gap-2 my-4">
+                <div className="flex gap-2 my-4">
                   <p>Is Preview Free?</p>
                   <input
                     type="checkbox"
                     className="mt-1 scale-125"
-                    value={lectureDetails.isPreviewFree}
+                    checked={lectureDetails.isPreviewFree}
                     onChange={(e) =>
                       setLectureDetails({
                         ...lectureDetails,
-                        isPreviewFree: e.target.value,
+                        isPreviewFree: e.target.checked,
                       })
                     }
                   />
