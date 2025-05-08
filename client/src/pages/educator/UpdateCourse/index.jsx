@@ -1,15 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import uniqid from "uniqid";
 import Quill from "quill";
 import { FiUpload } from "react-icons/fi";
 import { RiArrowDropDownLine, RiCloseFill } from "react-icons/ri";
 import { FaPlus } from "react-icons/fa";
-import Loading from "../../../components/student/Loading"; // Assuming same Loading component as MyCourses
+import { AppContext } from "../../../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import Loading from "../../../components/student/Loading";
 
 const UpdateCourse = () => {
-  const { courseId } = useParams(); // Extract courseId from URL
-  const navigate = useNavigate(); // For navigation
+  const { backendUrl, getToken } = useContext(AppContext);
+  const { courseId } = useParams();
+  const navigate = useNavigate();
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
@@ -26,7 +30,6 @@ const UpdateCourse = () => {
   const [currentLectureIndex, setCurrentLectureIndex] = useState(null);
   const [isEditingLecture, setIsEditingLecture] = useState(false);
   const [error, setError] = useState("");
-
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
     lectureDuration: "",
@@ -34,56 +37,38 @@ const UpdateCourse = () => {
     isPreviewFree: false,
   });
 
-  // Fetch course data when component mounts
+  // Fetch course data
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
-        // Replace with your actual API call
-        // const response = await fetch(`/api/courses/${courseId}`);
-        // const data = await response.json();
+        const token = await getToken();
+        const { data } = await axios.get(
+          `${backendUrl}/api/course/${courseId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        // Mock data aligned with MyCourses structure
-        const data = {
-          _id: courseId,
-          courseTitle: "Introduction to JavaScript",
-          courseDescription:
-            "<p>Learn the basics of JavaScript programming</p>",
-          coursePrice: 4000000,
-          discount: 10,
-          courseThumbnail: "https://example.com/thumbnail.jpg",
-          chapters: [
-            {
-              chapterId: uniqid(),
-              chapterTitle: "Introduction",
-              chapterContent: [
-                {
-                  lectureId: uniqid(),
-                  lectureTitle: "Welcome to JavaScript",
-                  lectureDuration: "10",
-                  lectureUrl: "https://example.com/video1",
-                  isPreviewFree: true,
-                  lectureOrder: 1,
-                },
-              ],
+        if (data.success) {
+          const course = data.courseData;
+          setCourseTitle(course.courseTitle);
+          setCourseDescription(course.courseDescription);
+          setCoursePrice(course.coursePrice);
+          setDiscount(course.discount || 0);
+          setExistingImage(course.courseThumbnail);
+          setChapters(
+            course.courseContent.map((chapter) => ({
+              ...chapter,
               collapsed: false,
-              chapterOrder: 1,
-            },
-          ],
-          enrolledStudents: [],
-          createdAt: new Date().toISOString(),
-        };
-
-        // Update state with fetched data
-        setCourseTitle(data.courseTitle);
-        setCourseDescription(data.courseDescription);
-        setCoursePrice(data.coursePrice);
-        setDiscount(data.discount || 0); // Fallback for undefined discount
-        setExistingImage(data.courseThumbnail);
-        setChapters(data.chapters || []);
-        setIsLoading(false);
+            }))
+          );
+        } else {
+          throw new Error(data.message);
+        }
       } catch (error) {
-        console.error("Error fetching course data:", error);
-        setError("Failed to load course data. Please try again.");
+        toast.error("Không thể tải dữ liệu khóa học: " + error.message);
+        setError("Không thể tải dữ liệu khóa học. Vui lòng thử lại.");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -91,31 +76,24 @@ const UpdateCourse = () => {
     if (courseId) {
       fetchCourseData();
     }
-  }, [courseId]);
+  }, [courseId, backendUrl, getToken]);
 
-  // Initialize Quill editor and set content after data is loaded
+  // Initialize Quill editor
   useEffect(() => {
     if (!isLoading && editorRef.current && !quillRef.current) {
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
       });
 
-      // Set the editor content
       if (courseDescription) {
-        try {
-          quillRef.current.root.innerHTML = courseDescription;
-        } catch (err) {
-          console.error("Error setting Quill content:", err);
-        }
+        quillRef.current.root.innerHTML = courseDescription;
       }
 
-      // Add listener to update state when content changes
       quillRef.current.on("text-change", () => {
         setCourseDescription(quillRef.current.root.innerHTML);
       });
     }
 
-    // Cleanup Quill instance on unmount
     return () => {
       if (quillRef.current) {
         quillRef.current.off("text-change");
@@ -126,7 +104,7 @@ const UpdateCourse = () => {
 
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
-      const title = prompt("Enter Chapter Name:");
+      const title = prompt("Nhập tên chương:");
       if (title) {
         const newChapter = {
           chapterId: uniqid(),
@@ -139,7 +117,7 @@ const UpdateCourse = () => {
         setChapters([...chapters, newChapter]);
       }
     } else if (action === "remove") {
-      if (window.confirm("Are you sure you want to delete this chapter?")) {
+      if (window.confirm("Bạn có chắc muốn xóa chương này không?")) {
         setChapters(
           chapters.filter((chapter) => chapter.chapterId !== chapterId)
         );
@@ -168,7 +146,7 @@ const UpdateCourse = () => {
       setCurrentLectureIndex(null);
       setShowPopup(true);
     } else if (action === "remove") {
-      if (window.confirm("Are you sure you want to delete this lecture?")) {
+      if (window.confirm("Bạn có chắc muốn xóa bài giảng này không?")) {
         setChapters(
           chapters.map((chapter) => {
             if (chapter.chapterId === chapterId) {
@@ -203,20 +181,19 @@ const UpdateCourse = () => {
   };
 
   const addOrUpdateLecture = () => {
-    // Validate lecture details
     if (!lectureDetails.lectureTitle.trim()) {
-      alert("Lecture title is required.");
+      toast.error("Tiêu đề bài giảng là bắt buộc.");
       return;
     }
     if (
       !lectureDetails.lectureDuration ||
       isNaN(lectureDetails.lectureDuration)
     ) {
-      alert("Valid lecture duration is required.");
+      toast.error("Thời lượng bài giảng phải là số hợp lệ.");
       return;
     }
     if (!lectureDetails.lectureUrl.trim()) {
-      alert("Lecture URL is required.");
+      toast.error("URL bài giảng là bắt buộc.");
       return;
     }
 
@@ -224,7 +201,6 @@ const UpdateCourse = () => {
       chapters.map((chapter) => {
         if (chapter.chapterId === currentChapterId) {
           if (isEditingLecture) {
-            // Update existing lecture
             const updatedContent = [...chapter.chapterContent];
             updatedContent[currentLectureIndex] = {
               ...updatedContent[currentLectureIndex],
@@ -232,7 +208,6 @@ const UpdateCourse = () => {
             };
             return { ...chapter, chapterContent: updatedContent };
           } else {
-            // Add new lecture
             const newLecture = {
               ...lectureDetails,
               lectureOrder:
@@ -251,7 +226,6 @@ const UpdateCourse = () => {
       })
     );
 
-    // Reset popup and lecture details
     setShowPopup(false);
     setIsEditingLecture(false);
     setCurrentLectureIndex(null);
@@ -267,71 +241,58 @@ const UpdateCourse = () => {
   const handleUpdateCourse = async (e) => {
     e.preventDefault();
 
-    // Validate form
     if (!courseTitle.trim()) {
-      setError("Course球员title is required.");
+      setError("Tiêu đề khóa học là bắt buộc.");
       return;
     }
     if (coursePrice < 0) {
-      setError("Course price cannot be negative.");
+      setError("Giá khóa học không thể âm.");
       return;
     }
     if (discount < 0 || discount > 100) {
-      setError("Discount must be between 0 and 100.");
+      setError("Giảm giá phải từ 0 đến 100.");
       return;
     }
     if (!courseDescription.trim()) {
-      setError("Course description is required.");
+      setError("Mô tả khóa học là bắt buộc.");
+      return;
+    }
+    if (!existingImage && !image) {
+      setError("Hình thu nhỏ khóa học là bắt buộc.");
       return;
     }
 
-    // Prepare form data for image upload
-    const formData = new FormData();
-    if (image) {
-      formData.append("image", image);
-    }
-
-    // Course data to update
-    const updatedCourseData = {
+    const courseData = {
       courseTitle,
       courseDescription,
       coursePrice: Number(coursePrice),
       discount: Number(discount),
-      chapters,
-      courseThumbnail: image
-        ? "will_be_replaced_by_uploaded_image_url"
-        : existingImage,
+      courseContent: chapters,
     };
 
+    const formData = new FormData();
+    formData.append("courseData", JSON.stringify(courseData));
+    if (image) {
+      formData.append("image", image);
+    }
+
     try {
-      // Replace with your actual API calls
-      console.log("Updating course with data:", updatedCourseData);
+      const token = await getToken();
+      const { data } = await axios.put(
+        `${backendUrl}/api/educator/update-course/${courseId}`,
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      // Example API call for image upload
-      // if (image) {
-      //   const uploadResponse = await fetch('/api/upload', {
-      //     method: 'POST',
-      //     body: formData,
-      //   });
-      //   const uploadData = await uploadResponse.json();
-      //   updatedCourseData.courseThumbnail = uploadData.imageUrl;
-      // }
-
-      // Example API call to update course
-      // const response = await fetch(`/api/courses/${courseId}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(updatedCourseData),
-      // });
-      // if (!response.ok) throw new Error('Failed to update course');
-
-      alert("Course updated successfully!");
-      navigate("/educator/my-courses"); // Navigate back to MyCourses
+      if (data.success) {
+        toast.success(data.message);
+        navigate("/educator/my-courses");
+      } else {
+        throw new Error(data.message);
+      }
     } catch (error) {
-      console.error("Error updating course:", error);
-      setError("Failed to update course. Please try again.");
+      toast.error("Cập nhật khóa học thất bại: " + error.message);
+      setError("Cập nhật khóa học thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -351,21 +312,21 @@ const UpdateCourse = () => {
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <form onSubmit={handleUpdateCourse}>
         <div className="flex flex-col gap-5">
-          <p>Course Title</p>
+          <p>Tiêu đề khóa học</p>
           <input
             type="text"
             onChange={(e) => setCourseTitle(e.target.value)}
             value={courseTitle}
-            placeholder="Enter title"
+            placeholder="Nhập tiêu đề"
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
           />
           <div className="flex flex-col gap-1">
-            <p>Course Description</p>
+            <p>Mô tả khóa học</p>
             <div ref={editorRef}></div>
           </div>
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex flex-col gap-1">
-              <p>Course Price</p>
+              <p>Giá khóa học</p>
               <input
                 type="number"
                 onChange={(e) => setCoursePrice(e.target.value)}
@@ -376,7 +337,7 @@ const UpdateCourse = () => {
               />
             </div>
             <div className="flex md:flex-row flex-col items-center gap-3">
-              <p>Course Thumbnail</p>
+              <p>Hình thu nhỏ khóa học</p>
               <label
                 htmlFor="thumbnailImage"
                 className="flex items-center gap-3"
@@ -394,14 +355,14 @@ const UpdateCourse = () => {
                     <img
                       className="max-h-10"
                       src={URL.createObjectURL(image)}
-                      alt="New thumbnail"
+                      alt="Hình thu nhỏ mới"
                     />
                     <button
                       type="button"
                       onClick={() => setImage(null)}
                       className="text-red-500 text-sm"
                     >
-                      Remove
+                      Xóa
                     </button>
                   </div>
                 ) : existingImage ? (
@@ -409,16 +370,16 @@ const UpdateCourse = () => {
                     <img
                       className="max-h-10"
                       src={existingImage}
-                      alt="Current thumbnail"
+                      alt="Hình thu nhỏ hiện tại"
                     />
-                    <span className="text-sm text-gray-500">(Current)</span>
+                    <span className="text-sm text-gray-500">(Hiện tại)</span>
                   </div>
                 ) : null}
               </label>
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <p>Discount %</p>
+            <p>Giảm giá (%)</p>
             <input
               onChange={(e) => setDiscount(e.target.value)}
               type="number"
@@ -430,7 +391,7 @@ const UpdateCourse = () => {
             />
           </div>
 
-          {/* Managing Chapters & Lectures */}
+          {/* Quản lý chương và bài giảng */}
           <div>
             {chapters.map((chapter, chapterIndex) => (
               <div
@@ -450,7 +411,7 @@ const UpdateCourse = () => {
                     </span>
                   </div>
                   <span className="text-gray-500">
-                    {chapter.chapterContent.length} Lectures
+                    {chapter.chapterContent.length} Bài giảng
                   </span>
                   <RiCloseFill
                     className="cursor-pointer"
@@ -465,17 +426,21 @@ const UpdateCourse = () => {
                         className="flex justify-between items-center mb-2 p-2 hover:bg-gray-50 rounded"
                       >
                         <span>
-                          {lectureIndex + 1}. {lecture.lectureTitle} -{" "}
-                          {lecture.lectureDuration} mins -{" "}
+                          {chapterIndex + 1}.{lectureIndex + 1}.{" "}
+                          {lecture.lectureTitle} - {lecture.lectureDuration}{" "}
+                          phút -{" "}
                           <a
                             href={lecture.lectureUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-500"
                           >
-                            Link
+                            Liên kết
                           </a>{" "}
-                          - {lecture.isPreviewFree ? "Free Preview" : "Paid"}
+                          -{" "}
+                          {lecture.isPreviewFree
+                            ? "Xem trước miễn phí"
+                            : "Trả phí"}
                         </span>
                         <div className="flex gap-2">
                           <button
@@ -489,7 +454,7 @@ const UpdateCourse = () => {
                             }
                             className="text-blue-500 hover:underline"
                           >
-                            Edit
+                            Chỉnh sửa
                           </button>
                           <RiCloseFill
                             onClick={() =>
@@ -499,7 +464,7 @@ const UpdateCourse = () => {
                                 lectureIndex
                               )
                             }
-                            className="cursor-pointer"
+                            className="cursor-pointer text-red-500"
                           />
                         </div>
                       </div>
@@ -508,7 +473,7 @@ const UpdateCourse = () => {
                       className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2"
                       onClick={() => handleLecture("add", chapter.chapterId)}
                     >
-                      <FaPlus className="mr-1" /> Add Lecture
+                      <FaPlus className="mr-1" /> Thêm bài giảng
                     </div>
                   </div>
                 )}
@@ -519,17 +484,17 @@ const UpdateCourse = () => {
             className="flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer"
             onClick={() => handleChapter("add")}
           >
-            <FaPlus className="mr-1" /> Add Chapter
+            <FaPlus className="mr-1" /> Thêm chương
           </div>
 
           {showPopup && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
               <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
                 <h2 className="text-lg font-semibold mb-4">
-                  {isEditingLecture ? "Edit Lecture" : "Add Lecture"}
+                  {isEditingLecture ? "Chỉnh sửa bài giảng" : "Thêm bài giảng"}
                 </h2>
                 <div className="mb-4">
-                  <p>Lecture Title</p>
+                  <p>Tiêu đề bài giảng</p>
                   <input
                     type="text"
                     className="mt-1 block w-full border rounded py-2 px-3"
@@ -540,11 +505,11 @@ const UpdateCourse = () => {
                         lectureTitle: e.target.value,
                       })
                     }
-                    placeholder="Enter lecture title"
+                    placeholder="Nhập tiêu đề bài giảng"
                   />
                 </div>
                 <div className="mb-4">
-                  <p>Duration (minutes)</p>
+                  <p>Thời lượng (phút)</p>
                   <input
                     type="number"
                     className="mt-1 block w-full border rounded py-2 px-3"
@@ -555,12 +520,12 @@ const UpdateCourse = () => {
                         lectureDuration: e.target.value,
                       })
                     }
-                    placeholder="Enter duration"
+                    placeholder="Nhập thời lượng"
                     min="0"
                   />
                 </div>
                 <div className="mb-4">
-                  <p>Lecture URL</p>
+                  <p>URL bài giảng</p>
                   <input
                     type="text"
                     className="mt-1 block w-full border rounded py-2 px-3"
@@ -571,7 +536,7 @@ const UpdateCourse = () => {
                         lectureUrl: e.target.value,
                       })
                     }
-                    placeholder="Enter URL"
+                    placeholder="Nhập URL"
                   />
                 </div>
                 <div className="flex gap-2 my-4 items-center">
@@ -587,7 +552,7 @@ const UpdateCourse = () => {
                       })
                     }
                   />
-                  <label htmlFor="isPreviewFree">Is Preview Free?</label>
+                  <label htmlFor="isPreviewFree">Xem trước miễn phí?</label>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button
@@ -595,7 +560,7 @@ const UpdateCourse = () => {
                     type="button"
                     className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                   >
-                    {isEditingLecture ? "Update" : "Add"}
+                    {isEditingLecture ? "Cập nhật" : "Thêm"}
                   </button>
                   <button
                     onClick={() => {
@@ -613,7 +578,7 @@ const UpdateCourse = () => {
                     type="button"
                     className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
                   >
-                    Cancel
+                    Hủy
                   </button>
                 </div>
                 <RiCloseFill
@@ -641,14 +606,14 @@ const UpdateCourse = () => {
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-8 rounded"
           >
-            UPDATE
+            CẬP NHẬT
           </button>
           <button
             type="button"
             className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2.5 px-8 rounded"
             onClick={() => navigate("/educator/my-courses")}
           >
-            CANCEL
+            HỦY
           </button>
         </div>
       </form>
