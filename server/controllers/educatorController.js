@@ -136,6 +136,44 @@ export const updateCourse = async (req, res) => {
   }
 };
 
+// Delete Course
+export const deleteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const educatorId = req.auth.userId;
+
+    // Validate courseId
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID khóa học không hợp lệ" });
+    }
+
+    // Find the course
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy khóa học" });
+    }
+
+    // Check educator ownership
+    if (course.educator.toString() !== educatorId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền xóa khóa học này" });
+    }
+
+    // Delete the course
+    await Course.findByIdAndDelete(courseId);
+
+    res.json({ success: true, message: "Khóa học đã được xóa" });
+  } catch (error) {
+    console.error("Error in deleteCourse:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get Educator Courses
 export const getEducatorCourses = async (req, res) => {
   try {
