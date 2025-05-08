@@ -66,6 +66,7 @@ const UpdateCourse = () => {
           throw new Error(data.message);
         }
       } catch (error) {
+        console.error("Error fetching course data:", error);
         toast.error("Không thể tải dữ liệu khóa học: " + error.message);
         setError("Không thể tải dữ liệu khóa học. Vui lòng thử lại.");
       } finally {
@@ -258,16 +259,22 @@ const UpdateCourse = () => {
       return;
     }
     if (!existingImage && !image) {
-      setError("Hình thu nhỏ khóa học là bắt buộc.");
+      setError("Hình ảnh khóa học là bắt buộc.");
       return;
     }
 
+    // Prepare course data, removing frontend-only fields like 'collapsed'
     const courseData = {
       courseTitle,
       courseDescription,
       coursePrice: Number(coursePrice),
       discount: Number(discount),
-      courseContent: chapters,
+      courseContent: chapters.map((chapter) => ({
+        chapterId: chapter.chapterId,
+        chapterTitle: chapter.chapterTitle,
+        chapterContent: chapter.chapterContent,
+        chapterOrder: chapter.chapterOrder,
+      })),
     };
 
     const formData = new FormData();
@@ -277,22 +284,34 @@ const UpdateCourse = () => {
     }
 
     try {
+      setIsLoading(true); // Show loading state during update
       const token = await getToken();
       const { data } = await axios.put(
         `${backendUrl}/api/educator/update-course/${courseId}`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (data.success) {
         toast.success(data.message);
-        navigate("/educator/my-courses");
+        navigate("/educator/my-course");
       } else {
-        throw new Error(data.message);
+        throw new Error(data.message || "Cập nhật khóa học thất bại");
       }
     } catch (error) {
-      toast.error("Cập nhật khóa học thất bại: " + error.message);
+      console.error("Error updating course:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Cập nhật khóa học thất bại";
+      toast.error("Cập nhật khóa học thất bại: " + errorMessage);
       setError("Cập nhật khóa học thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false); // Hide loading state after update attempt
     }
   };
 
@@ -337,7 +356,7 @@ const UpdateCourse = () => {
               />
             </div>
             <div className="flex md:flex-row flex-col items-center gap-3">
-              <p>Hình thu nhỏ khóa học</p>
+              <p>Hình ảnh</p>
               <label
                 htmlFor="thumbnailImage"
                 className="flex items-center gap-3"
@@ -355,7 +374,7 @@ const UpdateCourse = () => {
                     <img
                       className="max-h-10"
                       src={URL.createObjectURL(image)}
-                      alt="Hình thu nhỏ mới"
+                      alt="Hình ảnh mới"
                     />
                     <button
                       type="button"
@@ -370,7 +389,7 @@ const UpdateCourse = () => {
                     <img
                       className="max-h-10"
                       src={existingImage}
-                      alt="Hình thu nhỏ hiện tại"
+                      alt="Hình ảnh hiện tại"
                     />
                     <span className="text-sm text-gray-500">(Hiện tại)</span>
                   </div>
@@ -611,7 +630,7 @@ const UpdateCourse = () => {
           <button
             type="button"
             className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2.5 px-8 rounded"
-            onClick={() => navigate("/educator/my-courses")}
+            onClick={() => navigate("/educator/my-course")}
           >
             HỦY
           </button>

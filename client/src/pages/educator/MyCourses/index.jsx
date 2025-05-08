@@ -3,13 +3,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const MyCourses = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
-
   const [courses, setCourses] = useState(null);
 
   const fetchEducatorCourses = async () => {
@@ -22,6 +21,31 @@ const MyCourses = () => {
       data.success && setCourses(data.courses);
     } catch (error) {
       toast.error(error.message);
+    }
+  };
+
+  const deleteCourse = async (courseId) => {
+    if (!window.confirm("Bạn có chắc muốn xóa khóa học này không?")) {
+      return;
+    }
+
+    try {
+      const token = await getToken();
+      const { data } = await axios.delete(
+        `${backendUrl}/api/educator/delete-course/${courseId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (data.success) {
+        setCourses(courses.filter((course) => course._id !== courseId));
+        toast.success("Khóa học đã được xóa");
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      toast.error("Xóa khóa học thất bại: " + error.message);
     }
   };
 
@@ -92,6 +116,12 @@ const MyCourses = () => {
                       >
                         <FaEye />
                       </Link>
+                      <button
+                        onClick={() => deleteCourse(course._id)}
+                        className="bg-red-500 text-white px-5 py-3 rounded hover:bg-red-600 text-xs"
+                      >
+                        <FaTrash />
+                      </button>
                     </div>
                   </td>
                 </tr>

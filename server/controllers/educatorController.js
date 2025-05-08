@@ -3,6 +3,7 @@ import Course from "../models/Course.js";
 import { v2 as cloudinary } from "cloudinary";
 import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 // Update role to educator
 export const updateRoleToEducator = async (req, res) => {
   try {
@@ -57,10 +58,10 @@ export const updateCourse = async (req, res) => {
     const educatorId = req.auth.userId;
 
     // Validate courseId
-    if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid course ID" });
+        .json({ success: false, message: "ID khóa học không hợp lệ" });
     }
 
     // Parse courseData
@@ -70,23 +71,35 @@ export const updateCourse = async (req, res) => {
     } catch (error) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid course data format" });
+        .json({ success: false, message: "Dữ liệu khóa học không hợp lệ" });
     }
 
-    // Ensure the course exists and belongs to the educator
+    // Remove frontend-only fields (e.g., collapsed)
+    if (parsedCourseData.courseContent) {
+      parsedCourseData.courseContent = parsedCourseData.courseContent.map(
+        (chapter) => ({
+          chapterId: chapter.chapterId,
+          chapterTitle: chapter.chapterTitle,
+          chapterContent: chapter.chapterContent,
+          chapterOrder: chapter.chapterOrder,
+        })
+      );
+    }
+
+    // Find the course
     const course = await Course.findById(courseId);
     if (!course) {
       return res
         .status(404)
-        .json({ success: false, message: "Course not found" });
+        .json({ success: false, message: "Không tìm thấy khóa học" });
     }
+
+    // Check educator ownership
     if (course.educator.toString() !== educatorId) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Unauthorized to update this course",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền cập nhật khóa học này",
+      });
     }
 
     // Update course fields
@@ -98,10 +111,19 @@ export const updateCourse = async (req, res) => {
     course.courseContent =
       parsedCourseData.courseContent || course.courseContent;
 
-    // Handle image upload if provided
+    // Handle image upload
     if (imageFile) {
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path);
-      course.courseThumbnail = imageUpload.secure_url;
+      try {
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+          folder: "course_thumbnails",
+        });
+        course.courseThumbnail = imageUpload.secure_url;
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        return res
+          .status(500)
+          .json({ success: false, message: "Lỗi khi tải ảnh lên" });
+      }
     }
 
     // Save updated course
@@ -109,6 +131,7 @@ export const updateCourse = async (req, res) => {
 
     res.json({ success: true, message: "Khóa học đã được cập nhật" });
   } catch (error) {
+    console.error("Error in updateCourse:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
