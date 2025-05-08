@@ -4,11 +4,17 @@ import Footer from "../../../components/student/Footer";
 import Loading from "../../../components/student/Loading";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
-import { FaAngleDown, FaPlayCircle, FaStar } from "react-icons/fa";
+import {
+  FaAngleDown,
+  FaFileVideo,
+  FaInfinity,
+  FaPlayCircle,
+  FaStar,
+} from "react-icons/fa";
 import humanizeDuration from "humanize-duration";
 import { CiClock1 } from "react-icons/ci";
 import { LuAlarmClock } from "react-icons/lu";
-import { FaBookOpenReader } from "react-icons/fa6";
+import { FaBookOpenReader, FaClockRotateLeft } from "react-icons/fa6";
 import BackToTop from "../../../components/client/BackToTop";
 import YouTube from "react-youtube";
 import { Helmet } from "react-helmet";
@@ -16,6 +22,7 @@ import { Button } from "antd";
 import "./CourseDetails.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { PiStudentBold } from "react-icons/pi";
 
 // Cấu hình humanizeDuration cho tiếng Việt
 const vietnameseHumanizer = humanizeDuration.humanizer({
@@ -259,7 +266,7 @@ const CourseDetails = () => {
         </div>
 
         {/* Right column */}
-        <div className="relative flex-[4] w-full z-10 md:sticky md:top-5 pb-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
+        <div className="relative flex-[4] w-full z-10 md:sticky md:top-5 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
           {playerData ? (
             <YouTube
               videoId={playerData.videoId}
@@ -274,7 +281,7 @@ const CourseDetails = () => {
             />
           )}
 
-          <div className="p-3">
+          <div className="py-5 px-10 ">
             <div className="flex items-center gap-2">
               <LuAlarmClock className="w-4 text-red-500" />
               <p className="text-red-500">
@@ -299,7 +306,17 @@ const CourseDetails = () => {
                 </p> */}
               </div>
             </div>
-            <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
+
+            <Button
+              onClick={enrollCourse}
+              className={`courseDetails__button w-full font-semibold text-base text-white bg-blue-2 ${
+                isAlreadyEnrolled && " isAlreadyEnrolled"
+              }`}
+            >
+              {isAlreadyEnrolled ? "Đã mua" : "Đăng ký ngay"}
+            </Button>
+
+            {/* <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
               <div className="flex items-center gap-1">
                 <FaStar className="text-yellow-cs" />
                 <p>{calculateRating(courseData)}</p>
@@ -314,22 +331,44 @@ const CourseDetails = () => {
                 <FaBookOpenReader />
                 <p>{calculateNoOfLectures(courseData)} bài giảng</p>
               </div>
-            </div>
+            </div> */}
 
-            <Button
-              onClick={enrollCourse}
-              className={`courseDetails__button w-full font-semibold text-base text-white bg-blue-2 ${
-                isAlreadyEnrolled && " isAlreadyEnrolled"
-              }`}
-            >
-              {isAlreadyEnrolled ? "Đã mua" : "Đăng ký ngay"}
-            </Button>
+            <div className="text-sm md:text-default gap-4 pt-2 md:pt-4 mt-5 ">
+              <div className="border-b border-gray pt-3 pb-3 flex items-center justify-between ">
+                <div className="flex gap-4 items-center text-dark-1 ">
+                  <FaFileVideo />
+                  <p>Bài giảng</p>
+                </div>
+                <div>{calculateNoOfLectures(courseData)}</div>
+              </div>
+              <div className="border-b border-gray pt-3 pb-3 flex items-center justify-between ">
+                <div className="flex gap-4 items-center text-dark-1 ">
+                  <FaClockRotateLeft />
+                  <p>Thời gian</p>
+                </div>
+                <div>{calculateCourseDuration(courseData)}</div>
+              </div>
+              <div className="border-b border-gray pt-3 pb-3 flex items-center justify-between ">
+                <div className="flex gap-4 items-center text-dark-1 ">
+                  <FaInfinity />
+                  <p>Sở hữu</p>
+                </div>
+                <div>Trọn đời</div>
+              </div>
+              <div className="border-b border-gray pt-3 pb-3 flex items-center justify-between ">
+                <div className="flex gap-4 items-center text-dark-1 ">
+                  <PiStudentBold />
+                  <p>Học viên đã đăng ký</p>
+                </div>
+                <div>{courseData.enrolledStudents.length} học viên</div>
+              </div>
+            </div>
 
             {/* <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
               {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
             </button> */}
 
-            <div className="mt-5">
+            {/* <div className="mt-5">
               <p>What's in the course</p>
               <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
                 <li>Lifetime access with free updates.</li>
@@ -338,7 +377,7 @@ const CourseDetails = () => {
                 <li>Lifetime access with free updates</li>
                 <li>Lifetime access with free updates</li>
               </ul>
-            </div>
+            </div> */}
             <div className="absolute top-2 right-2 text-xs px-4 py-1 rounded-xl bg-green-1 text-dark-1 font-semibold">
               {courseData.discount} %
             </div>

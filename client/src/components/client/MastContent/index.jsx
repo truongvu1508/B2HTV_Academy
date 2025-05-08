@@ -33,7 +33,9 @@ const MastContent = () => {
               <div className="mastContent__card-icon">
                 <FaStar />
               </div>
-              <h4 className="mastContent__card-title">01. Chất lượng cao</h4>
+              <h4 className="mastContent__card-title">
+                01. Chất lượng cao
+              </h4>
               <p className="mastContent__card-text">
                 Nội dung của khóa học được đầu tư cả về chất và lượng, giáo viên
                 có kinh nghiệm và cực kỳ tâm huyết với công việc giảng dạy
@@ -52,7 +54,9 @@ const MastContent = () => {
               <div className="mastContent__card-icon">
                 <PiStudentBold />
               </div>
-              <h4 className="mastContent__card-title">01. Chất lượng cao</h4>
+              <h4 className="mastContent__card-title">
+                02. Cung cấp nhiều kỹ năng quan trọng
+              </h4>
               <p className="mastContent__card-text">
                 Khi học ngôn ngữ lập trình C bạn không chỉ đơn thuần học ngôn
                 ngữ C mà còn học kỹ thuật lập trình, tư duy logic, cách giải
@@ -73,7 +77,9 @@ const MastContent = () => {
               <div className="mastContent__card-icon">
                 <BsFillBagCheckFill />
               </div>
-              <h4 className="mastContent__card-title">01. Chất lượng cao</h4>
+              <h4 className="mastContent__card-title">
+                03. Bước chuẩn bị vững chắc của một lập trình viên
+              </h4>
               <p className="mastContent__card-text">
                 Kỹ thuật lập trình là kỹ năng đầu tiên cần phải học khi bạn muốn
                 trở thành một lập trình viên, việc học tốt kỹ thuật lập trình sẽ

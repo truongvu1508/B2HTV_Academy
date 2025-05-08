@@ -115,9 +115,9 @@ const Navbar = () => {
           </ul>
         </div>
         <div>
-          <button className="hover:text-blue-1 text-white mr-5">
+          {/* <button className="hover:text-blue-1 text-white mr-5">
             <ShoppingCartOutlined className="card" />
-          </button>
+          </button> */}
           {user ? (
             <UserButton />
           ) : (
