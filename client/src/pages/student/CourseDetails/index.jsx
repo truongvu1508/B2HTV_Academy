@@ -4,6 +4,7 @@ import Footer from "../../../components/student/Footer";
 import Loading from "../../../components/student/Loading";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
+
 import {
   FaAngleDown,
   FaFileVideo,
@@ -12,9 +13,9 @@ import {
   FaStar,
 } from "react-icons/fa";
 import humanizeDuration from "humanize-duration";
-import { CiClock1 } from "react-icons/ci";
+
 import { LuAlarmClock } from "react-icons/lu";
-import { FaBookOpenReader, FaClockRotateLeft } from "react-icons/fa6";
+import { FaClockRotateLeft } from "react-icons/fa6";
 import BackToTop from "../../../components/client/BackToTop";
 import YouTube from "react-youtube";
 import { Helmet } from "react-helmet";
@@ -166,13 +167,8 @@ const CourseDetails = () => {
             <h3 className="text-xl font-extrabold text-dark-1">
               Giới thiệu khóa học
             </h3>
-            {/* <p
-              className="pt-3 "
-              dangerouslySetInnerHTML={{
-                __html: courseData.courseDescription,
-              }}
-            ></p> */}
-            <div className="pt-3">
+
+            <div className="pt-3 leading-loose">
               <div
                 dangerouslySetInnerHTML={{
                   __html: showFullDescription
@@ -308,9 +304,6 @@ const CourseDetails = () => {
                   })}{" "}
                   {currency}
                 </p>
-                {/* <p className="md:text-lg text-gray-500">
-                  {courseData.discount} %
-                </p> */}
               </div>
             </div>
 
@@ -322,23 +315,6 @@ const CourseDetails = () => {
             >
               {isAlreadyEnrolled ? "Đã mua" : "Đăng ký ngay"}
             </Button>
-
-            {/* <div className="flex items-center text-sm md:text-default gap-4 pt-2 md:pt-4 text-gray-500">
-              <div className="flex items-center gap-1">
-                <FaStar className="text-yellow-cs" />
-                <p>{calculateRating(courseData)}</p>
-              </div>
-              <div className="h-4 w-px bg-gray-500/40"></div>
-              <div className="flex items-center gap-1">
-                <CiClock1 />
-                <p>{calculateCourseDuration(courseData)}</p>
-              </div>
-              <div className="h-4 w-px bg-gray-500/40"></div>
-              <div className="flex items-center gap-1">
-                <FaBookOpenReader />
-                <p>{calculateNoOfLectures(courseData)} bài giảng</p>
-              </div>
-            </div> */}
 
             <div className="text-sm md:text-default gap-4 pt-2 md:pt-4 mt-5 ">
               <div className="border-b border-gray pt-3 pb-3 flex items-center justify-between ">
@@ -370,21 +346,6 @@ const CourseDetails = () => {
                 <div>{courseData.enrolledStudents.length} học viên</div>
               </div>
             </div>
-
-            {/* <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white font-medium">
-              {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
-            </button> */}
-
-            {/* <div className="mt-5">
-              <p>What's in the course</p>
-              <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
-                <li>Lifetime access with free updates.</li>
-                <li>Step-by-step, hands-on project guidance.</li>
-                <li>Downloadable resources and source code.</li>
-                <li>Lifetime access with free updates</li>
-                <li>Lifetime access with free updates</li>
-              </ul>
-            </div> */}
             <div className="absolute top-2 right-2 text-xs px-4 py-1 rounded-xl bg-green-1 text-dark-1 font-semibold">
               {courseData.discount} %
             </div>

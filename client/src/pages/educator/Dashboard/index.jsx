@@ -131,10 +131,10 @@ const Dashboard = () => {
   return dashboardData ? (
     <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-8">
       <div className="space-y-5 w-full">
-        <div className="flex flex-wrap gap-5 items-center ">
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
+        <div className="flex flex-wrap gap-5 items-center justify-around">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-10 w-96 rounded-md bg-white">
             <div className="flex items-center">
-              <FaUser className="text-dark-2 text-3xl mr-[10px]" />
+              <FaUser className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
                   {dashboardData.totalStudents}
@@ -143,9 +143,9 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-10 w-96 rounded-md bg-white">
             <div className="flex items-center">
-              <FaBook className="text-dark-2 text-3xl mr-[10px]" />
+              <FaBook className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
                   {dashboardData.totalCourses}
@@ -154,12 +154,16 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-72 rounded-md bg-white">
+          <div className="flex items-center gap-3 shadow-card border border-blue-500 p-10 w-96 rounded-md bg-white">
             <div className="flex items-center">
-              <FaMoneyCheckAlt className="text-dark-2 text-3xl mr-[10px]" />
+              <FaMoneyCheckAlt className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
-                  {dashboardData.totalEarnings} {currency}
+                  {dashboardData.totalEarnings.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  {currency}
                 </p>
                 <p className="text-base text-gray-500">Doanh thu</p>
               </div>
