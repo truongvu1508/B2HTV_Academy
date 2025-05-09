@@ -168,7 +168,7 @@ const CourseDetails = () => {
               Giới thiệu khóa học
             </h3>
 
-            <div className="pt-3 leading-loose">
+            <p className="pt-3 rich-text">
               <div
                 dangerouslySetInnerHTML={{
                   __html: showFullDescription
@@ -184,7 +184,7 @@ const CourseDetails = () => {
                   {showFullDescription ? "Thu gọn" : "Xem thêm"}
                 </button>
               )}
-            </div>
+            </p>
           </div>
           <div className="pb-10 mb-10 text-gray-800">
             <h2 className="text-xl font-extrabold text-dark-1">
