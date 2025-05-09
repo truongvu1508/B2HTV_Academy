@@ -39,6 +39,9 @@ const UpdateCourse = () => {
     isPreviewFree: false,
   });
 
+  const [isAddingChapter, setIsAddingChapter] = useState(false);
+  const [newChapterTitle, setNewChapterTitle] = useState("");
+
   // Fetch course data
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -103,22 +106,12 @@ const UpdateCourse = () => {
         quillRef.current = null;
       }
     };
-  }, [isLoading, courseDescription]);
+  }, [isLoading]);
 
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
-      const title = prompt("Nhập tên chương:");
-      if (title) {
-        const newChapter = {
-          chapterId: uniqid(),
-          chapterTitle: title,
-          chapterContent: [],
-          collapsed: false,
-          chapterOrder:
-            chapters.length > 0 ? chapters.slice(-1)[0].chapterOrder + 1 : 1,
-        };
-        setChapters([...chapters, newChapter]);
-      }
+      setNewChapterTitle("");
+      setIsAddingChapter(true);
     } else if (action === "remove") {
       if (window.confirm("Bạn có chắc muốn xóa chương này không?")) {
         setChapters(
@@ -542,6 +535,70 @@ const UpdateCourse = () => {
           >
             <FaPlus className="mr-1" /> Thêm chương
           </div>
+
+          {/* Popup thêm chương mới */}
+          {isAddingChapter && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
+                <h2 className="text-lg font-semibold mb-4">Thêm chương mới</h2>
+                <div className="mb-4">
+                  <p>Tên chương</p>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded py-2 px-3"
+                    value={newChapterTitle}
+                    onChange={(e) => setNewChapterTitle(e.target.value)}
+                    placeholder="Nhập tên chương"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={() => {
+                      if (newChapterTitle.trim()) {
+                        const newChapter = {
+                          chapterId: uniqid(),
+                          chapterTitle: newChapterTitle,
+                          chapterContent: [],
+                          collapsed: false,
+                          chapterOrder:
+                            chapters.length > 0
+                              ? chapters.slice(-1)[0].chapterOrder + 1
+                              : 1,
+                        };
+                        setChapters([...chapters, newChapter]);
+                        setIsAddingChapter(false);
+                        toast.success("Thêm chương mới thành công");
+                      } else {
+                        toast.error("Tên chương không được để trống");
+                      }
+                    }}
+                    type="button"
+                    className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Thêm
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsAddingChapter(false);
+                      setNewChapterTitle("");
+                    }}
+                    type="button"
+                    className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  >
+                    Hủy
+                  </button>
+                </div>
+                <RiCloseFill
+                  onClick={() => {
+                    setIsAddingChapter(false);
+                    setNewChapterTitle("");
+                  }}
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Popup chỉnh sửa bài giảng */}
           {showPopup && (
