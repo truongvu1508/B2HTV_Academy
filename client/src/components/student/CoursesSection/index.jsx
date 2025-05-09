@@ -43,10 +43,8 @@ const CoursesSection = () => {
 
   return (
     <div className="py-16 md:px-40 px-8 text-center">
-      <h2 className="text-3xl font-medium text-gray-800 mb-3">
-        Khóa học nổi bật
-      </h2>
-      <p className="text-sm md:text-base text-gray-500">
+      <h2 className="text-3xl font-bold text-dark-1 mb-3">Khóa học nổi bật</h2>
+      <p className="text-sm md:text-base text-dark-1">
         Những khóa học nổi bật dành cho lập trình viên! Học kiến thức chuyên
         sâu, công nghệ hiện đại, thực hành dự án thực tế từ chuyên gia, sẵn sàng
         bứt phá trong sự nghiệp công nghệ!

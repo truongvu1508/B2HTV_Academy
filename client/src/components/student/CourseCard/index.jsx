@@ -71,11 +71,18 @@ const CourseCard = ({ course, courseData }) => {
             {(
               course.coursePrice -
               (course.coursePrice * course.discount) / 100
-            ).toFixed(0)}{" "}
+            ).toLocaleString("en-US", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}{" "}
             {currency}
           </p>
           <p className="line-through">
-            {course.coursePrice} {currency}
+            {course.coursePrice.toLocaleString("en-US", {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}{" "}
+            {currency}
           </p>
         </div>
       </div>

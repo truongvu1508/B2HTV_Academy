@@ -294,12 +294,19 @@ const CourseDetails = () => {
                 {(
                   courseData.coursePrice -
                   (courseData.discount * courseData.coursePrice) / 100
-                ).toFixed(0)}{" "}
+                ).toLocaleString("en-US", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                })}{" "}
                 {currency}
               </p>
               <div>
                 <p className="md:text-lg text-gray-500  line-through">
-                  {courseData.coursePrice} {currency}
+                  {courseData.coursePrice.toLocaleString("en-US", {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  {currency}
                 </p>
                 {/* <p className="md:text-lg text-gray-500">
                   {courseData.discount} %
