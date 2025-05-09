@@ -262,7 +262,7 @@ const CourseDetails = () => {
         </div>
 
         {/* Right column */}
-        <div className="relative flex-[4] w-full z-10 md:sticky md:top-5 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
+        <div className="relative flex-[4] w-full z-10 md:sticky md:top-3 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px] p-">
           {playerData ? (
             <YouTube
               videoId={playerData.videoId}
