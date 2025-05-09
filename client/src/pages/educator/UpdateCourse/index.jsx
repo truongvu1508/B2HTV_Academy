@@ -452,19 +452,23 @@ const UpdateCourse = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-500">
+                    <span className="text-green-500 font-bold">
                       {chapter.chapterContent.length} Bài giảng
                     </span>
-                    <FaEdit
-                      className="cursor-pointer text-blue-500"
-                      onClick={() => handleChapter("edit", chapter.chapterId)}
-                      title="Chỉnh sửa tên chương"
-                    />
-                    <RiCloseFill
-                      className="cursor-pointer text-red-500"
-                      onClick={() => handleChapter("remove", chapter.chapterId)}
-                      title="Xóa chương"
-                    />
+                    <div className="flex gap-1 ">
+                      <FaEdit
+                        className="cursor-pointer text-blue-500"
+                        onClick={() => handleChapter("edit", chapter.chapterId)}
+                        title="Chỉnh sửa tên chương"
+                      />
+                      <RiCloseFill
+                        className="cursor-pointer text-red-500"
+                        onClick={() =>
+                          handleChapter("remove", chapter.chapterId)
+                        }
+                        title="Xóa chương"
+                      />
+                    </div>
                   </div>
                 </div>
                 {!chapter.collapsed && (
@@ -492,7 +496,7 @@ const UpdateCourse = () => {
                             : "Trả phí"}
                         </span>
                         <div className="flex gap-2">
-                          <button
+                          {/* <button
                             type="button"
                             onClick={() =>
                               handleLecture(
@@ -504,7 +508,18 @@ const UpdateCourse = () => {
                             className="text-blue-500 hover:underline"
                           >
                             Chỉnh sửa
-                          </button>
+                          </button> */}
+                          <FaEdit
+                            className="text-blue-500 cursor-pointer"
+                            onClick={() =>
+                              handleLecture(
+                                "edit",
+                                chapter.chapterId,
+                                lectureIndex
+                              )
+                            }
+                            title="Chỉnh sửa tên bài giảng"
+                          />
                           <RiCloseFill
                             onClick={() =>
                               handleLecture(
@@ -514,12 +529,13 @@ const UpdateCourse = () => {
                               )
                             }
                             className="cursor-pointer text-red-500"
+                            title="Xóa bài giảng"
                           />
                         </div>
                       </div>
                     ))}
                     <div
-                      className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2"
+                      className="inline-flex bg-gray-100 p-3 rounded cursor-pointer mt-2 items-center text-blue-500"
                       onClick={() => handleLecture("add", chapter.chapterId)}
                     >
                       <FaPlus className="mr-1" /> Thêm bài giảng
@@ -530,7 +546,7 @@ const UpdateCourse = () => {
             ))}
           </div>
           <div
-            className="flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer"
+            className="flex justify-center items-center bg-blue-100 p-3 rounded-lg cursor-pointer"
             onClick={() => handleChapter("add")}
           >
             <FaPlus className="mr-1" /> Thêm chương
