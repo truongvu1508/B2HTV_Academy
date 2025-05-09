@@ -7,6 +7,7 @@ import "./Dashboard.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Column, Pie } from "@ant-design/plots";
+import BackToTop from "../../../components/client/BackToTop";
 
 const Dashboard = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -166,15 +167,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Biểu đồ */}
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6 w-full">
-          <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-            <h2 className="text-lg font-medium mb-4">Doanh thu theo tháng</h2>
-            <div className="h-80">
-              <Column {...columnConfig} />
-            </div>
-          </div>
-
           <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
             <h2 className="text-lg font-medium mb-4">
               Phân bố học viên theo khóa học
@@ -183,68 +176,6 @@ const Dashboard = () => {
               <Pie {...pieConfig} />
             </div>
           </div>
-        </div>
-        <div className="grid md:grid-cols-2 grid-cols-1 gap-6 w-full">
-          <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-            <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
-            <div>
-              <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10 bg-white">
-                <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold truncate">
-                      Tất cả khóa học
-                    </th>
-                    <th className="px-4 py-3 font-semibold truncate">
-                      Doanh thu
-                    </th>
-                    <th className="px-4 py-3 font-semibold truncate">
-                      Học viên
-                    </th>
-                    <th className="px-4 py-3 font-semibold truncate">
-                      Ngày đăng
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm text-gray-500">
-                  {courses.map((course) => (
-                    <tr
-                      key={course._id}
-                      className="border-b border-gray-500/20"
-                    >
-                      <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
-                        <div className="w-32 h-24 aspect-square overflow-hidden">
-                          <img
-                            src={course.courseThumbnail}
-                            alt="Course Image"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <span className="truncate hidden md:block">
-                          {course.courseTitle}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        {course.enrolledStudents.length === 0
-                          ? `0 ${currency}`
-                          : `${(
-                              course.enrolledStudents.length *
-                              (course.coursePrice *
-                                (1 - (course.discount || 0) / 100))
-                            ).toFixed(0)} ${currency}`}
-                      </td>
-                      <td className="px-4 py-3">
-                        {course.enrolledStudents.length}
-                      </td>
-                      <td className="px-4 py-3">
-                        {new Date(course.createdAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
             <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
             <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
@@ -281,41 +212,68 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* <div>
-          <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
-          <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
+        <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
+          <h2 className="text-lg font-medium mb-4">Doanh thu theo tháng</h2>
+          <div className="h-80">
+            <Column {...columnConfig} />
+          </div>
+        </div>
+        <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
+          <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
+          <div className="flex flex-col items-center max-w-7xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
             <table className="table-fixed md:table-auto w-full overflow-hidden">
               <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
                 <tr>
-                  <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                    #
+                  <th className="px-4 py-3 font-semibold truncate">
+                    Tất cả khóa học
                   </th>
-                  <th className="px-4 py-3 font-semibold">Tên học viên</th>
-                  <th className="px-4 py-3 font-semibold">Khóa học</th>
+                  <th className="px-4 py-3 font-semibold truncate">
+                    Doanh thu
+                  </th>
+                  <th className="px-4 py-3 font-semibold truncate">Học viên</th>
+                  <th className="px-4 py-3 font-semibold truncate">
+                    Ngày đăng
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-sm text-gray-500">
-                {dashboardData.enrolledStudentsData.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-500/20">
-                    <td className="px-4 py-3 text-center hidden sm:table-cell">
-                      {index + 1}
+                {courses.map((course) => (
+                  <tr key={course._id} className="border-b border-gray-500/20">
+                    <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
+                      <div className="w-32 h-24 aspect-square overflow-hidden">
+                        <img
+                          src={course.courseThumbnail}
+                          alt="Course Image"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <span className="truncate hidden md:block">
+                        {course.courseTitle}
+                      </span>
                     </td>
-                    <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
-                      <img
-                        src={item.student.imageUrl}
-                        alt="Profile"
-                        className="w-9 h-9 rounded-full"
-                      />
-                      <span className="truncate">{item.student.name}</span>
+                    <td className="px-4 py-3">
+                      {course.enrolledStudents.length === 0
+                        ? `0 ${currency}`
+                        : `${(
+                            course.enrolledStudents.length *
+                            (course.coursePrice *
+                              (1 - (course.discount || 0) / 100))
+                          ).toFixed(0)} ${currency}`}
                     </td>
-                    <td className="px-4 py-3 truncate">{item.courseTitle}</td>
+                    <td className="px-4 py-3">
+                      {course.enrolledStudents.length}
+                    </td>
+                    <td className="px-4 py-3">
+                      {new Date(course.createdAt).toLocaleDateString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div> */}
+        </div>
       </div>
+      <BackToTop />
     </div>
   ) : (
     <Loading />
