@@ -17,8 +17,10 @@ const CoursesList = () => {
   const { input } = useParams();
   const [filteredCourse, setFilteredCourse] = useState([]);
   const [detailedCourses, setDetailedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchDetailedCourses = async (courses) => {
+    setLoading(true);
     try {
       const courseDataPromises = courses.map((course) =>
         axios.get(`${backendUrl}/api/course/${course._id}`)
@@ -37,6 +39,8 @@ const CoursesList = () => {
       console.error("Lỗi khi lấy dữ liệu khóa học:", error);
       toast.error("Lỗi khi lấy dữ liệu khóa học");
       return [];
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,13 +97,31 @@ const CoursesList = () => {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 my-16 gap-3 px-2 md:p-0">
-          {filteredCourse.map((course, index) => (
-            <CourseCard
-              key={course._id}
-              course={course}
-              courseData={detailedCourses[index]}
-            />
-          ))}
+          {loading ? (
+            // Display skeleton cards while loading
+            Array(6)
+              .fill(0)
+              .map((_, index) => (
+                <CourseCard key={`skeleton-${index}`} loading={true} />
+              ))
+          ) : filteredCourse.length > 0 ? (
+            // Display actual course cards when data is available
+            filteredCourse.map((course, index) => (
+              <CourseCard
+                key={course._id}
+                course={course}
+                courseData={detailedCourses[index]}
+                loading={false}
+              />
+            ))
+          ) : (
+            // Display message when no courses match the search
+            <div className="col-span-full text-center py-8">
+              <p className="text-lg text-gray-600">
+                Không tìm thấy khóa học nào phù hợp.
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <Footer />

@@ -4,15 +4,18 @@ import { Link } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import { CiClock1 } from "react-icons/ci";
 import { FaBookOpenReader, FaUserGraduate } from "react-icons/fa6";
+import CourseCardSkeleton from "../CourseCardSkeleton";
 
-const CourseCard = ({ course, courseData }) => {
+const CourseCard = ({ course, courseData, loading }) => {
   const {
     currency,
     calculateRating,
     calculateCourseDuration,
     calculateNoOfLectures,
   } = useContext(AppContext);
-
+  if (loading) {
+    return <CourseCardSkeleton />;
+  }
   return (
     <Link
       to={"/course/" + course._id}
