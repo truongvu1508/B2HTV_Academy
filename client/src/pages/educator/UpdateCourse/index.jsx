@@ -95,14 +95,18 @@ const UpdateCourse = () => {
         quillRef.current.root.innerHTML = courseDescription;
       }
 
-      quillRef.current.on("text-change", () => {
+      const handleTextChange = () => {
         setCourseDescription(quillRef.current.root.innerHTML);
-      });
+      };
+      quillRef.current.on("text-change", handleTextChange);
     }
 
     return () => {
       if (quillRef.current) {
         quillRef.current.off("text-change");
+        if (editorRef.current) {
+          editorRef.current.innerHTML = "";
+        }
         quillRef.current = null;
       }
     };
@@ -117,6 +121,7 @@ const UpdateCourse = () => {
         setChapters(
           chapters.filter((chapter) => chapter.chapterId !== chapterId)
         );
+        toast.success("Xóa chương thành công!");
       }
     } else if (action === "toggle") {
       setChapters(
@@ -184,6 +189,7 @@ const UpdateCourse = () => {
             return chapter;
           })
         );
+        toast.success("Xóa bài giảng thành công!");
       }
     } else if (action === "edit") {
       const chapter = chapters.find((ch) => ch.chapterId === chapterId);
@@ -229,6 +235,7 @@ const UpdateCourse = () => {
               ...updatedContent[currentLectureIndex],
               ...lectureDetails,
             };
+            toast.success("Cập nhật bài giảng thành công!");
             return { ...chapter, chapterContent: updatedContent };
           } else {
             const newLecture = {
@@ -239,6 +246,7 @@ const UpdateCourse = () => {
                   : 1,
               lectureId: uniqid(),
             };
+            toast.success("Thêm bài giảng thành công!");
             return {
               ...chapter,
               chapterContent: [...chapter.chapterContent, newLecture],
@@ -266,22 +274,27 @@ const UpdateCourse = () => {
 
     if (!courseTitle.trim()) {
       setError("Tiêu đề khóa học là bắt buộc.");
+      toast.error("Tiêu đề khóa học là bắt buộc.");
       return;
     }
     if (coursePrice < 0) {
       setError("Giá khóa học không thể âm.");
+      toast.error("Giá khóa học không thể âm.");
       return;
     }
     if (discount < 0 || discount > 100) {
       setError("Giảm giá phải từ 0 đến 100.");
+      toast.error("Giảm giá phải từ 0 đến 100.");
       return;
     }
     if (!courseDescription.trim()) {
       setError("Mô tả khóa học là bắt buộc.");
+      toast.error("Mô tả khóa học là bắt buộc.");
       return;
     }
     if (!existingImage && !image) {
       setError("Hình ảnh khóa học là bắt buộc.");
+      toast.error("Hình ảnh khóa học là bắt buộc.");
       return;
     }
 
@@ -333,7 +346,7 @@ const UpdateCourse = () => {
       toast.error("Cập nhật khóa học thất bại: " + errorMessage);
       setError("Cập nhật khóa học thất bại. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false); // Hide loading state after update attempt
+      setIsLoading(false);
     }
   };
 
@@ -452,7 +465,7 @@ const UpdateCourse = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-green-500 font-bold">
+                    <span className="text-green-500 ">
                       {chapter.chapterContent.length} Bài giảng
                     </span>
                     <div className="flex gap-1 ">
@@ -488,27 +501,20 @@ const UpdateCourse = () => {
                             rel="noopener noreferrer"
                             className="text-blue-500"
                           >
-                            Liên kết
+                            Video
                           </a>{" "}
                           -{" "}
-                          {lecture.isPreviewFree
-                            ? "Xem trước miễn phí"
-                            : "Trả phí"}
+                          <span
+                            className={
+                              lecture.isPreviewFree
+                                ? "text-green-500"
+                                : "text-yellow-500"
+                            }
+                          >
+                            {lecture.isPreviewFree ? "Miễn phí" : "Trả phí"}
+                          </span>
                         </span>
                         <div className="flex gap-2">
-                          {/* <button
-                            type="button"
-                            onClick={() =>
-                              handleLecture(
-                                "edit",
-                                chapter.chapterId,
-                                lectureIndex
-                              )
-                            }
-                            className="text-blue-500 hover:underline"
-                          >
-                            Chỉnh sửa
-                          </button> */}
                           <FaEdit
                             className="text-blue-500 cursor-pointer"
                             onClick={() =>
