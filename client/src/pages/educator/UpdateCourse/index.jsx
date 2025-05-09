@@ -4,7 +4,7 @@ import uniqid from "uniqid";
 import Quill from "quill";
 import { FiUpload } from "react-icons/fi";
 import { RiArrowDropDownLine, RiCloseFill } from "react-icons/ri";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaEdit } from "react-icons/fa";
 import { AppContext } from "../../../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -26,9 +26,11 @@ const UpdateCourse = () => {
   const [existingImage, setExistingImage] = useState("");
   const [chapters, setChapters] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  const [showChapterEditPopup, setShowChapterEditPopup] = useState(false);
   const [currentChapterId, setCurrentChapterId] = useState(null);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(null);
   const [isEditingLecture, setIsEditingLecture] = useState(false);
+  const [chapterTitle, setChapterTitle] = useState("");
   const [error, setError] = useState("");
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
@@ -131,7 +133,34 @@ const UpdateCourse = () => {
             : chapter
         )
       );
+    } else if (action === "edit") {
+      const chapter = chapters.find((ch) => ch.chapterId === chapterId);
+      if (chapter) {
+        setCurrentChapterId(chapterId);
+        setChapterTitle(chapter.chapterTitle);
+        setShowChapterEditPopup(true);
+      }
     }
+  };
+
+  const handleEditChapterTitle = () => {
+    if (!chapterTitle.trim()) {
+      toast.error("Tên chương không được để trống");
+      return;
+    }
+
+    setChapters(
+      chapters.map((chapter) =>
+        chapter.chapterId === currentChapterId
+          ? { ...chapter, chapterTitle: chapterTitle }
+          : chapter
+      )
+    );
+
+    setShowChapterEditPopup(false);
+    setCurrentChapterId(null);
+    setChapterTitle("");
+    toast.success("Cập nhật tên chương thành công");
   };
 
   const handleLecture = (action, chapterId, lectureIndex) => {
@@ -429,13 +458,21 @@ const UpdateCourse = () => {
                       {chapterIndex + 1}. {chapter.chapterTitle}
                     </span>
                   </div>
-                  <span className="text-gray-500">
-                    {chapter.chapterContent.length} Bài giảng
-                  </span>
-                  <RiCloseFill
-                    className="cursor-pointer"
-                    onClick={() => handleChapter("remove", chapter.chapterId)}
-                  />
+                  <div className="flex items-center gap-3">
+                    <span className="text-gray-500">
+                      {chapter.chapterContent.length} Bài giảng
+                    </span>
+                    <FaEdit
+                      className="cursor-pointer text-blue-500"
+                      onClick={() => handleChapter("edit", chapter.chapterId)}
+                      title="Chỉnh sửa tên chương"
+                    />
+                    <RiCloseFill
+                      className="cursor-pointer text-red-500"
+                      onClick={() => handleChapter("remove", chapter.chapterId)}
+                      title="Xóa chương"
+                    />
+                  </div>
                 </div>
                 {!chapter.collapsed && (
                   <div className="p-4">
@@ -506,6 +543,7 @@ const UpdateCourse = () => {
             <FaPlus className="mr-1" /> Thêm chương
           </div>
 
+          {/* Popup chỉnh sửa bài giảng */}
           {showPopup && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
               <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
@@ -612,6 +650,55 @@ const UpdateCourse = () => {
                       lectureUrl: "",
                       isPreviewFree: false,
                     });
+                  }}
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Popup chỉnh sửa tên chương */}
+          {showChapterEditPopup && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
+                <h2 className="text-lg font-semibold mb-4">
+                  Chỉnh sửa tên chương
+                </h2>
+                <div className="mb-4">
+                  <p>Tên chương</p>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded py-2 px-3"
+                    value={chapterTitle}
+                    onChange={(e) => setChapterTitle(e.target.value)}
+                    placeholder="Nhập tên chương"
+                  />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={handleEditChapterTitle}
+                    type="button"
+                    className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    Cập nhật
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowChapterEditPopup(false);
+                      setCurrentChapterId(null);
+                      setChapterTitle("");
+                    }}
+                    type="button"
+                    className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  >
+                    Hủy
+                  </button>
+                </div>
+                <RiCloseFill
+                  onClick={() => {
+                    setShowChapterEditPopup(false);
+                    setCurrentChapterId(null);
+                    setChapterTitle("");
                   }}
                   className="absolute top-2 right-2 text-2xl cursor-pointer"
                 />
