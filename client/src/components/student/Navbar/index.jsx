@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { assets } from "../../../assets/assets";
 import { NavLink, useLocation } from "react-router-dom";
-import Home from "../../../pages/student/Home";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
@@ -20,6 +19,7 @@ const Navbar = () => {
     isActive
       ? "text-green-1 font-bold"
       : "text-white font-bold hover:text-green-1";
+
   const isCourseActive = () => {
     return (
       location.pathname === "/course-list" ||
@@ -50,9 +50,39 @@ const Navbar = () => {
       toast.error(error.message);
     }
   };
+
+  // Hàm mở khung đăng nhập với tùy chỉnh
+  const handleSignIn = () => {
+    openSignIn({
+      appearance: {
+        baseTheme: "default",
+        elements: {
+          formButtonPrimary: {
+            backgroundColor: "#00175D",
+            color: "#ffffff",
+          },
+          headerTitle: {
+            color: "#00175D",
+          },
+          card: {
+            backgroundColor: "#ffffff",
+          },
+
+          formFieldLabel: {
+            color: "#333",
+          },
+        },
+        variables: {
+          colorPrimary: "#001e78",
+          fontFamily: "Arial, sans-serif",
+        },
+      },
+    });
+  };
+
   return (
     <header className="bg-dark-1 pb-3 pt-3">
-      <nav className="flex justify-between items-center w-[82%] mx-auto ">
+      <nav className="flex justify-between items-center w-[82%] mx-auto">
         <div>
           <img
             onClick={() => navigate("/")}
@@ -61,14 +91,13 @@ const Navbar = () => {
             alt="B2HTV Academy"
           />
         </div>
-        <div className="">
+        <div>
           <ul className="flex items-center gap-[4vw]">
             <li>
               <NavLink className={navLinkStyles} to={"/"}>
                 Trang chủ
               </NavLink>
             </li>
-
             <li>
               <NavLink
                 className={({ isActive }) =>
@@ -79,25 +108,16 @@ const Navbar = () => {
                 Khóa học
               </NavLink>
             </li>
-
             <li>
               <NavLink className={navLinkStyles} to={"/about"}>
                 Về chúng tôi
               </NavLink>
             </li>
-
-            {/* <li>
-              <NavLink className={navLinkStyles} to={"/blog"}>
-                Blog
-              </NavLink>
-            </li> */}
-
             <li>
               <NavLink className={navLinkStyles} to={"/contact"}>
                 Liên hệ
               </NavLink>
             </li>
-
             {user && (
               <li className="my-enrollments bg-green-1">
                 <NavLink
@@ -115,14 +135,11 @@ const Navbar = () => {
           </ul>
         </div>
         <div>
-          {/* <button className="hover:text-blue-1 text-white mr-5">
-            <ShoppingCartOutlined className="card" />
-          </button> */}
           {user ? (
             <UserButton />
           ) : (
             <button
-              onClick={() => openSignIn()}
+              onClick={handleSignIn} // Sử dụng hàm tùy chỉnh
               className="hover:text-blue-1 text-white"
             >
               <UserOutlined className="user" />
