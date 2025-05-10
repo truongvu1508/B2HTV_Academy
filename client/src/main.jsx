@@ -22,11 +22,15 @@ createRoot(document.getElementById("root")).render(
         dividerText: "hoặc",
         formFieldLabel__emailAddress: "Địa chỉ email",
         formFieldInputPlaceholder__emailAddress: "Nhập địa chỉ email của bạn",
+        formFieldLabel__password: "Mật khẩu",
+        formFieldInputPlaceholder__password: "Nhập mật khẩu của bạn",
         formButtonPrimary: "Tiếp tục",
         signIn: {
           start: {
             title: "Đăng nhập vào B2HTV Academy",
             subtitle: "Chào mừng trở lại! Vui lòng đăng nhập để tiếp tục",
+            actionLink: "Đăng ký",
+            actionText: "Bạn chưa có tài khoản?",
           },
         },
         signUp: {
