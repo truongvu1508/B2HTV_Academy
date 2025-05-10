@@ -25,6 +25,8 @@ import star from "./star.svg";
 import star_blank from "./star_blank.svg";
 import logo from "./logo.png";
 import logo_fold from "./logo-fold.png";
+import logo_b2htv from "./logo_b2htv.png";
+
 import icon_address from "./icon-address.svg";
 import icon_mail from "./icon-mail.svg";
 import icon_phone from "./icon-phone.svg";
@@ -55,6 +57,7 @@ export const assets = {
   search_icon,
   star,
   star_blank,
+  logo_b2htv,
   logo,
   logo_fold,
   icon_address,

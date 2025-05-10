@@ -81,13 +81,13 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-dark-1 pb-3 pt-3">
+    <header className="bg-dark-1 pb-3 pt-3 border-b border-gray-600">
       <nav className="flex justify-between items-center w-[82%] mx-auto">
         <div>
           <img
             onClick={() => navigate("/")}
-            className="w-16 cursor-pointer"
-            src={assets.img_placeholder}
+            className=" w-[200px] cursor-pointer"
+            src={assets.logo_b2htv}
             alt="B2HTV Academy"
           />
         </div>
