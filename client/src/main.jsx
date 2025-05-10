@@ -37,6 +37,8 @@ createRoot(document.getElementById("root")).render(
           start: {
             title: "Tạo tài khoản mới",
             subtitle: "Chào mừng! Vui lòng điền thông tin để bắt đầu.",
+            actionLink: "Đăng nhập",
+            actionText: "Bạn đã có tài khoản?",
           },
         },
       }}
