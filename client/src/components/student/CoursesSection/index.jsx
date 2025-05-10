@@ -10,8 +10,10 @@ const CoursesSection = () => {
   const { allCourses, backendUrl } = useContext(AppContext);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [detailedCourses, setDetailedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchDetailedCourses = async (courses) => {
+    setLoading(true);
     try {
       const courseDataPromises = courses.map((course) =>
         axios.get(`${backendUrl}/api/course/${course._id}`)
@@ -25,10 +27,15 @@ const CoursesSection = () => {
           return null;
         }
       });
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       return detailedData.filter((data) => data !== null);
     } catch (error) {
       toast.error({ success: false, message: error.message });
       return [];
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,18 +58,28 @@ const CoursesSection = () => {
         bứt phá trong sự nghiệp công nghệ!
       </p>
 
-      <div className="grid grid-cols-auto px-4 md:px-0 md:my-16 my-10 gap-4">
-        {filteredCourses.length > 0 &&
-        detailedCourses.length === filteredCourses.length ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-4 md:px-0 md:my-16 my-10 gap-4">
+        {loading ? (
+          // Show skeleton loaders while loading
+          Array(3)
+            .fill(0)
+            .map((_, index) => (
+              <CourseCard key={`skeleton-${index}`} loading={true} />
+            ))
+        ) : filteredCourses.length > 0 &&
+          detailedCourses.length === filteredCourses.length ? (
+          // Show actual courses when loaded
           filteredCourses.map((course, index) => (
             <CourseCard
               key={course._id}
               course={course}
               courseData={detailedCourses[index]}
+              loading={false}
             />
           ))
         ) : (
-          <p className="text-gray-500 col-span-full">Đang tải khóa học...</p>
+          // Show message if no courses are available
+          <p className="text-gray-500 col-span-full">Không có khóa học nào.</p>
         )}
       </div>
 
