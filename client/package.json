@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/charts": "^2.2.7",
     "@clerk/clerk-react": "^5.26.2",
+    "@clerk/localizations": "^3.15.2",
     "antd": "^5.24.6",
     "aos": "^2.3.4",
     "axios": "^1.9.0",
@@ -23,6 +24,7 @@
     "react-countup": "^6.5.3",
     "react-dom": "^19.0.0",
     "react-helmet": "^6.1.0",
+    "react-html-parser": "^2.0.2",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.5.0",
     "react-scroll-trigger": "^0.6.14",
