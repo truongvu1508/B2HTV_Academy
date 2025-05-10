@@ -26,6 +26,7 @@ import star_blank from "./star_blank.svg";
 import logo from "./logo.png";
 import logo_fold from "./logo-fold.png";
 import logo_b2htv from "./logo_b2htv.png";
+import logo_b2htv_admin from "./logo_b2htv_admin.png";
 
 import icon_address from "./icon-address.svg";
 import icon_mail from "./icon-mail.svg";
@@ -58,6 +59,7 @@ export const assets = {
   star,
   star_blank,
   logo_b2htv,
+  logo_b2htv_admin,
   logo,
   logo_fold,
   icon_address,

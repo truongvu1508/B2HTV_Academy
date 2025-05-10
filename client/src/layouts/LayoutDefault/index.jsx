@@ -26,7 +26,12 @@ function LayoutDefault() {
               "header__logo " + (collapsed && "header__logo--collapsed")
             }
           >
-            <img src={collapsed ? assets.logo_fold : assets.logo} alt="logo" />
+            <img
+              src={
+                collapsed ? assets.logo_b2htv_admin : assets.logo_b2htv_admin
+              }
+              alt="logo"
+            />
           </div>
           <div className="header__nav">
             <div className="header__nav-left">
