@@ -7,7 +7,6 @@ import { AppContext } from "../../../context/AppContext";
 import { Button } from "antd";
 import { Line } from "rc-progress";
 import axios from "axios";
-import { data } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const MyEnrollments = () => {
@@ -106,12 +105,20 @@ const MyEnrollments = () => {
                 <td className="px-4 py-3 max-sm:hidden">
                   {progressArray[index] &&
                     `${progressArray[index].lectureCompleted} / ${progressArray[index].totalLectures} `}{" "}
-                  <span>lectures</span>
+                  <span>bài giảng</span>
                 </td>
                 <td className="px-4 py-3 max-sm:text-right">
                   <Button
                     type="primary"
                     onClick={() => navigate("/player/" + course._id)}
+                    className={
+                      progressArray[index] &&
+                      progressArray[index].lectureCompleted /
+                        progressArray[index].totalLectures ===
+                        1
+                        ? "!bg-green-500"
+                        : "!bg-blue-500"
+                    }
                   >
                     {progressArray[index] &&
                     progressArray[index].lectureCompleted /
