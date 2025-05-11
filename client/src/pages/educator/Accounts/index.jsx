@@ -6,7 +6,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Accounts = () => {
-  const { backendUrl, getToken, isEducator, userData } = useContext(AppContext);
+  const { backendUrl, getToken, isEducator, userData, currency } =
+    useContext(AppContext);
 
   const [accounts, setAccounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const Accounts = () => {
       // Filter out the educator's account if isEducator is true and userData is available
       const filteredAccounts =
         isEducator && userData
-          ? data.filter((account) => account._id !== userData._id) // Filter by _id
+          ? data.filter((account) => account._id !== userData._id)
           : data;
 
       setAccounts(filteredAccounts);
@@ -37,7 +38,7 @@ const Accounts = () => {
     if (isEducator) {
       fetchAccounts();
     }
-  }, [isEducator, userData]); // Added userData to dependencies
+  }, [isEducator, userData]);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("vi-VN");
@@ -59,6 +60,9 @@ const Accounts = () => {
                   <th className="px-4 py-3 font-semibold">Email</th>
                   <th className="px-4 py-3 font-semibold text-center">
                     Khóa học
+                  </th>
+                  <th className="px-4 py-3 font-semibold hidden md:table-cell">
+                    Tổng chi tiêu
                   </th>
                   <th className="px-4 py-3 font-semibold hidden md:table-cell">
                     Ngày tạo
@@ -87,10 +91,19 @@ const Accounts = () => {
                         {account.email}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded">
                           {account.enrolledCourses
                             ? account.enrolledCourses.length
                             : 0}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
+                        <span className="bg-green-100 text-green-500 text-xs font-medium px-3 py-1 rounded">
+                          {account.totalSpent.toLocaleString("en-US", {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                          }) || 0}{" "}
+                          {currency}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
@@ -102,7 +115,7 @@ const Accounts = () => {
                 {(!accounts || accounts.length === 0) && (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="6"
                       className="px-4 py-8 text-center text-gray-500"
                     >
                       Không có dữ liệu tài khoản nào

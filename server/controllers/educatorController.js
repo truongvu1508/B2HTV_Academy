@@ -327,13 +327,43 @@ export const getEnrolledStudentsData = async (req, res) => {
 // Get All Users
 export const getAllUsers = async (req, res) => {
   try {
-    // Fetch all users from the database with only the specified fields
     const users = await User.find({}).select(
       "_id name email imageUrl enrolledCourses createdAt updatedAt"
     );
 
-    // Return data directly without wrapping in a success object
-    res.json(users);
+    const purchaseAggregates = await Purchase.aggregate([
+      {
+        $match: {
+          status: "completed",
+        },
+      },
+      {
+        $group: {
+          _id: "$userId",
+          totalSpent: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const purchaseMap = new Map(
+      purchaseAggregates.map((purchase) => [
+        purchase._id.toString(),
+        purchase.totalSpent,
+      ])
+    );
+
+    const usersWithTotalSpent = users.map((user) => ({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      imageUrl: user.imageUrl,
+      enrolledCourses: user.enrolledCourses,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      totalSpent: purchaseMap.get(user._id.toString()) || 0,
+    }));
+
+    res.json(usersWithTotalSpent);
   } catch (error) {
     console.error("Error in getAllUsers:", error);
     res.status(500).json({
