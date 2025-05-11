@@ -183,13 +183,11 @@ const Accounts = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
-                        <span className="bg-green-100 text-green-500 text-xs font-medium px-3 py-1 rounded">
-                          {account.totalSpent.toLocaleString("en-US", {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0,
-                          }) || 0}{" "}
-                          {currency}
-                        </span>
+                        {account.totalSpent.toLocaleString("en-US", {
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        }) || 0}{" "}
+                        {currency}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
                         {formatDate(account.createdAt)}
@@ -197,10 +195,10 @@ const Accounts = () => {
                       <td className="px-4 py-3 text-sm">
                         <button
                           onClick={() => handleToggleLock(account)}
-                          className={`text-white text-xs font-medium px-3 py-1 rounded transition-colors ${
+                          className={` text-xs font-medium px-3 py-1 rounded transition-colors ${
                             account.isLocked
-                              ? "bg-red-500 hover:bg-red-600"
-                              : "bg-green-500 hover:bg-green-600"
+                              ? "bg-red-100 text-red-600 hover:bg-red-600 hover:text-white"
+                              : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
                           }`}
                         >
                           {account.isLocked ? "Đã khóa" : "Hoạt động"}
