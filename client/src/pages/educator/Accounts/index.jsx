@@ -8,74 +8,107 @@ import { toast } from "react-toastify";
 const Accounts = () => {
   const { backendUrl, getToken, isEducator } = useContext(AppContext);
 
-  const [enrolledStudents, setEnrolledStudents] = useState(null);
+  const [accounts, setAccounts] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const fetchEnrolledStudents = async () => {
+  const fetchAccounts = async () => {
     try {
+      setLoading(true);
       const token = await getToken();
-      const { data } = await axios.get(
-        backendUrl + "/api/educator/enrolled-students",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (data.success) {
-        setEnrolledStudents(data.enrolledStudents.reverse());
-      } else {
-        toast.error(data.message);
-      }
+      const { data } = await axios.get(backendUrl + "/api/educator/allUsers", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setAccounts(data);
+      setLoading(false);
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Lỗi khi tải dữ liệu tài khoản: " + error.message);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     if (isEducator) {
-      fetchEnrolledStudents();
+      fetchAccounts();
     }
   }, [isEducator]);
 
-  return enrolledStudents ? (
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("vi-VN");
+  };
+
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-        <h1>Danh sách tài khoản</h1>
-        <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse ">
-          <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-            <tr>
-              <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                #
-              </th>
-              <th className="px-4 py-3 font-semibold">Tên học viên</th>
-              <th className="px-4 py-3 font-semibold">Tên khóa học</th>
-              <th className="px-4 py-3 font-semibold hidden sm:table-cell">
-                Ngày đăng ký
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {enrolledStudents.map((item, index) => (
-              <tr key={index} className="border-b border-gray-500/20">
-                <td className="px-4 py-3 text-center hidden sm:table-cell">
-                  {index + 1}
-                </td>
-                <td className="md:px-4 px-2 py-2 flex items-center space-x-3">
-                  <img
-                    src={item.student.imageUrl}
-                    alt=""
-                    className="w-9 h-9 rounded-full"
-                  />
-                  <span className="truncate">{item.student.name}</span>
-                </td>
-                <td className="px-4 py-3 truncate">{item.courseTitle}</td>
-                <td className="px-4 py-3 hidden sm:table-cell">
-                  {new Date(item.purchaseDate).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="w-full">
+        <h2 className="text-lg font-bold mb-10">Danh sách tài khoản</h2>
+        <div className="flex flex-col items-center max-w-6xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
+          <div className="w-full overflow-x-auto">
+            <table className="md:table-auto table-fixed w-full overflow-hidden border-collapse">
+              <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
+                <tr>
+                  <th className="px-4 py-3 font-semibold text-center">#</th>
+                  <th className="px-4 py-3 font-semibold">Thông tin</th>
+                  <th className="px-4 py-3 font-semibold">Email</th>
+                  <th className="px-4 py-3 font-semibold text-center">
+                    Khóa học
+                  </th>
+                  <th className="px-4 py-3 font-semibold hidden md:table-cell">
+                    Ngày tạo
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts &&
+                  accounts.map((account, index) => (
+                    <tr
+                      key={account._id}
+                      className="border-b border-gray-500/20 hover:bg-gray-50"
+                    >
+                      <td className="px-4 py-3 text-center">{index + 1}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center space-x-3">
+                          <img
+                            src={account.imageUrl}
+                            alt={account.name}
+                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
+                          />
+                          <span className="font-medium">{account.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 truncate">
+                        {account.email}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                          {account.enrolledCourses
+                            ? account.enrolledCourses.length
+                            : 0}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
+                        {formatDate(account.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+
+                {(!accounts || accounts.length === 0) && (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      className="px-4 py-8 text-center text-gray-500"
+                    >
+                      Không có dữ liệu tài khoản nào
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

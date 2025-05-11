@@ -64,7 +64,7 @@ const MyCourses = () => {
           </button>
         </Link>
 
-        <h2 className="text-lg font-medium"> Danh sách khóa học</h2>
+        <h2 className="text-lg font-bold"> Danh sách khóa học</h2>
         <div>
           <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10 bg-white">
             <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
