@@ -323,3 +323,23 @@ export const getEnrolledStudentsData = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// Get All Users
+export const getAllUsers = async (req, res) => {
+  try {
+    // Fetch all users from the database with only the specified fields
+    const users = await User.find({}).select(
+      "_id name email imageUrl enrolledCourses createdAt updatedAt"
+    );
+
+    // Return data directly without wrapping in a success object
+    res.json(users);
+  } catch (error) {
+    console.error("Error in getAllUsers:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi lấy danh sách người dùng",
+      error: error.message,
+    });
+  }
+};
