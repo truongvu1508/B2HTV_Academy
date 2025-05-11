@@ -66,6 +66,9 @@ const Accounts = () => {
                   <th className="px-4 py-3 font-semibold hidden md:table-cell">
                     Ngày tạo
                   </th>
+                  <th className="px-4 py-3 font-semibold hidden md:table-cell">
+                    Trạng thái
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -107,6 +110,11 @@ const Accounts = () => {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
                         {formatDate(account.createdAt)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
+                        <span className="bg-green-100 text-green-500 text-xs font-medium px-3 py-1 rounded">
+                          {account.isLocked ? "Đã khóa" : "Hoạt động"}
+                        </span>
                       </td>
                     </tr>
                   ))}

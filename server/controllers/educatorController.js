@@ -328,7 +328,7 @@ export const getEnrolledStudentsData = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select(
-      "_id name email imageUrl enrolledCourses createdAt updatedAt"
+      "_id name email imageUrl enrolledCourses createdAt updatedAt isLocked"
     );
 
     const purchaseAggregates = await Purchase.aggregate([
@@ -360,6 +360,7 @@ export const getAllUsers = async (req, res) => {
       enrolledCourses: user.enrolledCourses,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      isLocked: user.isLocked,
       totalSpent: purchaseMap.get(user._id.toString()) || 0,
     }));
 

@@ -114,7 +114,7 @@ export const stripeWebhooks = async (request, response) => {
 
       break;
     }
-    // ... handle other event types
+
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
