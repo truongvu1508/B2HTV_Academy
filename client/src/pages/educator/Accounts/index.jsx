@@ -6,7 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Accounts = () => {
-  const { backendUrl, getToken, isEducator } = useContext(AppContext);
+  const { backendUrl, getToken, isEducator, userData } = useContext(AppContext);
 
   const [accounts, setAccounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,7 +19,13 @@ const Accounts = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setAccounts(data);
+      // Filter out the educator's account if isEducator is true and userData is available
+      const filteredAccounts =
+        isEducator && userData
+          ? data.filter((account) => account._id !== userData._id) // Filter by _id
+          : data;
+
+      setAccounts(filteredAccounts);
       setLoading(false);
     } catch (error) {
       toast.error("Lỗi khi tải dữ liệu tài khoản: " + error.message);
@@ -31,7 +37,7 @@ const Accounts = () => {
     if (isEducator) {
       fetchAccounts();
     }
-  }, [isEducator]);
+  }, [isEducator, userData]); // Added userData to dependencies
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("vi-VN");
