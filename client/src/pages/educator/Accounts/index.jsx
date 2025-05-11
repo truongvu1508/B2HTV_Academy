@@ -20,7 +20,6 @@ const Accounts = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Filter out the educator's account if isEducator is true and userData is available
       const filteredAccounts =
         isEducator && userData
           ? data.filter((account) => account._id !== userData._id)

@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
         ref: "Course",
       },
     ],
+    isLocked: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
