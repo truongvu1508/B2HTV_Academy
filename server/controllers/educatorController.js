@@ -374,3 +374,45 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
+
+// Update User Lock Status
+export const updateUserLockStatus = async (req, res) => {
+  try {
+    const { userId, isLocked } = req.body;
+
+    // Validate userId
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "ID người dùng không được cung cấp",
+      });
+    }
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng",
+      });
+    }
+
+    // Update the isLocked status
+    user.isLocked = isLocked;
+    await user.save();
+
+    return res.json({
+      success: true,
+      message: isLocked
+        ? "Đã khóa tài khoản người dùng thành công"
+        : "Đã mở khóa tài khoản người dùng thành công",
+    });
+  } catch (error) {
+    console.error("Error in updateUserLockStatus:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi cập nhật trạng thái khóa tài khoản",
+      error: error.message,
+    });
+  }
+};

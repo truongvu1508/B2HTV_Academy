@@ -8,6 +8,7 @@ import {
   getEnrolledStudentsData,
   updateCourse,
   updateRoleToEducator,
+  updateUserLockStatus,
 } from "../controllers/educatorController.js";
 import upload from "../configs/multer.js";
 import { protectEducator } from "../middlewares/authMiddleware.js";
@@ -48,4 +49,11 @@ educatorRouter.get(
   getEnrolledStudentsData
 );
 educatorRouter.get("/allUsers", requireAuth(), getAllUsers);
+
+// Update user lock status route
+educatorRouter.put(
+  "/updateUserLockStatus",
+  requireAuth(),
+  updateUserLockStatus
+);
 export default educatorRouter;
