@@ -24,14 +24,19 @@ function MenuSider() {
     //   key: "/educator/add-course",
     // },
     {
-      label: <Link to="/educator/my-course">My Courses</Link>,
+      label: <Link to="/educator/my-course">Quản lý Khóa học</Link>,
       icon: <LuBookMarked />,
       key: "/educator/my-course",
     },
     {
-      label: <Link to="/educator/student-enrolled">Students Enrolled</Link>,
+      label: <Link to="/educator/student-enrolled">Học viên</Link>,
       icon: <FaUserCheck />,
       key: "/educator/student-enrolled",
+    },
+    {
+      label: <Link to="/educator/accounts">Quản lý tài khoản</Link>,
+      icon: <FaUserCheck />,
+      key: "/educator/accounts",
     },
   ];
 

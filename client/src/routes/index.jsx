@@ -18,6 +18,7 @@ import Contact from "../pages/client/Contact";
 import Error404 from "../pages/Error404";
 import LayoutDefault from "../layouts/LayoutDefault";
 import UpdateCourse from "../pages/educator/UpdateCourse";
+import Accounts from "../pages/educator/Accounts";
 
 const routes = [
   {
@@ -83,6 +84,10 @@ const routes = [
       {
         path: "student-enrolled",
         element: <StudentsEnrolled />,
+      },
+      {
+        path: "accounts",
+        element: <Accounts />,
       },
     ],
   },
