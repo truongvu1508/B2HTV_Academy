@@ -150,7 +150,11 @@ const Dashboard = () => {
                 (row.coursePrice * (1 - (row.discount || 0) / 100));
           return revenue;
         },
-        cell: ({ getValue }) => `${getValue().toFixed(0)} ${currency}`,
+        cell: ({ getValue }) =>
+          `${getValue().toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })} ${currency}`,
       },
       {
         accessorKey: "enrolledStudents",
@@ -176,7 +180,7 @@ const Dashboard = () => {
     },
     initialState: {
       pagination: {
-        pageSize: 5, // Default 5 rows per page for Recent Enrollments
+        pageSize: 5,
       },
     },
     onSortingChange: (updater) => {
@@ -196,7 +200,7 @@ const Dashboard = () => {
     },
     initialState: {
       pagination: {
-        pageSize: 5, // Default 5 rows per page for Courses
+        pageSize: 5,
       },
     },
     onSortingChange: (updater) => {

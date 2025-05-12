@@ -106,7 +106,11 @@ const MyCourses = () => {
                 (row.coursePrice * (1 - (row.discount || 0) / 100));
           return revenue;
         },
-        cell: ({ getValue }) => `${getValue().toFixed(0)} ${currency}`,
+        cell: ({ getValue }) =>
+          `${getValue().toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })} ${currency}`,
       },
       {
         accessorKey: "enrolledStudents",
