@@ -143,7 +143,6 @@ const MyCourses = () => {
     [currency]
   );
 
-  // Table instance
   const table = useReactTable({
     data: courses,
     columns,
@@ -152,7 +151,7 @@ const MyCourses = () => {
     },
     initialState: {
       pagination: {
-        pageSize: 10, // Mặc định 10 dòng trên 1 trang
+        pageSize: 5,
       },
     },
     onSortingChange: setSorting,

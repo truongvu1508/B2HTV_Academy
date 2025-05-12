@@ -70,9 +70,9 @@ const CustomPagination = ({
   };
 
   return (
-    <div className="flex !justify-between !items-center space-y-4 mt-4 mb-10">
+    <div className="flex justify-between items-center space-y-4 mt-4 mb-10">
       {/* Results Display */}
-      <div className="text-sm text-gray-600">
+      <div className="text-xs text-gray-600">
         Hiển thị {startRow} đến {endRow} của {totalRows} kết quả
       </div>
 
@@ -82,7 +82,7 @@ const CustomPagination = ({
         <button
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Trước
         </button>
@@ -97,11 +97,11 @@ const CustomPagination = ({
             <button
               key={pageNumber}
               onClick={() => handlePageChange(pageNumber)}
-              className={`px-4 py-2 text-sm font-medium border rounded-md 
+              className={`px-2 py-1 text-xs font-medium border rounded-md 
                 ${
                   currentPage === pageNumber
                     ? "bg-blue-500 text-white border-blue-500"
-                    : "text-gray-700 bg-white border-gray-300 hover:bg-gray-50"
+                    : "text-blue-700 bg-white border-gray-300 hover:bg-gray-50"
                 }`}
             >
               {pageNumber}
@@ -113,7 +113,7 @@ const CustomPagination = ({
         <button
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Sau
         </button>
