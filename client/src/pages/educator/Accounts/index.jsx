@@ -1,18 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import Loading from "../../../components/student/Loading";
 import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import CustomPagination from "../../../components/educator/CustomPagination";
 
 const Accounts = () => {
   const { backendUrl, getToken, isEducator, userData, currency } =
     useContext(AppContext);
-
-  const [accounts, setAccounts] = useState(null);
+  const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [sorting, setSorting] = useState([]);
 
   const fetchAccounts = async () => {
     try {
@@ -28,9 +37,9 @@ const Accounts = () => {
           : data;
 
       setAccounts(filteredAccounts);
-      setLoading(false);
     } catch (error) {
       toast.error("Lỗi khi tải dữ liệu tài khoản: " + error.message);
+    } finally {
       setLoading(false);
     }
   };
@@ -67,7 +76,6 @@ const Accounts = () => {
       );
 
       if (data.success) {
-        // Update local state
         setAccounts(
           accounts.map((acc) =>
             acc._id === selectedAccount._id
@@ -91,6 +99,102 @@ const Accounts = () => {
       setSelectedAccount(null);
     }
   };
+
+  const columns = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "#",
+        cell: ({ row, table }) =>
+          table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+          row.index +
+          1,
+        enableSorting: false,
+      },
+      {
+        accessorKey: "name",
+        header: "Thông tin",
+        cell: ({ row }) => (
+          <div className="flex items-center space-x-3">
+            <img
+              src={row.original.imageUrl}
+              alt={row.original.name}
+              className="w-10 h-10 rounded-full object-cover border border-gray-200"
+            />
+            <span className="font-medium">{row.original.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ getValue }) => (
+          <span className="text-sm text-gray-600 truncate">{getValue()}</span>
+        ),
+      },
+      {
+        accessorKey: "enrolledCourses",
+        header: "Khóa học",
+        accessorFn: (row) => row.enrolledCourses?.length || 0,
+        cell: ({ getValue }) => (
+          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded">
+            {getValue()}
+          </span>
+        ),
+      },
+      {
+        accessorKey: "totalSpent",
+        header: "Tổng chi tiêu",
+        cell: ({ getValue }) =>
+          `${getValue().toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })} ${currency}`,
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Ngày tạo",
+        cell: ({ getValue }) => formatDate(getValue()),
+      },
+      {
+        id: "status",
+        header: "Trạng thái",
+        cell: ({ row }) => (
+          <button
+            onClick={() => handleToggleLock(row.original)}
+            className={`text-xs font-medium px-3 py-1 rounded transition-colors ${
+              row.original.isLocked
+                ? "bg-red-100 text-red-600 hover:bg-red-600 hover:text-white"
+                : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
+            }`}
+          >
+            {row.original.isLocked ? "Đã khóa" : "Hoạt động"}
+          </button>
+        ),
+        enableSorting: false,
+      },
+    ],
+    [currency]
+  );
+
+  // Table instance
+  const table = useReactTable({
+    data: accounts,
+    columns,
+    state: {
+      sorting,
+    },
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   // Modal confirmation popup
   const ConfirmationModal = () => {
@@ -128,99 +232,109 @@ const Accounts = () => {
     );
   };
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <div className="min-h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <div className="w-full">
-        <h2 className="text-lg font-bold mb-10">Danh sách tài khoản</h2>
-        <div className="flex flex-col items-center max-w-6xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-          <div className="w-full overflow-x-auto">
-            <table className="md:table-auto table-fixed w-full overflow-hidden border-collapse">
-              <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-                <tr>
-                  <th className="px-4 py-3 font-semibold text-center">#</th>
-                  <th className="px-4 py-3 font-semibold">Thông tin</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold text-center">
-                    Khóa học
-                  </th>
-                  <th className="px-4 py-3 font-semibold hidden md:table-cell">
-                    Tổng chi tiêu
-                  </th>
-                  <th className="px-4 py-3 font-semibold hidden md:table-cell">
-                    Ngày tạo
-                  </th>
-                  <th className="px-4 py-3 font-semibold">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                {accounts &&
-                  accounts.map((account, index) => (
-                    <tr
-                      key={account._id}
-                      className="border-b border-gray-500/20 hover:bg-gray-50"
-                    >
-                      <td className="px-4 py-3 text-center">{index + 1}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-3">
-                          <img
-                            src={account.imageUrl}
-                            alt={account.name}
-                            className="w-10 h-10 rounded-full object-cover border border-gray-200"
-                          />
-                          <span className="font-medium">{account.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 truncate">
-                        {account.email}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded">
-                          {account.enrolledCourses
-                            ? account.enrolledCourses.length
-                            : 0}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
-                        {account.totalSpent.toLocaleString("en-US", {
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }) || 0}{" "}
-                        {currency}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 hidden md:table-cell">
-                        {formatDate(account.createdAt)}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <button
-                          onClick={() => handleToggleLock(account)}
-                          className={` text-xs font-medium px-3 py-1 rounded transition-colors ${
-                            account.isLocked
-                              ? "bg-red-100 text-red-600 hover:bg-red-600 hover:text-white"
-                              : "bg-green-100 text-green-600 hover:bg-green-600 hover:text-white"
-                          }`}
-                        >
-                          {account.isLocked ? "Đã khóa" : "Hoạt động"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+  if (loading) {
+    return <Loading />;
+  }
 
-                {(!accounts || accounts.length === 0) && (
-                  <tr>
-                    <td
-                      colSpan="7"
-                      className="px-4 py-8 text-center text-gray-500"
-                    >
-                      Không có dữ liệu tài khoản nào
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+  return (
+    <div className="flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
+      <div className="w-full">
+        {accounts.length > 0 ? (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              {" "}
+              <h2 className="text-lg font-bold mb-4">Danh sách tài khoản</h2>
+              <div className="flex items-center space-x-2">
+                <label htmlFor="rowsPerPage" className="text-sm">
+                  Hiển thị:
+                </label>
+                <select
+                  value={table.getState().pagination.pageSize}
+                  onChange={(e) => {
+                    table.setPageSize(Number(e.target.value));
+                  }}
+                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                >
+                  {[5, 10, 15, 20, 25].map((pageSize) => (
+                    <option key={pageSize} value={pageSize}>
+                      {pageSize} dòng
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex flex-col w-full overflow-hidden rounded-md ">
+              <div className="w-full overflow-x-auto">
+                <table className="w-full bg-white border border-gray-500/20 text-left">
+                  <thead className="border-b border-gray-500/20">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <th
+                            key={header.id}
+                            className={`px-4 py-3 text-sm font-semibold ${
+                              header.id === "index" ? "text-center" : ""
+                            } ${
+                              header.column.getCanSort() ? "cursor-pointer" : ""
+                            }`}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <div
+                              className={`flex ${
+                                header.id === "index"
+                                  ? "justify-center"
+                                  : "items-center"
+                              }`}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.getCanSort() &&
+                                ({
+                                  asc: <FaSortUp className="ml-2" />,
+                                  desc: <FaSortDown className="ml-2" />,
+                                }[header.column.getIsSorted()] ?? (
+                                  <FaSort className="ml-2 opacity-50" />
+                                ))}
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {table.getRowModel().rows.map((row) => (
+                      <tr
+                        key={row.id}
+                        className="border-b border-gray-500/20 hover:bg-gray-50"
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className={`px-4 py-3 text-sm ${
+                              cell.column.id === "index" ? "text-center" : ""
+                            }`}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <CustomPagination table={table} />
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            Không có dữ liệu tài khoản nào
           </div>
-        </div>
+        )}
       </div>
       <ConfirmationModal />
     </div>
