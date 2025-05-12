@@ -1,12 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState, useMemo } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
@@ -14,13 +8,13 @@ import { FaEye, FaTrash, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
 import CustomPagination from "../../../components/educator/CustomPagination";
+import useDataTable from "../../../hooks/useDataTable";
 
 const MyCourses = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [courses, setCourses] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-  const [sorting, setSorting] = useState([]);
 
   const fetchEducatorCourses = async () => {
     try {
@@ -147,21 +141,11 @@ const MyCourses = () => {
     [currency]
   );
 
-  const table = useReactTable({
+  // Table instance
+  const table = useDataTable({
     data: courses,
     columns,
-    state: {
-      sorting,
-    },
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    defaultPageSize: 5,
   });
 
   // If courses are not loaded yet

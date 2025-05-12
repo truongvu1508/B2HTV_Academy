@@ -1,12 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState, useMemo } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
 import {
@@ -23,6 +17,7 @@ import { toast } from "react-toastify";
 import { Column, Pie } from "@ant-design/plots";
 import BackToTop from "../../../components/client/BackToTop";
 import CustomPagination from "../../../components/educator/CustomPagination";
+import useDataTable from "../../../hooks/useDataTable";
 
 const Dashboard = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -171,45 +166,18 @@ const Dashboard = () => {
     [currency]
   );
 
-  // Table instances
-  const enrollmentTable = useReactTable({
+  // Dang ky gan day
+  const enrollmentTable = useDataTable({
     data: dashboardData?.enrolledStudentsData || [],
     columns: enrollmentColumns,
-    state: {
-      sorting: [],
-    },
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-    onSortingChange: (updater) => {
-      const newSorting = typeof updater === "function" ? updater([]) : updater;
-      enrollmentTable.setSorting(newSorting);
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    defaultPageSize: 5,
   });
 
-  const courseTable = useReactTable({
+  // Danh sach khoa hoc
+  const courseTable = useDataTable({
     data: courses,
     columns: courseColumns,
-    state: {
-      sorting: [],
-    },
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-    onSortingChange: (updater) => {
-      const newSorting = typeof updater === "function" ? updater([]) : updater;
-      courseTable.setSorting(newSorting);
-    },
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    defaultPageSize: 5,
   });
 
   // Column chart configuration

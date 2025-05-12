@@ -1,18 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState, useMemo } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import Loading from "../../../components/student/Loading";
 import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import CustomPagination from "../../../components/educator/CustomPagination";
+import useDataTable from "../../../hooks/useDataTable";
 
 const Accounts = () => {
   const { backendUrl, getToken, isEducator, userData, currency } =
@@ -21,7 +16,6 @@ const Accounts = () => {
   const [loading, setLoading] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(null);
-  const [sorting, setSorting] = useState([]);
 
   const fetchAccounts = async () => {
     try {
@@ -179,21 +173,10 @@ const Accounts = () => {
   );
 
   // Table instance
-  const table = useReactTable({
+  const table = useDataTable({
     data: accounts,
     columns,
-    state: {
-      sorting,
-    },
-    initialState: {
-      pagination: {
-        pageSize: 5,
-      },
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    defaultPageSize: 5,
   });
 
   // Modal confirmation popup
