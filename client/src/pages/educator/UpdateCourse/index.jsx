@@ -28,6 +28,8 @@ const UpdateCourse = () => {
   const [chapters, setChapters] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [showChapterEditPopup, setShowChapterEditPopup] = useState(false);
+  const [showDeleteChapterModal, setShowDeleteChapterModal] = useState(false);
+  const [showDeleteLectureModal, setShowDeleteLectureModal] = useState(false);
   const [currentChapterId, setCurrentChapterId] = useState(null);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(null);
   const [isEditingLecture, setIsEditingLecture] = useState(false);
@@ -39,9 +41,10 @@ const UpdateCourse = () => {
     lectureUrl: "",
     isPreviewFree: false,
   });
-
   const [isAddingChapter, setIsAddingChapter] = useState(false);
   const [newChapterTitle, setNewChapterTitle] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState(null);
+  const [selectedLecture, setSelectedLecture] = useState(null);
 
   // Fetch course data
   useEffect(() => {
@@ -118,12 +121,8 @@ const UpdateCourse = () => {
       setNewChapterTitle("");
       setIsAddingChapter(true);
     } else if (action === "remove") {
-      if (window.confirm("Bạn có chắc muốn xóa chương này không?")) {
-        setChapters(
-          chapters.filter((chapter) => chapter.chapterId !== chapterId)
-        );
-        toast.success("Xóa chương thành công!");
-      }
+      setSelectedChapterId(chapterId);
+      setShowDeleteChapterModal(true);
     } else if (action === "toggle") {
       setChapters(
         chapters.map((chapter) =>
@@ -140,6 +139,17 @@ const UpdateCourse = () => {
         setShowChapterEditPopup(true);
       }
     }
+  };
+
+  const confirmDeleteChapter = () => {
+    if (!selectedChapterId) return;
+
+    setChapters(
+      chapters.filter((chapter) => chapter.chapterId !== selectedChapterId)
+    );
+    toast.success("Xóa chương thành công!");
+    setShowDeleteChapterModal(false);
+    setSelectedChapterId(null);
   };
 
   const handleEditChapterTitle = () => {
@@ -175,22 +185,14 @@ const UpdateCourse = () => {
       setCurrentLectureIndex(null);
       setShowPopup(true);
     } else if (action === "remove") {
-      if (window.confirm("Bạn có chắc muốn xóa bài giảng này không?")) {
-        setChapters(
-          chapters.map((chapter) => {
-            if (chapter.chapterId === chapterId) {
-              const updatedContent = chapter.chapterContent
-                .filter((_, idx) => idx !== lectureIndex)
-                .map((lecture, idx) => ({
-                  ...lecture,
-                  lectureOrder: idx + 1,
-                }));
-              return { ...chapter, chapterContent: updatedContent };
-            }
-            return chapter;
-          })
-        );
-        toast.success("Xóa bài giảng thành công!");
+      const chapter = chapters.find((ch) => ch.chapterId === chapterId);
+      if (chapter) {
+        setSelectedLecture({
+          chapterId,
+          lectureIndex,
+          lectureTitle: chapter.chapterContent[lectureIndex].lectureTitle,
+        });
+        setShowDeleteLectureModal(true);
       }
     } else if (action === "edit") {
       const chapter = chapters.find((ch) => ch.chapterId === chapterId);
@@ -208,6 +210,28 @@ const UpdateCourse = () => {
         setShowPopup(true);
       }
     }
+  };
+
+  const confirmDeleteLecture = () => {
+    if (!selectedLecture) return;
+
+    setChapters(
+      chapters.map((chapter) => {
+        if (chapter.chapterId === selectedLecture.chapterId) {
+          const updatedContent = chapter.chapterContent
+            .filter((_, idx) => idx !== selectedLecture.lectureIndex)
+            .map((lecture, idx) => ({
+              ...lecture,
+              lectureOrder: idx + 1,
+            }));
+          return { ...chapter, chapterContent: updatedContent };
+        }
+        return chapter;
+      })
+    );
+    toast.success("Xóa bài giảng thành công!");
+    setShowDeleteLectureModal(false);
+    setSelectedLecture(null);
   };
 
   const addOrUpdateLecture = () => {
@@ -782,6 +806,74 @@ const UpdateCourse = () => {
                   }}
                   className="absolute top-2 right-2 text-2xl cursor-pointer"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Delete Chapter Confirmation Modal */}
+          {showDeleteChapterModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <h3 className="text-lg font-semibold mb-4">
+                  Xác nhận xóa chương
+                </h3>
+                <p>
+                  Bạn có chắc muốn xóa chương "
+                  {
+                    chapters.find((ch) => ch.chapterId === selectedChapterId)
+                      ?.chapterTitle
+                  }
+                  " không?
+                </p>
+                <div className="flex justify-end mt-6 space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteChapterModal(false);
+                      setSelectedChapterId(null);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={confirmDeleteChapter}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    Xóa
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Lecture Confirmation Modal */}
+          {showDeleteLectureModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <h3 className="text-lg font-semibold mb-4">
+                  Xác nhận xóa bài giảng
+                </h3>
+                <p>
+                  Bạn có chắc muốn xóa bài giảng "
+                  {selectedLecture?.lectureTitle}" không?
+                </p>
+                <div className="flex justify-end mt-6 space-x-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteLectureModal(false);
+                      setSelectedLecture(null);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={confirmDeleteLecture}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    Xóa
+                  </button>
+                </div>
               </div>
             </div>
           )}
