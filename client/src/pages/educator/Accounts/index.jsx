@@ -99,11 +99,7 @@ const Accounts = () => {
       {
         id: "index",
         header: "#",
-        cell: ({ row, table }) =>
-          table.getState().pagination.pageIndex *
-            table.getState().pagination.pageSize +
-          row.index +
-          1,
+        cell: ({ row }) => row.index + 1,
         enableSorting: false,
       },
       {

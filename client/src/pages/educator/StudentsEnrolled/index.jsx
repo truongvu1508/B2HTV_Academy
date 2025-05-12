@@ -12,7 +12,6 @@ import useDataTable from "../../../hooks/useDataTable";
 const StudentsEnrolled = () => {
   const { backendUrl, getToken, isEducator } = useContext(AppContext);
   const [enrolledStudents, setEnrolledStudents] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   const fetchEnrolledStudents = async () => {
@@ -47,11 +46,7 @@ const StudentsEnrolled = () => {
       {
         id: "index",
         header: "#",
-        cell: ({ row, table }) =>
-          table.getState().pagination.pageIndex *
-            table.getState().pagination.pageSize +
-          row.index +
-          1,
+        cell: ({ row }) => row.index + 1,
         enableSorting: false,
       },
       {
@@ -99,7 +94,6 @@ const StudentsEnrolled = () => {
         {enrolledStudents.length > 0 ? (
           <>
             <div className="flex justify-between items-center mb-4">
-              {" "}
               <h2 className="text-lg font-bold mb-4">Danh sách học viên</h2>
               <div className="flex items-center space-x-2">
                 <label htmlFor="rowsPerPage" className="text-sm">
