@@ -5,6 +5,7 @@ import { LuBookMarked } from "react-icons/lu";
 import { FaUserCheck } from "react-icons/fa";
 import { DashboardOutlined } from "@ant-design/icons";
 import { Link, useLocation, Navigate } from "react-router-dom";
+import { PiStudentBold } from "react-icons/pi";
 
 function MenuSider() {
   const location = useLocation();
@@ -30,7 +31,7 @@ function MenuSider() {
     },
     {
       label: <Link to="/educator/student-enrolled">Học viên</Link>,
-      icon: <FaUserCheck />,
+      icon: <PiStudentBold />,
       key: "/educator/student-enrolled",
     },
     {

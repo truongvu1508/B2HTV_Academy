@@ -1,23 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { AppContext } from "../../../context/AppContext";
 import Loading from "../../../components/student/Loading";
-import { FaBook, FaMoneyCheckAlt, FaUser } from "react-icons/fa";
+import {
+  FaBook,
+  FaMoneyCheckAlt,
+  FaUser,
+  FaSort,
+  FaSortUp,
+  FaSortDown,
+} from "react-icons/fa";
 import "./Dashboard.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Column, Pie } from "@ant-design/plots";
 import BackToTop from "../../../components/client/BackToTop";
+import CustomPagination from "../../../components/educator/CustomPagination";
 
 const Dashboard = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [dashboardData, setDashboardData] = useState(null);
   const [salesData, setSalesData] = useState([]);
   const [enrollmentData, setEnrollmentData] = useState([]);
-  const [courses, setCourses] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
     try {
+      setLoading(true);
       const token = await getToken();
       const { data } = await axios.get(backendUrl + "/api/educator/dashboard", {
         headers: { Authorization: `Bearer ${token}` },
@@ -38,16 +55,160 @@ const Dashboard = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchEducatorCourses = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(backendUrl + "/api/educator/courses", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        setCourses(data.courses);
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
   useEffect(() => {
     if (isEducator) {
       fetchDashboardData();
+      fetchEducatorCourses();
     }
   }, [isEducator]);
 
-  // Cấu hình biểu đồ cột
+  // Column configuration for Recent Enrollments table
+  const enrollmentColumns = useMemo(
+    () => [
+      {
+        id: "index",
+        header: "#",
+        cell: ({ row, table }) =>
+          table.getState().pagination.pageIndex *
+            table.getState().pagination.pageSize +
+          row.index +
+          1,
+        enableSorting: false,
+      },
+      {
+        accessorKey: "student.name",
+        header: "Tên học viên",
+        cell: ({ row }) => (
+          <div className="flex items-center space-x-3">
+            <img
+              src={row.original.student.imageUrl}
+              alt="Profile"
+              className="w-9 h-9 rounded-full"
+            />
+            <span className="truncate">{row.original.student.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "courseTitle",
+        header: "Khóa học",
+        cell: ({ getValue }) => <span className="truncate">{getValue()}</span>,
+      },
+    ],
+    []
+  );
+
+  // Column configuration for Courses table
+  const courseColumns = useMemo(
+    () => [
+      {
+        accessorKey: "courseTitle",
+        header: "Tất cả khóa học",
+        cell: ({ row }) => (
+          <div className="flex items-center space-x-3 truncate">
+            <div className="w-32 h-24 aspect-square overflow-hidden">
+              <img
+                src={row.original.courseThumbnail}
+                alt="Course Image"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <span className="truncate hidden md:block">
+              {row.original.courseTitle}
+            </span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "revenue",
+        header: "Doanh thu",
+        accessorFn: (row) => {
+          const revenue =
+            row.enrolledStudents.length === 0
+              ? 0
+              : row.enrolledStudents.length *
+                (row.coursePrice * (1 - (row.discount || 0) / 100));
+          return revenue;
+        },
+        cell: ({ getValue }) => `${getValue().toFixed(0)} ${currency}`,
+      },
+      {
+        accessorKey: "enrolledStudents",
+        header: "Học viên",
+        accessorFn: (row) => row.enrolledStudents.length,
+        cell: ({ getValue }) => getValue(),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Ngày đăng",
+        cell: ({ getValue }) => new Date(getValue()).toLocaleDateString(),
+      },
+    ],
+    [currency]
+  );
+
+  // Table instances
+  const enrollmentTable = useReactTable({
+    data: dashboardData?.enrolledStudentsData || [],
+    columns: enrollmentColumns,
+    state: {
+      sorting: [],
+    },
+    initialState: {
+      pagination: {
+        pageSize: 5, // Default 5 rows per page for Recent Enrollments
+      },
+    },
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === "function" ? updater([]) : updater;
+      enrollmentTable.setSorting(newSorting);
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const courseTable = useReactTable({
+    data: courses,
+    columns: courseColumns,
+    state: {
+      sorting: [],
+    },
+    initialState: {
+      pagination: {
+        pageSize: 5, // Default 5 rows per page for Courses
+      },
+    },
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === "function" ? updater([]) : updater;
+      courseTable.setSorting(newSorting);
+    },
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  // Column chart configuration
   const columnConfig = {
     data:
       salesData.length > 0
@@ -83,7 +244,7 @@ const Dashboard = () => {
     },
   };
 
-  // Cấu hình biểu đồ tròn
+  // Pie chart configuration
   const pieConfig = {
     appendPadding: 10,
     data:
@@ -109,26 +270,11 @@ const Dashboard = () => {
     interactions: [{ type: "element-active" }],
   };
 
-  const fetchEducatorCourses = async () => {
-    try {
-      const token = await getToken();
-      const { data } = await axios.get(backendUrl + "/api/educator/courses", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  if (loading) {
+    return <Loading />;
+  }
 
-      data.success && setCourses(data.courses);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    if (isEducator) {
-      fetchEducatorCourses();
-    }
-  }, [isEducator]);
-
-  return dashboardData ? (
+  return (
     <div className="min-h-screen flex flex-col items-start justify-between gap-8 md:p-8 md:pb-0 p-4 pt-8 pb-8">
       <div className="space-y-5 w-full">
         <div className="flex flex-wrap gap-5 items-center justify-around">
@@ -137,7 +283,7 @@ const Dashboard = () => {
               <FaUser className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
-                  {dashboardData.totalStudents}
+                  {dashboardData?.totalStudents || 0}
                 </p>
                 <p className="text-base text-gray-500">Học viên</p>
               </div>
@@ -148,7 +294,7 @@ const Dashboard = () => {
               <FaBook className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
-                  {dashboardData.totalCourses}
+                  {dashboardData?.totalCourses || 0}
                 </p>
                 <p className="text-base text-gray-500">Khóa học</p>
               </div>
@@ -159,10 +305,10 @@ const Dashboard = () => {
               <FaMoneyCheckAlt className="text-dark-2 text-3xl mr-[20px]" />
               <div>
                 <p className="text-2xl font-medium text-gray-600">
-                  {dashboardData.totalEarnings.toLocaleString("en-US", {
+                  {dashboardData?.totalEarnings.toLocaleString("en-US", {
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 0,
-                  })}{" "}
+                  }) || 0}{" "}
                   {currency}
                 </p>
                 <p className="text-base text-gray-500">Doanh thu</p>
@@ -181,38 +327,99 @@ const Dashboard = () => {
             </div>
           </div>
           <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-            <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
-            <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-              <table className="table-fixed md:table-auto w-full overflow-hidden">
-                <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-semibold text-center hidden sm:table-cell">
-                      #
-                    </th>
-                    <th className="px-4 py-3 font-semibold">Tên học viên</th>
-                    <th className="px-4 py-3 font-semibold">Khóa học</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm text-gray-500">
-                  {dashboardData.enrolledStudentsData.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-500/20">
-                      <td className="px-4 py-3 text-center hidden sm:table-cell">
-                        {index + 1}
-                      </td>
-                      <td className="md:px-4 px-2 py-3 flex items-center space-x-3">
-                        <img
-                          src={item.student.imageUrl}
-                          alt="Profile"
-                          className="w-9 h-9 rounded-full"
-                        />
-                        <span className="truncate">{item.student.name}</span>
-                      </td>
-                      <td className="px-4 py-3 truncate">{item.courseTitle}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {dashboardData?.enrolledStudentsData.length > 0 ? (
+              <>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
+                  <div className="flex items-center space-x-2">
+                    <label htmlFor="rowsPerPageEnrollments" className="text-sm">
+                      Hiển thị:
+                    </label>
+                    <select
+                      value={enrollmentTable.getState().pagination.pageSize}
+                      onChange={(e) => {
+                        enrollmentTable.setPageSize(Number(e.target.value));
+                      }}
+                      className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    >
+                      {[5, 10, 15, 20].map((pageSize) => (
+                        <option key={pageSize} value={pageSize}>
+                          {pageSize} dòng
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="flex flex-col max-w-4xl w-full overflow-hidden rounded-md bg-white">
+                  <table className="w-full bg-white border border-gray-500/20 text-left">
+                    <thead className="border-b border-gray-500/20">
+                      {enrollmentTable.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                          {headerGroup.headers.map((header) => (
+                            <th
+                              key={header.id}
+                              className={`px-4 py-3 text-sm font-semibold ${
+                                header.id === "index" ? "text-center" : ""
+                              } ${
+                                header.column.getCanSort()
+                                  ? "cursor-pointer"
+                                  : ""
+                              }`}
+                              onClick={header.column.getToggleSortingHandler()}
+                            >
+                              <div
+                                className={`flex ${
+                                  header.id === "index"
+                                    ? "justify-center"
+                                    : "items-center"
+                                }`}
+                              >
+                                {flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )}
+                                {header.column.getCanSort() &&
+                                  ({
+                                    asc: <FaSortUp className="ml-2" />,
+                                    desc: <FaSortDown className="ml-2" />,
+                                  }[header.column.getIsSorted()] ?? (
+                                    <FaSort className="ml-2 opacity-50" />
+                                  ))}
+                              </div>
+                            </th>
+                          ))}
+                        </tr>
+                      ))}
+                    </thead>
+                    <tbody>
+                      {enrollmentTable.getRowModel().rows.map((row) => (
+                        <tr
+                          key={row.id}
+                          className="border-b border-gray-500/20"
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <td
+                              key={cell.id}
+                              className={`px-4 py-3 text-sm ${
+                                cell.column.id === "index" ? "text-center" : ""
+                              }`}
+                            >
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <CustomPagination table={enrollmentTable} />
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">Không có đăng ký gần đây.</div>
+            )}
           </div>
         </div>
 
@@ -222,65 +429,86 @@ const Dashboard = () => {
             <Column {...columnConfig} />
           </div>
         </div>
+
         <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-          <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
-          <div className="flex flex-col items-center max-w-7xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-            <table className="table-fixed md:table-auto w-full overflow-hidden">
-              <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
-                <tr>
-                  <th className="px-4 py-3 font-semibold truncate">
-                    Tất cả khóa học
-                  </th>
-                  <th className="px-4 py-3 font-semibold truncate">
-                    Doanh thu
-                  </th>
-                  <th className="px-4 py-3 font-semibold truncate">Học viên</th>
-                  <th className="px-4 py-3 font-semibold truncate">
-                    Ngày đăng
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="text-sm text-gray-500">
-                {courses.map((course) => (
-                  <tr key={course._id} className="border-b border-gray-500/20">
-                    <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
-                      <div className="w-32 h-24 aspect-square overflow-hidden">
-                        <img
-                          src={course.courseThumbnail}
-                          alt="Course Image"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <span className="truncate hidden md:block">
-                        {course.courseTitle}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {course.enrolledStudents.length === 0
-                        ? `0 ${currency}`
-                        : `${(
-                            course.enrolledStudents.length *
-                            (course.coursePrice *
-                              (1 - (course.discount || 0) / 100))
-                          ).toFixed(0)} ${currency}`}
-                    </td>
-                    <td className="px-4 py-3">
-                      {course.enrolledStudents.length}
-                    </td>
-                    <td className="px-4 py-3">
-                      {new Date(course.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {courses.length > 0 ? (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="rowsPerPageCourses" className="text-sm">
+                    Hiển thị:
+                  </label>
+                  <select
+                    value={courseTable.getState().pagination.pageSize}
+                    onChange={(e) => {
+                      courseTable.setPageSize(Number(e.target.value));
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                  >
+                    {[5, 10, 15, 20].map((pageSize) => (
+                      <option key={pageSize} value={pageSize}>
+                        {pageSize} dòng
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="flex flex-col overflow-hidden rounded-md bg-white ">
+                <table className="w-full bg-white border border-gray-500/20 text-left">
+                  <thead className="border-b border-gray-500/20">
+                    {courseTable.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <th
+                            key={header.id}
+                            className={`px-4 py-3 text-sm font-semibold ${
+                              header.column.getCanSort() ? "cursor-pointer" : ""
+                            }`}
+                          >
+                            <div className="flex items-center">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.getCanSort() &&
+                                ({
+                                  asc: <FaSortUp className="ml-2" />,
+                                  desc: <FaSortDown className="ml-2" />,
+                                }[header.column.getIsSorted()] ?? (
+                                  <FaSort className="ml-2 opacity-50" />
+                                ))}
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {courseTable.getRowModel().rows.map((row) => (
+                      <tr key={row.id} className="border-b border-gray-500/20">
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={cell.id} className="px-4 py-3 text-sm">
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <CustomPagination table={courseTable} />
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">Không có khóa học nào.</div>
+          )}
         </div>
       </div>
       <BackToTop />
     </div>
-  ) : (
-    <Loading />
   );
 };
 

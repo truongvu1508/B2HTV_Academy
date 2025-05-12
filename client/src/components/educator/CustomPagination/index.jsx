@@ -70,7 +70,7 @@ const CustomPagination = ({
   };
 
   return (
-    <div className="flex justify-between items-center space-y-4 mt-4 mb-10">
+    <div className="flex !justify-between !items-center space-y-4 mt-4 mb-10">
       {/* Results Display */}
       <div className="text-sm text-gray-600">
         Hiển thị {startRow} đến {endRow} của {totalRows} kết quả
