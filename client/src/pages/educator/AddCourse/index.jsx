@@ -22,7 +22,9 @@ const AddCourse = () => {
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [currentChapterId, setCurrentChapterId] = useState(false);
+  const [showChapterPopup, setShowChapterPopup] = useState(false);
+  const [currentChapterId, setCurrentChapterId] = useState(null);
+  const [chapterTitle, setChapterTitle] = useState("");
 
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
@@ -33,18 +35,7 @@ const AddCourse = () => {
 
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
-      const title = prompt("Enter Chapter Name:");
-      if (title) {
-        const newChapter = {
-          chapterId: uniqid(),
-          chapterTitle: title,
-          chapterContent: [],
-          collapsed: false,
-          chapterOrder:
-            chapters.length > 0 ? chapters.slice(-1)[0].chapterOrder + 1 : 1,
-        };
-        setChapters([...chapters, newChapter]);
-      }
+      setShowChapterPopup(true);
     } else if (action === "remove") {
       setChapters(
         chapters.filter((chapter) => chapter.chapterId !== chapterId)
@@ -57,6 +48,24 @@ const AddCourse = () => {
             : chapter
         )
       );
+    }
+  };
+
+  const addChapter = () => {
+    if (chapterTitle.trim()) {
+      const newChapter = {
+        chapterId: uniqid(),
+        chapterTitle,
+        chapterContent: [],
+        collapsed: false,
+        chapterOrder:
+          chapters.length > 0 ? chapters.slice(-1)[0].chapterOrder + 1 : 1,
+      };
+      setChapters([...chapters, newChapter]);
+      setChapterTitle("");
+      setShowChapterPopup(false);
+    } else {
+      toast.error("Chapter title cannot be empty");
     }
   };
 
@@ -147,7 +156,6 @@ const AddCourse = () => {
   };
 
   useEffect(() => {
-    // Initiate Quill only once
     if (!quillRef.current && editorRef.current) {
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
@@ -294,15 +302,67 @@ const AddCourse = () => {
           >
             + Add Chapter
           </div>
-          {showPopup && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white text-gray-700 p-4 rounded relative w-full max-w-80">
-                <h2 className="text-lg font-semibold mb-4">Add Lecture</h2>
-                <div className="mb-2">
-                  <p>Lecture Title</p>
+
+          {/* Chapter Popup */}
+          {showChapterPopup && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Add Chapter</h3>
+                  <RiCloseFill
+                    onClick={() => setShowChapterPopup(false)}
+                    className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Chapter Title
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={chapterTitle}
+                    onChange={(e) => setChapterTitle(e.target.value)}
+                    placeholder="Enter chapter title"
+                  />
+                </div>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowChapterPopup(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={addChapter}
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Add Chapter
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Lecture Popup */}
+          {showPopup && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold">Add Lecture</h3>
+                  <RiCloseFill
+                    onClick={() => setShowPopup(false)}
+                    className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lecture Title
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureTitle}
                     onChange={(e) =>
                       setLectureDetails({
@@ -310,13 +370,16 @@ const AddCourse = () => {
                         lectureTitle: e.target.value,
                       })
                     }
+                    placeholder="Enter lecture title"
                   />
                 </div>
-                <div className="mb-2">
-                  <p>Duration (minutes)</p>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Duration (minutes)
+                  </label>
                   <input
                     type="number"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureDuration}
                     onChange={(e) =>
                       setLectureDetails({
@@ -324,13 +387,16 @@ const AddCourse = () => {
                         lectureDuration: e.target.value,
                       })
                     }
+                    placeholder="Enter duration"
                   />
                 </div>
-                <div className="mb-2">
-                  <p>Lecture URL</p>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lecture URL
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-1 px-2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureUrl}
                     onChange={(e) =>
                       setLectureDetails({
@@ -338,13 +404,13 @@ const AddCourse = () => {
                         lectureUrl: e.target.value,
                       })
                     }
+                    placeholder="Enter lecture URL"
                   />
                 </div>
-                <div className="flex gap-2 my-4">
-                  <p>Is Preview Free?</p>
+                <div className="flex items-center gap-3 mb-4">
                   <input
                     type="checkbox"
-                    className="mt-1 scale-125"
+                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     checked={lectureDetails.isPreviewFree}
                     onChange={(e) =>
                       setLectureDetails({
@@ -353,18 +419,25 @@ const AddCourse = () => {
                       })
                     }
                   />
+                  <label className="text-sm font-medium text-gray-700">
+                    Is Preview Free?
+                  </label>
                 </div>
-                <button
-                  onClick={addLecture}
-                  type="button"
-                  className="w-full bg-blue-400 text-white px-4 py-2 rounded"
-                >
-                  Add
-                </button>
-                <RiCloseFill
-                  onClick={() => setShowPopup(false)}
-                  className="absolute top-2 right-2 text-[22px] cursor-pointer"
-                />
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setShowPopup(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={addLecture}
+                    type="button"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Add Lecture
+                  </button>
+                </div>
               </div>
             </div>
           )}
