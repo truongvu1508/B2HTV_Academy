@@ -167,7 +167,7 @@ const AddCourse = () => {
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <form onSubmit={handleSubmit} action="">
         <div className="flex flex-col gap-5">
-          <p>Course Title</p>
+          <p>Tiêu đề khóa học</p>
           <input
             type="text"
             onChange={(e) => setCourseTitle(e.target.value)}
@@ -176,12 +176,12 @@ const AddCourse = () => {
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
           />
           <div className="flex flex-col gap-1">
-            <p>Course Description</p>
+            <p>Mô tả khóa học</p>
             <div ref={editorRef}></div>
           </div>
           <div className="flex items-center justify-between flex-wrap">
             <div className="flex flex-col gap-1">
-              <p>Course Price</p>
+              <p>Giá khóa học</p>
               <input
                 type="number"
                 onChange={(e) => setCoursePrice(e.target.value)}
@@ -191,7 +191,7 @@ const AddCourse = () => {
               />
             </div>
             <div className="flex md:flex-row flex-col items-center gap-3">
-              <p>Course Thumbnail</p>
+              <p>Ảnh</p>
               <label
                 htmlFor="thumbnailImage"
                 className="flex items-center gap-3"
@@ -214,7 +214,7 @@ const AddCourse = () => {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <p>Discount %</p>
+            <p>Giảm giá (%)</p>
             <input
               onChange={(e) => setDiscount(e.target.value)}
               type="number"
@@ -246,7 +246,7 @@ const AddCourse = () => {
                     </span>
                   </div>
                   <span className="text-gray-500">
-                    {chapter.chapterContent.length} Lectures
+                    {chapter.chapterContent.length} Bài giảng
                   </span>
                   <RiCloseFill
                     className="cursor-pointer"
@@ -269,9 +269,9 @@ const AddCourse = () => {
                             className="text-blue-500"
                             rel="noopener noreferrer"
                           >
-                            Link
+                            Video
                           </a>{" "}
-                          - {lecture.isPreviewFree ? "Free Preview" : "Paid"}
+                          - {lecture.isPreviewFree ? "Miễn phí" : "Trả phí"}
                         </span>
                         <RiCloseFill
                           onClick={() =>
@@ -289,7 +289,7 @@ const AddCourse = () => {
                       className="inline-flex bg-gray-100 p-2 rounded cursor-pointer mt-2"
                       onClick={() => handleLecture("add", chapter.chapterId)}
                     >
-                      + Add Lecture
+                      + Thêm bài giảng
                     </div>
                   </div>
                 )}
@@ -300,7 +300,7 @@ const AddCourse = () => {
             className="flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer"
             onClick={() => handleChapter("add")}
           >
-            + Add Chapter
+            + Thêm chương
           </div>
 
           {/* Chapter Popup */}
@@ -308,7 +308,7 @@ const AddCourse = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md w-full">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Add Chapter</h3>
+                  <h3 className="text-lg font-semibold">Thêm chương mới</h3>
                   <RiCloseFill
                     onClick={() => setShowChapterPopup(false)}
                     className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
@@ -316,14 +316,14 @@ const AddCourse = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Chapter Title
+                    Tên chương
                   </label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={chapterTitle}
                     onChange={(e) => setChapterTitle(e.target.value)}
-                    placeholder="Enter chapter title"
+                    placeholder="Nhập tên chương"
                   />
                 </div>
                 <div className="flex justify-end space-x-3">
@@ -331,14 +331,14 @@ const AddCourse = () => {
                     onClick={() => setShowChapterPopup(false)}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     onClick={addChapter}
                     type="button"
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                   >
-                    Add Chapter
+                    Thêm
                   </button>
                 </div>
               </div>
@@ -350,7 +350,7 @@ const AddCourse = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-md w-full">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Add Lecture</h3>
+                  <h3 className="text-lg font-semibold">Thêm bài giảng</h3>
                   <RiCloseFill
                     onClick={() => setShowPopup(false)}
                     className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
@@ -358,7 +358,7 @@ const AddCourse = () => {
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lecture Title
+                    Tiêu đề bài giảng
                   </label>
                   <input
                     type="text"
@@ -370,12 +370,12 @@ const AddCourse = () => {
                         lectureTitle: e.target.value,
                       })
                     }
-                    placeholder="Enter lecture title"
+                    placeholder="Nhập tiêu đề bài giảng"
                   />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Duration (minutes)
+                    Thời lượng (phút)
                   </label>
                   <input
                     type="number"
@@ -387,12 +387,12 @@ const AddCourse = () => {
                         lectureDuration: e.target.value,
                       })
                     }
-                    placeholder="Enter duration"
+                    placeholder="Nhập thời lượng bài giảng"
                   />
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lecture URL
+                    URL bài giảng
                   </label>
                   <input
                     type="text"
@@ -404,7 +404,7 @@ const AddCourse = () => {
                         lectureUrl: e.target.value,
                       })
                     }
-                    placeholder="Enter lecture URL"
+                    placeholder="Nhập liên kết của bài giảng"
                   />
                 </div>
                 <div className="flex items-center gap-3 mb-4">
@@ -420,7 +420,7 @@ const AddCourse = () => {
                     }
                   />
                   <label className="text-sm font-medium text-gray-700">
-                    Is Preview Free?
+                    Xem trước miễn phí?
                   </label>
                 </div>
                 <div className="flex justify-end space-x-3">
@@ -428,14 +428,14 @@ const AddCourse = () => {
                     onClick={() => setShowPopup(false)}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                   >
-                    Cancel
+                    Hủy
                   </button>
                   <button
                     onClick={addLecture}
                     type="button"
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                   >
-                    Add Lecture
+                    Thêm bài giảng
                   </button>
                 </div>
               </div>
@@ -446,7 +446,7 @@ const AddCourse = () => {
           type="submit"
           className="bg-black text-white w-max py-2.5 px-8 rounded my-4"
         >
-          ADD
+          Tạo khóa học
         </button>
       </form>
     </div>
