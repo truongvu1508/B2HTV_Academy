@@ -10,6 +10,8 @@ import { toast } from "react-toastify";
 const MyCourses = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
   const [courses, setCourses] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   const fetchEducatorCourses = async () => {
     try {
@@ -24,28 +26,29 @@ const MyCourses = () => {
     }
   };
 
-  const deleteCourse = async (courseId) => {
-    if (!window.confirm("Bạn có chắc muốn xóa khóa học này không?")) {
-      return;
-    }
+  const deleteCourse = async () => {
+    if (!selectedCourseId) return;
 
     try {
       const token = await getToken();
       const { data } = await axios.delete(
-        `${backendUrl}/api/educator/delete-course/${courseId}`,
+        `${backendUrl}/api/educator/delete-course/${selectedCourseId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (data.success) {
-        setCourses(courses.filter((course) => course._id !== courseId));
+        setCourses(courses.filter((course) => course._id !== selectedCourseId));
         toast.success("Khóa học đã được xóa");
       } else {
         throw new Error(data.message);
       }
     } catch (error) {
       toast.error("Xóa khóa học thất bại: " + error.message);
+    } finally {
+      setShowConfirmModal(false);
+      setSelectedCourseId(null);
     }
   };
 
@@ -54,6 +57,45 @@ const MyCourses = () => {
       fetchEducatorCourses();
     }
   }, [isEducator]);
+
+  const handleDeleteClick = (courseId) => {
+    setSelectedCourseId(courseId);
+    setShowConfirmModal(true);
+  };
+
+  // Modal confirmation popup
+  const ConfirmationModal = () => {
+    if (!showConfirmModal || !selectedCourseId) return null;
+
+    const course = courses.find((c) => c._id === selectedCourseId);
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <h3 className="text-lg font-semibold mb-4">Xác nhận xóa khóa học</h3>
+          <p>
+            Bạn có chắc muốn xóa khóa học &quot;
+            <span className="font-bold">{course?.courseTitle}</span>&quot;
+            không?
+          </p>
+          <div className="flex justify-end mt-6 space-x-3">
+            <button
+              onClick={() => setShowConfirmModal(false)}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Hủy
+            </button>
+            <button
+              onClick={deleteCourse}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              Xóa
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return courses ? (
     <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -117,7 +159,7 @@ const MyCourses = () => {
                         <FaEye />
                       </Link>
                       <button
-                        onClick={() => deleteCourse(course._id)}
+                        onClick={() => handleDeleteClick(course._id)}
                         className="bg-red-500 text-white px-5 py-3 rounded hover:bg-red-600 text-xs"
                       >
                         <FaTrash />
@@ -130,6 +172,7 @@ const MyCourses = () => {
           </table>
         </div>
       </div>
+      <ConfirmationModal />
     </div>
   ) : (
     <Loading />
