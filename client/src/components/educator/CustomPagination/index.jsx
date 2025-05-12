@@ -15,6 +15,12 @@ const CustomPagination = ({
   const pageNumbers = [];
   const totalPages = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex + 1;
+  const pageSize = table.getState().pagination.pageSize;
+  const totalRows =
+    table.getFilteredRowModel().rows.length ||
+    table.getCoreRowModel().rows.length;
+  const startRow = (currentPage - 1) * pageSize + 1;
+  const endRow = Math.min(currentPage * pageSize, totalRows);
 
   const generatePageNumbers = () => {
     if (customPageNumbers) {
@@ -64,49 +70,54 @@ const CustomPagination = ({
   };
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-4">
-      {/* Previous Button */}
-      <button
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Trang trước
-      </button>
+    <div className="flex justify-between items-center space-y-4 mt-4 mb-10">
+      {/* Results Display */}
+      <div className="text-sm text-gray-600">
+        Hiển thị {startRow} đến {endRow} của {totalRows} kết quả
+      </div>
 
-      {/* Page Numbers */}
-      {renderedPageNumbers.map((pageNumber, index) =>
-        pageNumber === -1 ? (
-          <span
-            key={`ellipsis-${index}`}
-            className="px-4 py-2 text-sm text-gray-500"
-          >
-            ...
-          </span>
-        ) : (
-          <button
-            key={pageNumber}
-            onClick={() => handlePageChange(pageNumber)}
-            className={`px-4 py-2 text-sm font-medium border rounded-md 
-              ${
-                currentPage === pageNumber
-                  ? "bg-blue-500 text-white border-blue-500"
-                  : "text-gray-700 bg-white border-gray-300 hover:bg-gray-50"
-              }`}
-          >
-            {pageNumber}
-          </button>
-        )
-      )}
+      {/* Pagination Controls */}
+      <div className="flex items-center space-x-2">
+        {/* Previous Button */}
+        <button
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Trước
+        </button>
 
-      {/* Next Button */}
-      <button
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Trang sau
-      </button>
+        {/* Page Numbers */}
+        {renderedPageNumbers.map((pageNumber, index) =>
+          pageNumber === -1 ? (
+            <span key={index} className="px-4 py-2 text-sm text-gray-700">
+              ...
+            </span>
+          ) : (
+            <button
+              key={pageNumber}
+              onClick={() => handlePageChange(pageNumber)}
+              className={`px-4 py-2 text-sm font-medium border rounded-md 
+                ${
+                  currentPage === pageNumber
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "text-gray-700 bg-white border-gray-300 hover:bg-gray-50"
+                }`}
+            >
+              {pageNumber}
+            </button>
+          )
+        )}
+
+        {/* Next Button */}
+        <button
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Sau
+        </button>
+      </div>
     </div>
   );
 };

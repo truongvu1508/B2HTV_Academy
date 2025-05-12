@@ -23,7 +23,7 @@ import { ToastContainer } from "react-toastify";
 import { useAntiDevTools } from "./hooks/useAntiDevTools";
 
 const App = () => {
-  useAntiDevTools();
+  // useAntiDevTools();
   return (
     <div>
       {/* <Routes>

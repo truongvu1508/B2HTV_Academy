@@ -12,96 +12,7 @@ import Loading from "../../../components/student/Loading";
 import { FaEye, FaTrash, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-// Custom Pagination Component
-const CustomPagination = ({ table }) => {
-  const pageNumbers = [];
-  const totalPages = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex + 1;
-
-  // Generate page numbers to display
-  const generatePageNumbers = () => {
-    if (totalPages <= 5) {
-      // If total pages are 5 or less, show all pages
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      // More complex pagination logic
-      if (currentPage <= 3) {
-        // If current page is near the beginning
-        pageNumbers.push(1, 2, 3, 4, -1, totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        // If current page is near the end
-        pageNumbers.push(
-          1,
-          -1,
-          totalPages - 3,
-          totalPages - 2,
-          totalPages - 1,
-          totalPages
-        );
-      } else {
-        // Current page is in the middle
-        pageNumbers.push(
-          1,
-          -1,
-          currentPage - 1,
-          currentPage,
-          currentPage + 1,
-          -1,
-          totalPages
-        );
-      }
-    }
-  };
-
-  generatePageNumbers();
-
-  return (
-    <div className="flex items-center justify-center space-x-2 mt-4">
-      <button
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Prev
-      </button>
-
-      {pageNumbers.map((pageNumber, index) =>
-        pageNumber === -1 ? (
-          <span
-            key={`ellipsis-${index}`}
-            className="px-4 py-2 text-sm text-gray-500"
-          >
-            ...
-          </span>
-        ) : (
-          <button
-            key={pageNumber}
-            onClick={() => table.setPageIndex(pageNumber - 1)}
-            className={`px-4 py-2 text-sm font-medium border rounded-md 
-              ${
-                currentPage === pageNumber
-                  ? "bg-blue-500 text-white border-blue-500"
-                  : "text-gray-700 bg-white border-gray-300 hover:bg-gray-50"
-              }`}
-          >
-            {pageNumber}
-          </button>
-        )
-      )}
-
-      <button
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Next
-      </button>
-    </div>
-  );
-};
+import CustomPagination from "../../../components/educator/CustomPagination";
 
 const MyCourses = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -255,7 +166,7 @@ const MyCourses = () => {
   }
 
   return (
-    <div className="h-screen flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
+    <div className="flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <div className="w-full">
         <Link to={`/educator/add-course`}>
           <button className="bg-black text-white w-max py-2.5 px-8 rounded my-4">
@@ -263,9 +174,8 @@ const MyCourses = () => {
           </button>
         </Link>
 
-        <h2 className="text-lg font-bold">Danh sách khóa học</h2>
-
-        <div className="mt-4">
+        <div className="flex justify-between">
+          <h2 className="text-lg font-bold">Danh sách khóa học</h2>
           {/* Rows per page controls */}
           <div className="flex justify-end items-center mb-4">
             <div className="flex items-center space-x-2">
@@ -287,10 +197,11 @@ const MyCourses = () => {
               </select>
             </div>
           </div>
-
+        </div>
+        <div className="mt-4">
           {/* Table */}
-          <table className="w-full border border-gray-500/20 text-left">
-            <thead className="bg-gray-100 border-b border-gray-500/20">
+          <table className="w-full bg-white border border-gray-500/20 text-left">
+            <thead className="border-b border-gray-500/20">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
