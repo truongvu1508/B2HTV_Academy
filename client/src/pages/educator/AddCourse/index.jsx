@@ -261,17 +261,27 @@ const AddCourse = () => {
                         className="flex justify-between items-center mb-2"
                       >
                         <span>
-                          {lectureIndex + 1} {lecture.lectureTitle} -{" "}
-                          {lecture.lectureDuration} mins -{" "}
+                          {chapterIndex + 1}.{lectureIndex + 1}.{" "}
+                          {lecture.lectureTitle} - {lecture.lectureDuration}{" "}
+                          phút -{" "}
                           <a
                             href={lecture.lectureUrl}
                             target="_blank"
-                            className="text-blue-500"
                             rel="noopener noreferrer"
+                            className="text-blue-500"
                           >
                             Video
                           </a>{" "}
-                          - {lecture.isPreviewFree ? "Miễn phí" : "Trả phí"}
+                          -{" "}
+                          <span
+                            className={
+                              lecture.isPreviewFree
+                                ? "text-green-500"
+                                : "text-yellow-500"
+                            }
+                          >
+                            {lecture.isPreviewFree ? "Miễn phí" : "Trả phí"}
+                          </span>
                         </span>
                         <RiCloseFill
                           onClick={() =>
