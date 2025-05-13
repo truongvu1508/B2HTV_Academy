@@ -19,11 +19,10 @@ body {
   html {
     scroll-behavior: smooth;
   }
-}
-
-::selection {
-  background: #00ff84 !important;
-  color: #00175d !important;
+  ::selection {
+    background: #00ff84 !important;
+    color: #00175d !important;
+  }
 }
 
 .rich-text {
