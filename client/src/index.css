@@ -15,14 +15,13 @@ body {
   user-select: none;
 }
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  ::selection {
-    background: #00ff84 !important;
-    color: #00175d !important;
-  }
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: #00ff84 !important;
+  color: #00175d !important;
 }
 
 .rich-text {
