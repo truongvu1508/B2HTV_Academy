@@ -15,15 +15,21 @@
   user-select: none;
 } */
 
-html {
-  scroll-behavior: smooth;
-}
-
 ::selection {
   background-color: #00ff84 !important;
   color: #00175d !important;
 }
 
+::-moz-selection {
+  background-color: #00ff84 !important;
+  color: #00175d !important;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
 .rich-text {
   font-size: 15px;
   color: #7a7b7d;
