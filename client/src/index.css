@@ -7,7 +7,7 @@
 * {
   font-family: "Be Vietnam Pro", sans-serif;
 }
-/* 
+
 ::selection {
   background-color: #00ff84 !important;
   color: #00175d !important;
@@ -16,7 +16,7 @@
 ::-moz-selection {
   background-color: #00ff84 !important;
   color: #00175d !important;
-} */
+}
 
 @layer base {
   html {
