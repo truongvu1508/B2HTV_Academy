@@ -819,10 +819,12 @@ const UpdateCourse = () => {
                 </h3>
                 <p>
                   Bạn có chắc muốn xóa chương "
-                  {
-                    chapters.find((ch) => ch.chapterId === selectedChapterId)
-                      ?.chapterTitle
-                  }
+                  <strong>
+                    {
+                      chapters.find((ch) => ch.chapterId === selectedChapterId)
+                        ?.chapterTitle
+                    }
+                  </strong>
                   " không?
                 </p>
                 <div className="flex justify-end mt-6 space-x-3">
@@ -855,7 +857,7 @@ const UpdateCourse = () => {
                 </h3>
                 <p>
                   Bạn có chắc muốn xóa bài giảng "
-                  {selectedLecture?.lectureTitle}" không?
+                  <strong>{selectedLecture?.lectureTitle}</strong>" không?
                 </p>
                 <div className="flex justify-end mt-6 space-x-3">
                   <button

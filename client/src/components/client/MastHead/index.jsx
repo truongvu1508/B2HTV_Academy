@@ -8,10 +8,19 @@ import {
 } from "@ant-design/icons";
 import "./MastHead.scss";
 import { useClerk, useUser } from "@clerk/clerk-react";
+import { Cursor, useTypewriter } from "react-simple-typewriter";
 
 const MastHead = () => {
   const { openSignIn } = useClerk();
   const { user } = useUser();
+
+  const [text] = useTypewriter({
+    words: ["B2HTV ACADEMY"],
+    loop: true,
+    typeSpeed: 100,
+    deleteSpeed: 50,
+  });
+
   return (
     <>
       <section className="masthead">
@@ -31,9 +40,21 @@ const MastHead = () => {
             >
               <div className="masthead__content">
                 <h1 className="masthead__title">
-                  Học lập trình C qua 170 video, 320 bài tập Hackerrank và 200
-                  bài tập trắc nghiệm.
+                  <span>{text}</span>{" "}
+                  <span>
+                    <Cursor className="text-white" />
+                  </span>
                 </h1>
+                <p className="masthead__sub">
+                  B2HTV Academy là nền tảng đào tạo trực tuyến chuyên sâu về
+                  Công nghệ Thông tin, cung cấp các khóa học từ cơ bản đến nâng
+                  cao với nội dung thực tiễn và dễ hiểu. Với đội ngũ giảng viên
+                  là những chuyên gia giàu kinh nghiệm trong ngành, B2HTV
+                  Academy mang đến lộ trình học tập rõ ràng, phù hợp cho cả
+                  người mới bắt đầu lẫn lập trình viên muốn nâng cao kỹ năng.
+                  Học viên có thể dễ dàng tiếp cận kiến thức ở mọi lúc, mọi nơi
+                  và nhanh chóng áp dụng vào công việc thực tế.
+                </p>
                 <p className="masthead__sub">
                   Đạt được nền tảng kỹ thuật lập trình cực kì vững chắc và tư
                   duy trong việc giải quyết vấn đề. Thành thạo kiến thức về lập
@@ -93,7 +114,10 @@ const MastHead = () => {
               align="center"
             >
               <div className="masthead-image">
-                <img src={assets.language_introduction} />
+                <img
+                  src={assets.language_introduction}
+                  alt="language introduction"
+                />
               </div>
             </Col>
           </Row>

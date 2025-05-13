@@ -3,7 +3,7 @@ $dark-1: #00175d;
 
 .masthead {
   position: relative;
-  min-height: 150vh;
+  min-height: 130vh;
   width: 100%;
   overflow: hidden;
   padding: 50px 50px;
@@ -25,7 +25,7 @@ $dark-1: #00175d;
     font-size: 55px;
     font-weight: 700;
     line-height: 80px;
-    color: white;
+    color: $green-1;
   }
   &__sub {
     margin-top: 13px;
