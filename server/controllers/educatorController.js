@@ -191,6 +191,7 @@ export const getEducatorCourses = async (req, res) => {
 export const educatorDashboardData = async (req, res) => {
   try {
     const educator = req.auth.userId;
+    const timeFrame = req.query.timeFrame || "month"; // Lấy timeFrame từ query params, mặc định là "month"
     const courses = await Course.find({ educator });
     const totalCourses = courses.length;
 
@@ -234,8 +235,11 @@ export const educatorDashboardData = async (req, res) => {
       });
     }
 
-    // For Months
-    const salesByMonth = await generateSalesByMonth(purchases);
+    // Generate sales data based on timeFrame
+    const salesByTimeFrame = await generateSalesByTimeFrame(
+      purchases,
+      timeFrame
+    );
 
     // For Courses
     const enrollmentByMonth = await generateEnrollmentData(courses);
@@ -247,7 +251,7 @@ export const educatorDashboardData = async (req, res) => {
         enrolledStudentsData,
         totalCourses,
         totalStudents,
-        salesByMonth,
+        salesByMonth: salesByTimeFrame, // Đổi tên để phù hợp với frontend
         enrollmentByMonth,
       },
     });
@@ -257,39 +261,88 @@ export const educatorDashboardData = async (req, res) => {
   }
 };
 
-// revenue for months
-const generateSalesByMonth = async (purchases) => {
+// Generate sales data by time frame (month, quarter, year)
+const generateSalesByTimeFrame = async (purchases, timeFrame) => {
   const currentYear = new Date().getFullYear();
 
-  //initialization months
-  const months = [
-    { month: "T1", sales: 0 },
-    { month: "T2", sales: 0 },
-    { month: "T3", sales: 0 },
-    { month: "T4", sales: 0 },
-    { month: "T5", sales: 0 },
-    { month: "T6", sales: 0 },
-    { month: "T7", sales: 0 },
-    { month: "T8", sales: 0 },
-    { month: "T9", sales: 0 },
-    { month: "T10", sales: 0 },
-    { month: "T11", sales: 0 },
-    { month: "T12", sales: 0 },
-  ];
+  if (timeFrame === "month") {
+    // Initialization for months
+    const months = [
+      { month: "T1", sales: 0 },
+      { month: "T2", sales: 0 },
+      { month: "T3", sales: 0 },
+      { month: "T4", sales: 0 },
+      { month: "T5", sales: 0 },
+      { month: "T6", sales: 0 },
+      { month: "T7", sales: 0 },
+      { month: "T8", sales: 0 },
+      { month: "T9", sales: 0 },
+      { month: "T10", sales: 0 },
+      { month: "T11", sales: 0 },
+      { month: "T12", sales: 0 },
+    ];
 
-  const completedPurchases = purchases.filter((p) => p.status === "completed");
+    const completedPurchases = purchases.filter(
+      (p) => p.status === "completed"
+    );
 
-  completedPurchases.forEach((purchase) => {
-    const purchaseDate = new Date(purchase.createdAt);
-    const purchaseYear = purchaseDate.getFullYear();
+    completedPurchases.forEach((purchase) => {
+      const purchaseDate = new Date(purchase.createdAt);
+      const purchaseYear = purchaseDate.getFullYear();
 
-    if (purchaseYear === currentYear) {
-      const monthIndex = purchaseDate.getMonth(); // 0-11
-      months[monthIndex].sales += purchase.amount;
-    }
-  });
+      if (purchaseYear === currentYear) {
+        const monthIndex = purchaseDate.getMonth(); // 0-11
+        months[monthIndex].sales += purchase.amount;
+      }
+    });
 
-  return months;
+    return months;
+  } else if (timeFrame === "quarter") {
+    // Initialization for quarters
+    const quarters = [
+      { quarter: "Q1", sales: 0 }, // Jan-Mar
+      { quarter: "Q2", sales: 0 }, // Apr-Jun
+      { quarter: "Q3", sales: 0 }, // Jul-Sep
+      { quarter: "Q4", sales: 0 }, // Oct-Dec
+    ];
+
+    const completedPurchases = purchases.filter(
+      (p) => p.status === "completed"
+    );
+
+    completedPurchases.forEach((purchase) => {
+      const purchaseDate = new Date(purchase.createdAt);
+      const purchaseYear = purchaseDate.getFullYear();
+      const month = purchaseDate.getMonth(); // 0-11
+
+      if (purchaseYear === currentYear) {
+        const quarterIndex = Math.floor(month / 3); // 0-3
+        quarters[quarterIndex].sales += purchase.amount;
+      }
+    });
+
+    return quarters;
+  } else if (timeFrame === "year") {
+    // Initialization for years (current year only for simplicity)
+    const years = [{ year: currentYear.toString(), sales: 0 }];
+
+    const completedPurchases = purchases.filter(
+      (p) => p.status === "completed"
+    );
+
+    completedPurchases.forEach((purchase) => {
+      const purchaseDate = new Date(purchase.createdAt);
+      const purchaseYear = purchaseDate.getFullYear();
+
+      if (purchaseYear === currentYear) {
+        years[0].sales += purchase.amount;
+      }
+    });
+
+    return years;
+  }
+
+  return [];
 };
 
 const generateEnrollmentData = async (courses) => {

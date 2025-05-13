@@ -26,6 +26,7 @@ const Dashboard = () => {
   const [enrollmentData, setEnrollmentData] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeFrame, setTimeFrame] = useState("month"); // State cho combobox (month, quarter, year)
 
   const fetchDashboardData = async () => {
     try {
@@ -33,6 +34,7 @@ const Dashboard = () => {
       const token = await getToken();
       const { data } = await axios.get(backendUrl + "/api/educator/dashboard", {
         headers: { Authorization: `Bearer ${token}` },
+        params: { timeFrame }, // Gửi timeFrame qua query params
       });
 
       if (data.success) {
@@ -75,7 +77,7 @@ const Dashboard = () => {
       fetchDashboardData();
       fetchEducatorCourses();
     }
-  }, [isEducator]);
+  }, [isEducator, timeFrame]); // Thêm timeFrame vào dependency array để gọi lại API khi thay đổi
 
   // Column configuration for Recent Enrollments table
   const enrollmentColumns = useMemo(
@@ -181,7 +183,8 @@ const Dashboard = () => {
     data:
       salesData.length > 0
         ? salesData
-        : [
+        : timeFrame === "month"
+        ? [
             { month: "T1", sales: 0 },
             { month: "T2", sales: 0 },
             { month: "T3", sales: 0 },
@@ -194,8 +197,21 @@ const Dashboard = () => {
             { month: "T10", sales: 0 },
             { month: "T11", sales: 0 },
             { month: "T12", sales: 0 },
-          ],
-    xField: "month",
+          ]
+        : timeFrame === "quarter"
+        ? [
+            { quarter: "Q1", sales: 0 },
+            { quarter: "Q2", sales: 0 },
+            { quarter: "Q3", sales: 0 },
+            { quarter: "Q4", sales: 0 },
+          ]
+        : [{ year: "2025", sales: 0 }],
+    xField:
+      timeFrame === "month"
+        ? "month"
+        : timeFrame === "quarter"
+        ? "quarter"
+        : "year",
     yField: "sales",
     label: {
       position: "middle",
@@ -392,7 +408,27 @@ const Dashboard = () => {
         </div>
 
         <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-          <h2 className="text-lg font-medium mb-4">Doanh thu theo tháng</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium mb-4">
+              Doanh thu theo{" "}
+              {timeFrame === "month"
+                ? "tháng"
+                : timeFrame === "quarter"
+                ? "quý"
+                : "năm"}
+            </h2>{" "}
+            <div className="flex justify-end mb-4">
+              <select
+                value={timeFrame}
+                onChange={(e) => setTimeFrame(e.target.value)}
+                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="month">Tháng</option>
+                <option value="quarter">Quý</option>
+                <option value="year">Năm</option>
+              </select>
+            </div>
+          </div>
           <div className="h-80">
             <Column {...columnConfig} />
           </div>
