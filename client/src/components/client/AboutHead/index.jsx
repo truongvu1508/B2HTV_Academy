@@ -4,10 +4,11 @@ import "aos/dist/aos.css";
 import { Button, Col, Flex, Row } from "antd";
 import { assets } from "../../../assets/assets";
 import "./AboutHead.scss";
-import { useClerk, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+import { useSignInCustom } from "../../../hooks/useSignInCustom";
 
 const AboutHead = () => {
-  const { openSignIn } = useClerk();
+  const handleSignIn = useSignInCustom();
   const { user } = useUser();
 
   React.useEffect(() => {
@@ -108,7 +109,7 @@ const AboutHead = () => {
                 <></>
               ) : (
                 <>
-                  <Button onClick={openSignIn} className="aboutHead__button">
+                  <Button onClick={handleSignIn} className="aboutHead__button">
                     Đăng Ký Tài Khoản
                   </Button>
                 </>

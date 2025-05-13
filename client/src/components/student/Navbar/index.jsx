@@ -3,13 +3,14 @@ import { assets } from "../../../assets/assets";
 import { NavLink, useLocation } from "react-router-dom";
 import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
-import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useSignInCustom } from "../../../hooks/useSignInCustom";
 
 const Navbar = () => {
-  const { openSignIn } = useClerk();
+  const handleSignIn = useSignInCustom();
   const { user } = useUser();
   const { navigate, isEducator, backendUrl, setIsEducator, getToken } =
     useContext(AppContext);
@@ -49,35 +50,6 @@ const Navbar = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  };
-
-  // Hàm mở khung đăng nhập với tùy chỉnh
-  const handleSignIn = () => {
-    openSignIn({
-      appearance: {
-        baseTheme: "default",
-        elements: {
-          formButtonPrimary: {
-            backgroundColor: "#00175D",
-            color: "#ffffff",
-          },
-          headerTitle: {
-            color: "#00175D",
-          },
-          card: {
-            backgroundColor: "#ffffff",
-          },
-
-          formFieldLabel: {
-            color: "#333",
-          },
-        },
-        variables: {
-          colorPrimary: "#001e78",
-          fontFamily: "Arial, sans-serif",
-        },
-      },
-    });
   };
 
   return (
@@ -139,7 +111,7 @@ const Navbar = () => {
             <UserButton />
           ) : (
             <button
-              onClick={handleSignIn} // Sử dụng hàm tùy chỉnh
+              onClick={handleSignIn}
               className="hover:text-blue-1 text-white"
             >
               <UserOutlined className="user" />

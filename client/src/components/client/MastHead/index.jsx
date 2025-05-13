@@ -7,11 +7,12 @@ import {
   GlobalOutlined,
 } from "@ant-design/icons";
 import "./MastHead.scss";
-import { useClerk, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
+import { useSignInCustom } from "../../../hooks/useSignInCustom";
 
 const MastHead = () => {
-  const { openSignIn } = useClerk();
+  const handleSignIn = useSignInCustom();
   const { user } = useUser();
 
   const [text] = useTypewriter({
@@ -65,7 +66,7 @@ const MastHead = () => {
                   <></>
                 ) : (
                   <>
-                    <Button onClick={openSignIn} className="masthead__button">
+                    <Button onClick={handleSignIn} className="masthead__button">
                       Đăng Ký Tài Khoản
                     </Button>
                   </>
