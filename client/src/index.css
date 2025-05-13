@@ -7,14 +7,7 @@
 * {
   font-family: "Be Vietnam Pro", sans-serif;
 }
-
-/* body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-} */
-
+/* 
 ::selection {
   background-color: #00ff84 !important;
   color: #00175d !important;
@@ -23,7 +16,7 @@
 ::-moz-selection {
   background-color: #00ff84 !important;
   color: #00175d !important;
-}
+} */
 
 @layer base {
   html {
