@@ -1,36 +1,39 @@
 $dark-1: #00175d;
 
-.container {
-  padding: 0px 80px;
-}
 .footer {
-  color: white;
-  background: $dark-1;
-  padding: 60px 0px;
+  &__container {
+    color: white;
+    background: $dark-1;
+    padding: 60px 80px;
+  }
 
   &__title {
     font-size: 20px;
     margin-bottom: 20px;
     font-weight: bold;
-    &-media {
-      text-align: center;
-    }
   }
 
   &__item {
     display: flex;
     margin-top: 15px;
-
-    &-media {
-      justify-content: space-around;
-    }
   }
 
   &__icon {
-    margin-right: 10px;
-
+    margin-right: 20px;
     &-media {
       font-size: 32px;
     }
   }
+
+  &__copyright {
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+    color: #fff;
+    background: #001249;
+  }
+}
+
+.container {
+  padding: 0px 80px;
 }

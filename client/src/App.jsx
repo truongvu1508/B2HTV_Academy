@@ -20,10 +20,8 @@ import Error404 from "./pages/Error404";
 import AllRoute from "./components/AllRoute";
 import "quill/dist/quill.snow.css";
 import { ToastContainer } from "react-toastify";
-import { useAntiDevTools } from "./hooks/useAntiDevTools";
 
 const App = () => {
-  // useAntiDevTools();
   return (
     <div>
       {/* <Routes>

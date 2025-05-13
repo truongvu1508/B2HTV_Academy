@@ -9,13 +9,14 @@ import {
   YoutubeFilled,
 } from "@ant-design/icons";
 import "./Footer.scss";
+
 const Footer = () => {
   return (
     <>
       <footer className="footer">
-        <div className="container">
+        <div className="footer__container">
           <Row>
-            <Col xs={12} sm={12} md={12} lg={6} xl={6}>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6} className="my-4">
               <div className="footer__title">B2HTV Academy</div>
               <div className="footer__content">
                 <div className="footer__item">
@@ -39,7 +40,7 @@ const Footer = () => {
               </div>
             </Col>
 
-            <Col xs={12} sm={12} md={12} lg={6} xl={6}>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6} className="my-4">
               <div className="footer__title">VỀ B2HTV</div>
               <div className="footer__content">
                 <div className="footer__item">
@@ -53,7 +54,7 @@ const Footer = () => {
                 </div>
               </div>
             </Col>
-            <Col xs={12} sm={12} md={12} lg={6} xl={6}>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6} className="my-4">
               <div className="footer__title">THÔNG TIN</div>
               <div className="footer__content">
                 <div className="footer__item">
@@ -67,10 +68,8 @@ const Footer = () => {
                 </div>
               </div>
             </Col>
-            <Col xs={12} sm={12} md={12} lg={6} xl={6}>
-              <div className="footer__title footer__title-media">
-                SOCIAL MEDIA
-              </div>
+            <Col xs={24} sm={12} md={12} lg={6} xl={6} className="my-4">
+              <div className="footer__title footer__title">SOCIAL MEDIA</div>
               <div className="footer__content">
                 <div className="footer__item footer__item-media">
                   <div className="footer__icon footer__icon-media">
@@ -88,6 +87,9 @@ const Footer = () => {
           </Row>
         </div>
       </footer>
+      <div className="footer__copyright">
+        Copyright © 2025 B2HTV Academy. Powered by Group4
+      </div>
     </>
   );
 };

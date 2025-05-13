@@ -21,8 +21,9 @@ body {
   }
 }
 
-::-webkit-scrollbar {
-  display: none;
+::selection {
+  background: #00ff84 !important;
+  color: #00175d !important;
 }
 
 .rich-text {
