@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import uniqid from "uniqid";
 import Quill from "quill";
 import { FiUpload } from "react-icons/fi";
@@ -8,88 +9,164 @@ import { FaPlus, FaEdit } from "react-icons/fa";
 import { AppContext } from "../../../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import Loading from "../../../components/student/Loading";
 
-const AddCourse = () => {
+const UpdateCourse = () => {
   const { backendUrl, getToken } = useContext(AppContext);
+  const { courseId } = useParams();
   const navigate = useNavigate();
-
   const quillRef = useRef(null);
   const editorRef = useRef(null);
 
+  const [isLoading, setIsLoading] = useState(true);
   const [courseTitle, setCourseTitle] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
   const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
+  const [existingImage, setExistingImage] = useState("");
   const [chapters, setChapters] = useState([]);
-  const [categories, setCategories] = useState([]); // State cho danh mục
-  const [category, setCategory] = useState(""); // State cho danh mục được chọn
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  const [showChapterPopup, setShowChapterPopup] = useState(false);
   const [showChapterEditPopup, setShowChapterEditPopup] = useState(false);
   const [showDeleteChapterModal, setShowDeleteChapterModal] = useState(false);
   const [showDeleteLectureModal, setShowDeleteLectureModal] = useState(false);
   const [currentChapterId, setCurrentChapterId] = useState(null);
-  const [chapterTitle, setChapterTitle] = useState("");
-  const [isEditingLecture, setIsEditingLecture] = useState(false);
   const [currentLectureIndex, setCurrentLectureIndex] = useState(null);
-  const [selectedChapterId, setSelectedChapterId] = useState(null);
-  const [selectedLecture, setSelectedLecture] = useState(null);
+  const [isEditingLecture, setIsEditingLecture] = useState(false);
+  const [chapterTitle, setChapterTitle] = useState("");
+  const [error, setError] = useState("");
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
     lectureDuration: "",
     lectureUrl: "",
     isPreviewFree: false,
   });
+  const [isAddingChapter, setIsAddingChapter] = useState(false);
+  const [newChapterTitle, setNewChapterTitle] = useState("");
+  const [selectedChapterId, setSelectedChapterId] = useState(null);
+  const [selectedLecture, setSelectedLecture] = useState(null);
 
-  // Lấy danh sách danh mục
+  // Fetch course data and categories
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
         const token = await getToken();
-        const { data } = await axios.get(
+
+        // Fetch categories
+        const categoriesResponse = await axios.get(
           `${backendUrl}/api/educator/categories`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        if (data.success) {
-          setCategories(data.categories);
-          if (data.categories.length > 0) {
-            setCategory(data.categories[0]._id); // Chọn danh mục đầu tiên mặc định
+        console.log("Categories response:", categoriesResponse.data);
+
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.categories);
+          console.log("Categories set:", categoriesResponse.data.categories);
+        } else {
+          throw new Error(categoriesResponse.data.message);
+        }
+
+        // Fetch course data
+        const courseResponse = await axios.get(
+          `${backendUrl}/api/course/${courseId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log("Course response:", courseResponse.data);
+
+        if (courseResponse.data.success) {
+          const course = courseResponse.data.courseData;
+          setCourseTitle(course.courseTitle);
+          setCourseDescription(course.courseDescription);
+          setCoursePrice(course.coursePrice);
+          setDiscount(course.discount || 0);
+          setExistingImage(course.courseThumbnail);
+          setChapters(
+            course.courseContent.map((chapter) => ({
+              ...chapter,
+              collapsed: false,
+            }))
+          );
+
+          // Handle category (support both object and string ID)
+          const categoryId = course.category?._id || course.category;
+          console.log("Course category ID:", categoryId);
+          console.log(
+            "Checking if category exists:",
+            categoriesResponse.data.categories.some(
+              (cat) => cat._id === categoryId
+            )
+          );
+          if (
+            categoryId &&
+            categoriesResponse.data.categories.some(
+              (cat) => cat._id === categoryId
+            )
+          ) {
+            setCategory(categoryId);
+            console.log("Category set to:", categoryId);
+          } else {
+            setCategory("");
+            console.warn("Invalid or missing category ID:", categoryId);
+            toast.warn(
+              "Danh mục của khóa học không hợp lệ hoặc không tồn tại."
+            );
           }
         } else {
-          throw new Error(data.message);
+          throw new Error(courseResponse.data.message);
         }
       } catch (error) {
-        toast.error("Lỗi khi tải danh mục: " + error.message);
+        console.error("Error fetching data:", error);
+        toast.error("Lỗi khi tải dữ liệu: " + error.message);
+        setError("Không thể tải dữ liệu. Vui lòng thử lại.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchCategories();
-  }, [backendUrl, getToken]);
+
+    if (courseId) {
+      fetchData();
+    }
+  }, [courseId, backendUrl, getToken]);
 
   // Initialize Quill editor
   useEffect(() => {
-    if (!quillRef.current && editorRef.current) {
+    if (!isLoading && editorRef.current && !quillRef.current) {
       quillRef.current = new Quill(editorRef.current, {
         theme: "snow",
       });
 
+      if (courseDescription) {
+        quillRef.current.root.innerHTML = courseDescription;
+      }
+
       const handleTextChange = () => {
-        // Update course description when Quill content changes
+        setCourseDescription(quillRef.current.root.innerHTML);
       };
       quillRef.current.on("text-change", handleTextChange);
-
-      return () => {
-        quillRef.current.off("text-change");
-        quillRef.current = null;
-      };
     }
-  }, []);
+
+    return () => {
+      if (quillRef.current) {
+        quillRef.current.off("text-change");
+        if (editorRef.current) {
+          editorRef.current.innerHTML = "";
+        }
+        quillRef.current = null;
+      }
+    };
+  }, [isLoading, courseDescription]);
 
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
-      setChapterTitle("");
-      setShowChapterPopup(true);
+      setNewChapterTitle("");
+      setIsAddingChapter(true);
     } else if (action === "remove") {
       setSelectedChapterId(chapterId);
       setShowDeleteChapterModal(true);
@@ -111,23 +188,15 @@ const AddCourse = () => {
     }
   };
 
-  const addChapter = () => {
-    if (chapterTitle.trim()) {
-      const newChapter = {
-        chapterId: uniqid(),
-        chapterTitle,
-        chapterContent: [],
-        collapsed: false,
-        chapterOrder:
-          chapters.length > 0 ? chapters.slice(-1)[0].chapterOrder + 1 : 1,
-      };
-      setChapters([...chapters, newChapter]);
-      setChapterTitle("");
-      setShowChapterPopup(false);
-      toast.success("Thêm chương mới thành công");
-    } else {
-      toast.error("Tên chương không được để trống");
-    }
+  const confirmDeleteChapter = () => {
+    if (!selectedChapterId) return;
+
+    setChapters(
+      chapters.filter((chapter) => chapter.chapterId !== selectedChapterId)
+    );
+    toast.success("Xóa chương thành công!");
+    setShowDeleteChapterModal(false);
+    setSelectedChapterId(null);
   };
 
   const handleEditChapterTitle = () => {
@@ -139,7 +208,7 @@ const AddCourse = () => {
     setChapters(
       chapters.map((chapter) =>
         chapter.chapterId === currentChapterId
-          ? { ...chapter, chapterTitle }
+          ? { ...chapter, chapterTitle: chapterTitle }
           : chapter
       )
     );
@@ -148,17 +217,6 @@ const AddCourse = () => {
     setCurrentChapterId(null);
     setChapterTitle("");
     toast.success("Cập nhật tên chương thành công");
-  };
-
-  const confirmDeleteChapter = () => {
-    if (!selectedChapterId) return;
-
-    setChapters(
-      chapters.filter((chapter) => chapter.chapterId !== selectedChapterId)
-    );
-    toast.success("Xóa chương thành công!");
-    setShowDeleteChapterModal(false);
-    setSelectedChapterId(null);
   };
 
   const handleLecture = (action, chapterId, lectureIndex) => {
@@ -190,7 +248,7 @@ const AddCourse = () => {
         setLectureDetails({
           lectureTitle: lecture.lectureTitle,
           lectureDuration: lecture.lectureDuration,
-          lectureUrl: lecture.lectureUrl,
+          lectureUrl: lecture.lectureUrl || "",
           isPreviewFree: lecture.isPreviewFree,
         });
         setCurrentChapterId(chapterId);
@@ -233,10 +291,6 @@ const AddCourse = () => {
       isNaN(lectureDetails.lectureDuration)
     ) {
       toast.error("Thời lượng bài giảng phải là số hợp lệ.");
-      return;
-    }
-    if (!lectureDetails.lectureUrl.trim()) {
-      toast.error("URL bài giảng là bắt buộc.");
       return;
     }
 
@@ -283,40 +337,46 @@ const AddCourse = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleUpdateCourse = async (e) => {
     e.preventDefault();
 
     if (!courseTitle.trim()) {
+      setError("Tiêu đề khóa học là bắt buộc.");
       toast.error("Tiêu đề khóa học là bắt buộc.");
       return;
     }
     if (coursePrice < 0) {
+      setError("Giá khóa học không thể âm.");
       toast.error("Giá khóa học không thể âm.");
       return;
     }
     if (discount < 0 || discount > 100) {
+      setError("Giảm giá phải từ 0 đến 100.");
       toast.error("Giảm giá phải từ 0 đến 100.");
       return;
     }
-    if (!quillRef.current.root.innerHTML.trim()) {
+    if (!courseDescription.trim()) {
+      setError("Mô tả khóa học là bắt buộc.");
       toast.error("Mô tả khóa học là bắt buộc.");
       return;
     }
-    if (!image) {
+    if (!existingImage && !image) {
+      setError("Hình ảnh khóa học là bắt buộc.");
       toast.error("Hình ảnh khóa học là bắt buộc.");
       return;
     }
     if (!category) {
+      setError("Danh mục là bắt buộc.");
       toast.error("Danh mục là bắt buộc.");
       return;
     }
 
     const courseData = {
       courseTitle,
-      courseDescription: quillRef.current.root.innerHTML,
+      courseDescription,
       coursePrice: Number(coursePrice),
       discount: Number(discount),
-      category, // Thêm category vào courseData
+      category,
       courseContent: chapters.map((chapter) => ({
         chapterId: chapter.chapterId,
         chapterTitle: chapter.chapterTitle,
@@ -327,39 +387,57 @@ const AddCourse = () => {
 
     const formData = new FormData();
     formData.append("courseData", JSON.stringify(courseData));
-    formData.append("image", image);
+    if (image) {
+      formData.append("image", image);
+    }
 
     try {
+      setIsLoading(true);
       const token = await getToken();
-      const { data } = await axios.post(
-        `${backendUrl}/api/educator/add-course`,
+      const { data } = await axios.put(
+        `${backendUrl}/api/educator/update-course/${courseId}`,
         formData,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       if (data.success) {
         toast.success(data.message);
-        setCourseTitle("");
-        setCoursePrice(0);
-        setDiscount(0);
-        setImage(null);
-        setChapters([]);
-        setCategory(""); // Reset category
-        quillRef.current.root.innerHTML = "";
         navigate("/educator/my-course");
       } else {
-        toast.error(data.message);
+        throw new Error(data.message || "Cập nhật khóa học thất bại");
       }
     } catch (error) {
-      toast.error("Tạo khóa học thất bại: " + error.message);
+      console.error("Error updating course:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Cập nhật khóa học thất bại";
+      toast.error("Cập nhật khóa học thất bại: " + errorMessage);
+      setError("Cập nhật khóa học thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleUpdateCourse}>
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
@@ -412,12 +490,12 @@ const AddCourse = () => {
                   accept="image/*"
                   hidden
                 />
-                {image && (
+                {image ? (
                   <div className="flex items-center gap-2">
                     <img
                       className="max-h-10"
                       src={URL.createObjectURL(image)}
-                      alt="Hình ảnh khóa học"
+                      alt="Hình ảnh mới"
                     />
                     <button
                       type="button"
@@ -427,7 +505,16 @@ const AddCourse = () => {
                       Xóa
                     </button>
                   </div>
-                )}
+                ) : existingImage ? (
+                  <div className="flex items-center gap-2">
+                    <img
+                      className="max-h-10"
+                      src={existingImage}
+                      alt="Hình ảnh hiện tại"
+                    />
+                    <span className="text-sm text-gray-500">(Hiện tại)</span>
+                  </div>
+                ) : null}
               </label>
             </div>
           </div>
@@ -454,19 +541,18 @@ const AddCourse = () => {
               onChange={(e) => setCategory(e.target.value)}
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
             >
-              {categories.length === 0 ? (
-                <option value="">Không có danh mục</option>
-              ) : (
-                categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.name}
-                  </option>
-                ))
-              )}
+              <option value="" disabled>
+                Chọn danh mục
+              </option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* Chapters & Lectures */}
+          {/* Quản lý chương và bài giảng */}
           <div>
             {chapters.map((chapter, chapterIndex) => (
               <div
@@ -516,14 +602,18 @@ const AddCourse = () => {
                           {chapterIndex + 1}.{lectureIndex + 1}.{" "}
                           {lecture.lectureTitle} - {lecture.lectureDuration}{" "}
                           phút -{" "}
-                          <a
-                            href={lecture.lectureUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500"
-                          >
-                            Video
-                          </a>{" "}
+                          {lecture.lectureUrl ? (
+                            <a
+                              href={lecture.lectureUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-500"
+                            >
+                              Video
+                            </a>
+                          ) : (
+                            <span className="text-gray-500">Chưa có video</span>
+                          )}{" "}
                           -{" "}
                           <span
                             className={
@@ -545,7 +635,7 @@ const AddCourse = () => {
                                 lectureIndex
                               )
                             }
-                            title="Chỉnh sửa bài giảng"
+                            title="Chỉnh sửa tên bài giảng"
                           />
                           <RiCloseFill
                             onClick={() =>
@@ -579,56 +669,198 @@ const AddCourse = () => {
             <FaPlus className="mr-1" /> Thêm chương
           </div>
 
-          {/* Chapter Popup */}
-          {showChapterPopup && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">Thêm chương mới</h3>
-                  <RiCloseFill
-                    onClick={() => {
-                      setShowChapterPopup(false);
-                      setChapterTitle("");
-                    }}
-                    className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
-                  />
-                </div>
+          {/* Popup thêm chương mới */}
+          {isAddingChapter && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
+                <h2 className="text-lg font-semibold mb-4">Thêm chương mới</h2>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tên chương
                   </label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    value={chapterTitle}
-                    onChange={(e) => setChapterTitle(e.target.value)}
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={newChapterTitle}
+                    onChange={(e) => setNewChapterTitle(e.target.value)}
                     placeholder="Nhập tên chương"
                     autoFocus
                   />
                 </div>
-                <div className="flex justify-end space-x-3">
+                <div className="flex gap-2 mt-4">
                   <button
                     onClick={() => {
-                      setShowChapterPopup(false);
-                      setChapterTitle("");
+                      if (newChapterTitle.trim()) {
+                        const newChapter = {
+                          chapterId: uniqid(),
+                          chapterTitle: newChapterTitle,
+                          chapterContent: [],
+                          collapsed: false,
+                          chapterOrder:
+                            chapters.length > 0
+                              ? chapters.slice(-1)[0].chapterOrder + 1
+                              : 1,
+                        };
+                        setChapters([...chapters, newChapter]);
+                        setIsAddingChapter(false);
+                        toast.success("Thêm chương mới thành công");
+                      } else {
+                        toast.error("Tên chương không được để trống");
+                      }
                     }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={addChapter}
                     type="button"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                   >
                     Thêm
                   </button>
+                  <button
+                    onClick={() => {
+                      setIsAddingChapter(false);
+                      setNewChapterTitle("");
+                    }}
+                    type="button"
+                    className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  >
+                    Hủy
+                  </button>
                 </div>
+                <RiCloseFill
+                  onClick={() => {
+                    setIsAddingChapter(false);
+                    setNewChapterTitle("");
+                  }}
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                />
               </div>
             </div>
           )}
 
-          {/* Chapter Edit Popup */}
+          {/* Popup chỉnh sửa bài giảng */}
+          {showPopup && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+              <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
+                <h2 className="text-lg font-semibold mb-4">
+                  {isEditingLecture ? "Chỉnh sửa bài giảng" : "Thêm bài giảng"}
+                </h2>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tiêu đề bài giảng
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={lectureDetails.lectureTitle}
+                    onChange={(e) =>
+                      setLectureDetails({
+                        ...lectureDetails,
+                        lectureTitle: e.target.value,
+                      })
+                    }
+                    placeholder="Nhập tiêu đề bài giảng"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Thời lượng (phút)
+                  </label>
+                  <input
+                    type="number"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={lectureDetails.lectureDuration}
+                    onChange={(e) =>
+                      setLectureDetails({
+                        ...lectureDetails,
+                        lectureDuration: e.target.value,
+                      })
+                    }
+                    placeholder="Nhập thời lượng"
+                    min="0"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    URL bài giảng (tùy chọn)
+                  </label>
+                  <input
+                    type="text"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    value={lectureDetails.lectureUrl}
+                    onChange={(e) =>
+                      setLectureDetails({
+                        ...lectureDetails,
+                        lectureUrl: e.target.value,
+                      })
+                    }
+                    placeholder="Nhập URL (nếu có)"
+                  />
+                </div>
+                <div className="flex gap-2 my-4 items-center">
+                  <input
+                    type="checkbox"
+                    id="isPreviewFree"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    checked={lectureDetails.isPreviewFree}
+                    onChange={(e) =>
+                      setLectureDetails({
+                        ...lectureDetails,
+                        isPreviewFree: e.target.checked,
+                      })
+                    }
+                  />
+                  <label
+                    htmlFor="isPreviewFree"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Xem trước miễn phí?
+                  </label>
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <button
+                    onClick={addOrUpdateLecture}
+                    type="button"
+                    className="flex-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  >
+                    {isEditingLecture ? "Cập nhật" : "Thêm"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowPopup(false);
+                      setIsEditingLecture(false);
+                      setCurrentLectureIndex(null);
+                      setCurrentChapterId(null);
+                      setLectureDetails({
+                        lectureTitle: "",
+                        lectureDuration: "",
+                        lectureUrl: "",
+                        isPreviewFree: false,
+                      });
+                    }}
+                    type="button"
+                    className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  >
+                    Hủy
+                  </button>
+                </div>
+                <RiCloseFill
+                  onClick={() => {
+                    setShowPopup(false);
+                    setIsEditingLecture(false);
+                    setCurrentLectureIndex(null);
+                    setCurrentChapterId(null);
+                    setLectureDetails({
+                      lectureTitle: "",
+                      lectureDuration: "",
+                      lectureUrl: "",
+                      isPreviewFree: false,
+                    });
+                  }}
+                  className="absolute top-2 right-2 text-2xl cursor-pointer"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Popup chỉnh sửa tên chương */}
           {showChapterEditPopup && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
               <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
@@ -679,130 +911,6 @@ const AddCourse = () => {
             </div>
           )}
 
-          {/* Lecture Popup */}
-          {showPopup && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 max-w-md w-full">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    {isEditingLecture
-                      ? "Chỉnh sửa bài giảng"
-                      : "Thêm bài giảng"}
-                  </h3>
-                  <RiCloseFill
-                    onClick={() => {
-                      setShowPopup(false);
-                      setIsEditingLecture(false);
-                      setCurrentLectureIndex(null);
-                      setCurrentChapterId(null);
-                      setLectureDetails({
-                        lectureTitle: "",
-                        lectureDuration: "",
-                        lectureUrl: "",
-                        isPreviewFree: false,
-                      });
-                    }}
-                    className="text-2xl text-gray-600 hover:text-gray-800 cursor-pointer"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Tiêu đề bài giảng
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    value={lectureDetails.lectureTitle}
-                    onChange={(e) =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureTitle: e.target.value,
-                      })
-                    }
-                    placeholder="Nhập tiêu đề bài giảng"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Thời lượng (phút)
-                  </label>
-                  <input
-                    type="number"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    value={lectureDetails.lectureDuration}
-                    onChange={(e) =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureDuration: e.target.value,
-                      })
-                    }
-                    placeholder="Nhập thời lượng bài giảng"
-                    min="0"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    URL bài giảng
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    value={lectureDetails.lectureUrl}
-                    onChange={(e) =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        lectureUrl: e.target.value,
-                      })
-                    }
-                    placeholder="Nhập liên kết của bài giảng"
-                  />
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    checked={lectureDetails.isPreviewFree}
-                    onChange={(e) =>
-                      setLectureDetails({
-                        ...lectureDetails,
-                        isPreviewFree: e.target.checked,
-                      })
-                    }
-                  />
-                  <label className="text-sm font-medium text-gray-700">
-                    Xem trước miễn phí?
-                  </label>
-                </div>
-                <div className="flex justify-end space-x-3">
-                  <button
-                    onClick={() => {
-                      setShowPopup(false);
-                      setIsEditingLecture(false);
-                      setCurrentLectureIndex(null);
-                      setCurrentChapterId(null);
-                      setLectureDetails({
-                        lectureTitle: "",
-                        lectureDuration: "",
-                        lectureUrl: "",
-                        isPreviewFree: false,
-                      });
-                    }}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    onClick={addOrUpdateLecture}
-                    type="button"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                  >
-                    {isEditingLecture ? "Cập nhật" : "Thêm bài giảng"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Delete Chapter Confirmation Modal */}
           {showDeleteChapterModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -812,10 +920,12 @@ const AddCourse = () => {
                 </h3>
                 <p>
                   Bạn có chắc muốn xóa chương "
-                  {
-                    chapters.find((ch) => ch.chapterId === selectedChapterId)
-                      ?.chapterTitle
-                  }
+                  <strong>
+                    {
+                      chapters.find((ch) => ch.chapterId === selectedChapterId)
+                        ?.chapterTitle
+                    }
+                  </strong>
                   " không?
                 </p>
                 <div className="flex justify-end mt-6 space-x-3">
@@ -848,7 +958,7 @@ const AddCourse = () => {
                 </h3>
                 <p>
                   Bạn có chắc muốn xóa bài giảng "
-                  {selectedLecture?.lectureTitle}" không?
+                  <strong>{selectedLecture?.lectureTitle}</strong>" không?
                 </p>
                 <div className="flex justify-end mt-6 space-x-3">
                   <button
@@ -871,19 +981,20 @@ const AddCourse = () => {
             </div>
           )}
         </div>
+        {error && <p className="text-red-500 my-4">{error}</p>}
         <div className="flex gap-4 my-4">
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-8 rounded"
           >
-            Tạo khóa học
+            CẬP NHẬT
           </button>
           <button
             type="button"
-            onClick={() => navigate("/educator/my-course")}
             className="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2.5 px-8 rounded"
+            onClick={() => navigate("/educator/my-course")}
           >
-            Hủy
+            HỦY
           </button>
         </div>
       </form>
@@ -891,4 +1002,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse;
+export default UpdateCourse;

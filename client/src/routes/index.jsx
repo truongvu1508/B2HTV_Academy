@@ -19,6 +19,9 @@ import Error404 from "../pages/Error404";
 import LayoutDefault from "../layouts/LayoutDefault";
 import UpdateCourse from "../pages/educator/UpdateCourse";
 import Accounts from "../pages/educator/Accounts";
+import MyCategory from "../pages/educator/MyCategory";
+import AddCategory from "../pages/educator/AddCategory";
+import UpdateCategory from "../pages/educator/UpdateCategory/UpdateCategory";
 
 const routes = [
   {
@@ -77,9 +80,23 @@ const routes = [
         path: "update-course/:courseId",
         element: <UpdateCourse />,
       },
+
       {
         path: "my-course",
         element: <MyCourses />,
+      },
+      {
+        path: "my-category",
+        element: <MyCategory />,
+      },
+
+      {
+        path: "add-category",
+        element: <AddCategory />,
+      },
+      {
+        path: "update-category/:categoryId",
+        element: <UpdateCategory />,
       },
       {
         path: "student-enrolled",

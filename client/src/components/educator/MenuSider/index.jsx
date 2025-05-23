@@ -6,6 +6,7 @@ import { FaUserCheck } from "react-icons/fa";
 import { DashboardOutlined } from "@ant-design/icons";
 import { Link, useLocation, Navigate } from "react-router-dom";
 import { PiStudentBold } from "react-icons/pi";
+import { IoMdBookmarks } from "react-icons/io";
 
 function MenuSider() {
   const location = useLocation();
@@ -24,6 +25,11 @@ function MenuSider() {
     //   icon: <BiSolidBookAdd />,
     //   key: "/educator/add-course",
     // },
+    {
+      label: <Link to="/educator/my-category">Quản lý Danh mục</Link>,
+      icon: <IoMdBookmarks />,
+      key: "/educator/my-category",
+    },
     {
       label: <Link to="/educator/my-course">Quản lý Khóa học</Link>,
       icon: <LuBookMarked />,

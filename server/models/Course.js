@@ -5,7 +5,7 @@ const lectureSchema = new mongoose.Schema(
     lectureId: { type: String, required: true },
     lectureTitle: { type: String, required: true },
     lectureDuration: { type: Number, required: true },
-    lectureUrl: { type: String, required: true },
+    lectureUrl: { type: String },
     isPreviewFree: { type: Boolean, required: true },
     lectureOrder: { type: Number, required: true },
   },
@@ -36,6 +36,11 @@ const courseSchema = new mongoose.Schema(
     ],
     educator: { type: String, ref: "User", required: true },
     enrolledStudents: [{ type: String, ref: "User" }],
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
   },
   { timestamps: true, minimize: false }
 );

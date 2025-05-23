@@ -9,6 +9,10 @@ import {
   updateCourse,
   updateRoleToEducator,
   updateUserLockStatus,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+  getEducatorCategories,
 } from "../controllers/educatorController.js";
 import upload from "../configs/multer.js";
 import { protectEducator } from "../middlewares/authMiddleware.js";
@@ -39,6 +43,12 @@ educatorRouter.delete(
   protectEducator,
   deleteCourse
 );
+
+// Category routes
+educatorRouter.post("/add-category", protectEducator, addCategory);
+educatorRouter.put("/update-category/:id", protectEducator, updateCategory);
+educatorRouter.delete("/delete-category/:id", protectEducator, deleteCategory);
+educatorRouter.get("/categories", protectEducator, getEducatorCategories);
 
 educatorRouter.get("/courses", protectEducator, getEducatorCourses);
 

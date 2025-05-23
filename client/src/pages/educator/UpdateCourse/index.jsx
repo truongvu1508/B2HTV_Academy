@@ -26,6 +26,8 @@ const UpdateCourse = () => {
   const [image, setImage] = useState(null);
   const [existingImage, setExistingImage] = useState("");
   const [chapters, setChapters] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [showChapterEditPopup, setShowChapterEditPopup] = useState(false);
   const [showDeleteChapterModal, setShowDeleteChapterModal] = useState(false);
@@ -46,20 +48,37 @@ const UpdateCourse = () => {
   const [selectedChapterId, setSelectedChapterId] = useState(null);
   const [selectedLecture, setSelectedLecture] = useState(null);
 
-  // Fetch course data
+  // Fetch course data and categories
   useEffect(() => {
-    const fetchCourseData = async () => {
+    const fetchData = async () => {
       try {
+        setIsLoading(true);
         const token = await getToken();
-        const { data } = await axios.get(
+
+        // Fetch categories
+        const categoriesResponse = await axios.get(
+          `${backendUrl}/api/educator/categories`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.categories);
+        } else {
+          throw new Error(categoriesResponse.data.message);
+        }
+
+        // Fetch course data
+        const courseResponse = await axios.get(
           `${backendUrl}/api/course/${courseId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        if (data.success) {
-          const course = data.courseData;
+        if (courseResponse.data.success) {
+          const course = courseResponse.data.courseData;
           setCourseTitle(course.courseTitle);
           setCourseDescription(course.courseDescription);
           setCoursePrice(course.coursePrice);
@@ -71,20 +90,35 @@ const UpdateCourse = () => {
               collapsed: false,
             }))
           );
+
+          // Handle category (support both object and string ID)
+          const categoryId = course.category?._id || course.category;
+          if (
+            categoryId &&
+            categoriesResponse.data.categories.some(
+              (cat) => cat._id === categoryId
+            )
+          ) {
+            setCategory(categoryId);
+          } else {
+            setCategory("");
+            toast.warn(
+              "Danh mục của khóa học không hợp lệ hoặc không tồn tại."
+            );
+          }
         } else {
-          throw new Error(data.message);
+          throw new Error(courseResponse.data.message);
         }
       } catch (error) {
-        console.error("Error fetching course data:", error);
-        toast.error("Không thể tải dữ liệu khóa học: " + error.message);
-        setError("Không thể tải dữ liệu khóa học. Vui lòng thử lại.");
+        toast.error("Lỗi khi tải dữ liệu: " + error.message);
+        setError("Không thể tải dữ liệu. Vui lòng thử lại.");
       } finally {
         setIsLoading(false);
       }
     };
 
     if (courseId) {
-      fetchCourseData();
+      fetchData();
     }
   }, [courseId, backendUrl, getToken]);
 
@@ -114,7 +148,7 @@ const UpdateCourse = () => {
         quillRef.current = null;
       }
     };
-  }, [isLoading]);
+  }, [isLoading, courseDescription]);
 
   const handleChapter = (action, chapterId) => {
     if (action === "add") {
@@ -246,10 +280,6 @@ const UpdateCourse = () => {
       toast.error("Thời lượng bài giảng phải là số hợp lệ.");
       return;
     }
-    if (!lectureDetails.lectureUrl.trim()) {
-      toast.error("URL bài giảng là bắt buộc.");
-      return;
-    }
 
     setChapters(
       chapters.map((chapter) => {
@@ -322,13 +352,18 @@ const UpdateCourse = () => {
       toast.error("Hình ảnh khóa học là bắt buộc.");
       return;
     }
+    if (!category) {
+      setError("Danh mục là bắt buộc.");
+      toast.error("Danh mục là bắt buộc.");
+      return;
+    }
 
-    // Prepare course data, removing frontend-only fields like 'collapsed'
     const courseData = {
       courseTitle,
       courseDescription,
       coursePrice: Number(coursePrice),
       discount: Number(discount),
+      category,
       courseContent: chapters.map((chapter) => ({
         chapterId: chapter.chapterId,
         chapterTitle: chapter.chapterTitle,
@@ -344,7 +379,7 @@ const UpdateCourse = () => {
     }
 
     try {
-      setIsLoading(true); // Show loading state during update
+      setIsLoading(true);
       const token = await getToken();
       const { data } = await axios.put(
         `${backendUrl}/api/educator/update-course/${courseId}`,
@@ -363,7 +398,6 @@ const UpdateCourse = () => {
         throw new Error(data.message || "Cập nhật khóa học thất bại");
       }
     } catch (error) {
-      console.error("Error updating course:", error);
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
@@ -391,32 +425,45 @@ const UpdateCourse = () => {
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
       <form onSubmit={handleUpdateCourse}>
         <div className="flex flex-col gap-5">
-          <p>Tiêu đề khóa học</p>
-          <input
-            type="text"
-            onChange={(e) => setCourseTitle(e.target.value)}
-            value={courseTitle}
-            placeholder="Nhập tiêu đề"
-            className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
-          />
           <div className="flex flex-col gap-1">
-            <p>Mô tả khóa học</p>
-            <div ref={editorRef}></div>
+            <label className="text-sm font-medium text-gray-700">
+              Tiêu đề khóa học
+            </label>
+            <input
+              type="text"
+              onChange={(e) => setCourseTitle(e.target.value)}
+              value={courseTitle}
+              placeholder="Nhập tiêu đề"
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+            />
           </div>
-          <div className="flex items-center justify-between flex-wrap">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Mô tả khóa học
+            </label>
+            <div
+              ref={editorRef}
+              className="border border-gray-500 rounded"
+            ></div>
+          </div>
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex flex-col gap-1">
-              <p>Giá khóa học</p>
+              <label className="text-sm font-medium text-gray-700">
+                Giá khóa học
+              </label>
               <input
                 type="number"
                 onChange={(e) => setCoursePrice(e.target.value)}
                 value={coursePrice}
                 placeholder="0"
                 min="0"
-                className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500"
+                className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
               />
             </div>
-            <div className="flex md:flex-row flex-col items-center gap-3">
-              <p>Hình ảnh</p>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Hình ảnh khóa học
+              </label>
               <label
                 htmlFor="thumbnailImage"
                 className="flex items-center gap-3"
@@ -458,7 +505,9 @@ const UpdateCourse = () => {
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <p>Giảm giá (%)</p>
+            <label className="text-sm font-medium text-gray-700">
+              Giảm giá (%)
+            </label>
             <input
               onChange={(e) => setDiscount(e.target.value)}
               type="number"
@@ -466,8 +515,27 @@ const UpdateCourse = () => {
               placeholder="0"
               min="0"
               max="100"
-              className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500"
+              className="outline-none md:py-2.5 py-2 w-28 px-3 rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
             />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">
+              Danh mục
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500 focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="" disabled>
+                Chọn danh mục
+              </option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Quản lý chương và bài giảng */}
@@ -490,10 +558,10 @@ const UpdateCourse = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-green-500 ">
+                    <span className="text-green-500">
                       {chapter.chapterContent.length} Bài giảng
                     </span>
-                    <div className="flex gap-1 ">
+                    <div className="flex gap-1">
                       <FaEdit
                         className="cursor-pointer text-blue-500"
                         onClick={() => handleChapter("edit", chapter.chapterId)}
@@ -589,10 +657,12 @@ const UpdateCourse = () => {
               <div className="bg-white text-gray-700 p-6 rounded relative w-full max-w-md">
                 <h2 className="text-lg font-semibold mb-4">Thêm chương mới</h2>
                 <div className="mb-4">
-                  <p>Tên chương</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tên chương
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-2 px-3"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={newChapterTitle}
                     onChange={(e) => setNewChapterTitle(e.target.value)}
                     placeholder="Nhập tên chương"
@@ -655,10 +725,12 @@ const UpdateCourse = () => {
                   {isEditingLecture ? "Chỉnh sửa bài giảng" : "Thêm bài giảng"}
                 </h2>
                 <div className="mb-4">
-                  <p>Tiêu đề bài giảng</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tiêu đề bài giảng
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-2 px-3"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureTitle}
                     onChange={(e) =>
                       setLectureDetails({
@@ -670,10 +742,12 @@ const UpdateCourse = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <p>Thời lượng (phút)</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Thời lượng (phút)
+                  </label>
                   <input
                     type="number"
-                    className="mt-1 block w-full border rounded py-2 px-3"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureDuration}
                     onChange={(e) =>
                       setLectureDetails({
@@ -686,10 +760,12 @@ const UpdateCourse = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <p>URL bài giảng</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    URL bài giảng
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-2 px-3"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={lectureDetails.lectureUrl}
                     onChange={(e) =>
                       setLectureDetails({
@@ -704,7 +780,7 @@ const UpdateCourse = () => {
                   <input
                     type="checkbox"
                     id="isPreviewFree"
-                    className="w-4 h-4"
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     checked={lectureDetails.isPreviewFree}
                     onChange={(e) =>
                       setLectureDetails({
@@ -713,7 +789,12 @@ const UpdateCourse = () => {
                       })
                     }
                   />
-                  <label htmlFor="isPreviewFree">Xem trước miễn phí?</label>
+                  <label
+                    htmlFor="isPreviewFree"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Xem trước miễn phí?
+                  </label>
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button
@@ -769,10 +850,12 @@ const UpdateCourse = () => {
                   Chỉnh sửa tên chương
                 </h2>
                 <div className="mb-4">
-                  <p>Tên chương</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tên chương
+                  </label>
                   <input
                     type="text"
-                    className="mt-1 block w-full border rounded py-2 px-3"
+                    className="mt-1 block w-full border rounded py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     value={chapterTitle}
                     onChange={(e) => setChapterTitle(e.target.value)}
                     placeholder="Nhập tên chương"

@@ -8,6 +8,7 @@ import { Outlet } from "react-router-dom";
 import { assets } from "../../assets/assets";
 import MenuSider from "../../components/educator/MenuSider";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import BackToTop from "../../components/client/BackToTop";
 const { Sider, Content } = Layout;
 
 function LayoutDefault() {
@@ -19,8 +20,8 @@ function LayoutDefault() {
   const { user } = useUser();
   return (
     <>
-      <Layout className="layout-default">
-        <header className="header">
+      <Layout className="layout-default ">
+        <header className="header fixed w-full z-99">
           <div
             className={
               "header__logo " + (collapsed && "header__logo--collapsed")
@@ -60,11 +61,12 @@ function LayoutDefault() {
           <Sider className="sider" collapsed={collapsed} theme="light">
             <MenuSider />
           </Sider>
-          <Content className="content min-h-screen">
+          <Content className="content min-h-screen mt-10">
             <Outlet />
           </Content>
         </Layout>
       </Layout>
+      <BackToTop />
     </>
   );
 }

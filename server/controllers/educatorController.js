@@ -1,5 +1,6 @@
 import { clerkClient } from "@clerk/express";
 import Course from "../models/Course.js";
+import Category from "../models/Category.js";
 import { v2 as cloudinary } from "cloudinary";
 import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
@@ -32,21 +33,64 @@ export const addCourse = async (req, res) => {
     const educatorId = req.auth.userId;
 
     if (!imageFile) {
-      return res.json({ success: false, message: "Ảnh không được đính kèm" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Ảnh không được đính kèm" });
     }
 
-    const parsedCourseData = await JSON.parse(courseData);
+    // Parse courseData
+    let parsedCourseData;
+    try {
+      parsedCourseData = JSON.parse(courseData);
+    } catch (error) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Dữ liệu khóa học không hợp lệ" });
+    }
+
+    // Kiểm tra các trường bắt buộc
+    const { courseTitle, coursePrice, category } = parsedCourseData;
+    if (!courseTitle || !coursePrice || !category) {
+      return res.status(400).json({
+        success: false,
+        message: "Tiêu đề, giá và danh mục là bắt buộc",
+      });
+    }
+
+    // Kiểm tra danh mục
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID danh mục không hợp lệ" });
+    }
+    const categoryDoc = await Category.findOne({
+      _id: category,
+      educator: educatorId,
+    });
+    if (!categoryDoc) {
+      return res.status(400).json({
+        success: false,
+        message: "Danh mục không tồn tại hoặc bạn không có quyền",
+      });
+    }
+
+    // Gán educator và tạo khóa học
     parsedCourseData.educator = educatorId;
-
     const newCourse = await Course.create(parsedCourseData);
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path);
 
+    // Tải ảnh lên Cloudinary
+    const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+      folder: "course_thumbnails",
+    });
     newCourse.courseThumbnail = imageUpload.secure_url;
 
     await newCourse.save();
-    res.json({ success: true, message: "Đã thêm khóa học" });
+    res.json({ success: true, message: "Đã thêm khóa học", course: newCourse });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("Lỗi thêm khóa học:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
 
@@ -75,14 +119,21 @@ export const updateCourse = async (req, res) => {
         .json({ success: false, message: "Dữ liệu khóa học không hợp lệ" });
     }
 
-    // Remove frontend-only fields (e.g., collapsed)
+    // Normalize courseContent to ensure lectureUrl is optional
     if (parsedCourseData.courseContent) {
       parsedCourseData.courseContent = parsedCourseData.courseContent.map(
         (chapter) => ({
           chapterId: chapter.chapterId,
           chapterTitle: chapter.chapterTitle,
-          chapterContent: chapter.chapterContent,
           chapterOrder: chapter.chapterOrder,
+          chapterContent: chapter.chapterContent.map((lecture) => ({
+            lectureId: lecture.lectureId,
+            lectureTitle: lecture.lectureTitle,
+            lectureDuration: lecture.lectureDuration,
+            lectureUrl: lecture.lectureUrl || "", // Normalize to empty string
+            isPreviewFree: lecture.isPreviewFree || false,
+            lectureOrder: lecture.lectureOrder,
+          })),
         })
       );
     }
@@ -96,11 +147,31 @@ export const updateCourse = async (req, res) => {
     }
 
     // Check educator ownership
-    if (course.educator.toString() !== educatorId) {
+    if (course.educator !== educatorId) {
       return res.status(403).json({
         success: false,
         message: "Không có quyền cập nhật khóa học này",
       });
+    }
+
+    // Kiểm tra danh mục nếu được cập nhật
+    if (parsedCourseData.category) {
+      if (!mongoose.Types.ObjectId.isValid(parsedCourseData.category)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "ID danh mục không hợp lệ" });
+      }
+      const categoryDoc = await Category.findOne({
+        _id: parsedCourseData.category,
+        educator: educatorId,
+      });
+      if (!categoryDoc) {
+        return res.status(400).json({
+          success: false,
+          message: "Danh mục không tồn tại hoặc bạn không có quyền",
+        });
+      }
+      course.category = parsedCourseData.category;
     }
 
     // Update course fields
@@ -127,13 +198,15 @@ export const updateCourse = async (req, res) => {
       }
     }
 
-    // Save updated course
-    await course.save();
+    // Save updated course with relaxed validation
+    await course.save({ validateModifiedOnly: true });
 
-    res.json({ success: true, message: "Khóa học đã được cập nhật" });
+    res.json({ success: true, message: "Khóa học đã được cập nhật", course });
   } catch (error) {
-    console.error("Error in updateCourse:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Lỗi cập nhật khóa học:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
 
@@ -159,7 +232,7 @@ export const deleteCourse = async (req, res) => {
     }
 
     // Check educator ownership
-    if (course.educator.toString() !== educatorId) {
+    if (course.educator !== educatorId) {
       return res
         .status(403)
         .json({ success: false, message: "Không có quyền xóa khóa học này" });
@@ -170,8 +243,10 @@ export const deleteCourse = async (req, res) => {
 
     res.json({ success: true, message: "Khóa học đã được xóa" });
   } catch (error) {
-    console.error("Error in deleteCourse:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Lỗi xóa khóa học:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
 
@@ -179,11 +254,17 @@ export const deleteCourse = async (req, res) => {
 export const getEducatorCourses = async (req, res) => {
   try {
     const educator = req.auth.userId;
-    const courses = await Course.find({ educator });
+    const courses = await Course.find({ educator }).populate(
+      "category",
+      "name"
+    );
 
     res.json({ success: true, courses });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    console.error("Lỗi lấy khóa học:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
 
@@ -467,5 +548,153 @@ export const updateUserLockStatus = async (req, res) => {
       message: "Lỗi server khi cập nhật trạng thái khóa tài khoản",
       error: error.message,
     });
+  }
+};
+
+// Get Educator Category
+export const getEducatorCategories = async (req, res) => {
+  try {
+    const educator = req.auth.userId;
+    if (!educator) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Không tìm thấy ID giáo viên" });
+    }
+    const categories = await Category.find({ educator });
+    res.json({ success: true, categories });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Add Category
+export const addCategory = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const educator = req.auth.userId;
+
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Tên danh mục là bắt buộc" });
+    }
+
+    const existingCategory = await Category.findOne({ name });
+    if (existingCategory) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Danh mục đã tồn tại" });
+    }
+
+    const newCategory = await Category.create({
+      name,
+      description,
+      educator,
+    });
+    res.json({
+      success: true,
+      message: "Đã thêm danh mục",
+      category: newCategory,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Update Category
+export const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, description } = req.body;
+    const educator = req.auth.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID danh mục không hợp lệ" });
+    }
+
+    if (!name) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Tên danh mục là bắt buộc" });
+    }
+
+    const category = await Category.findById(id);
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy danh mục" });
+    }
+
+    // Kiểm tra quyền giáo viên
+    if (category.educator !== educator) {
+      return res.status(403).json({
+        success: false,
+        message: "Không có quyền cập nhật danh mục này",
+      });
+    }
+
+    const existingCategory = await Category.findOne({ name, _id: { $ne: id } });
+    if (existingCategory) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Danh mục đã tồn tại" });
+    }
+
+    category.name = name || category.name;
+    category.description =
+      description !== undefined ? description : category.description;
+
+    await category.save();
+    res.json({ success: true, message: "Đã cập nhật danh mục", category });
+  } catch (error) {
+    console.error("Lỗi cập nhật danh mục:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
+  }
+};
+// Delete Category
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const educator = req.auth.userId;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ID danh mục không hợp lệ" });
+    }
+
+    const category = await Category.findById(id);
+    if (!category) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy danh mục" });
+    }
+
+    // Kiểm tra quyền giáo viên
+    if (category.educator !== educator) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Không có quyền xóa danh mục này" });
+    }
+
+    const courseCount = await Course.countDocuments({ category: id });
+    if (courseCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Không thể xóa danh mục vì có khóa học đang sử dụng",
+      });
+    }
+
+    await Category.findByIdAndDelete(id);
+    res.json({ success: true, message: "Đã xóa danh mục" });
+  } catch (error) {
+    console.error("Lỗi xóa danh mục:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
