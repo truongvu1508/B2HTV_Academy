@@ -97,7 +97,7 @@ const CoursesList = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 my-16 gap-3 px-2 md:p-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 my-16 gap-x-3 gap-y-10 px-2 md:p-0">
           {loading ? (
             // Display skeleton cards while loading
             Array(6)

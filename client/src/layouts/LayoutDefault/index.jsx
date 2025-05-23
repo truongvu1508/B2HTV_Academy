@@ -21,7 +21,7 @@ function LayoutDefault() {
   return (
     <>
       <Layout className="layout-default ">
-        <header className="header fixed w-full z-99">
+        <header className="header">
           <div
             className={
               "header__logo " + (collapsed && "header__logo--collapsed")

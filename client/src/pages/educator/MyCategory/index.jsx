@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState, useMemo } from "react";
 import { flexRender } from "@tanstack/react-table";
 import { Link } from "react-router-dom";
