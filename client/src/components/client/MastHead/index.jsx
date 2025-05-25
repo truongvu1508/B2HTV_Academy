@@ -10,6 +10,14 @@ import "./MastHead.scss";
 import { useUser } from "@clerk/clerk-react";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
 import { useSignInCustom } from "../../../hooks/useSignInCustom";
+import "../../FLoating/Floating.scss";
+import {
+  FaLaptopCode,
+  FaMobileAlt,
+  FaCloud,
+  FaPaintBrush,
+} from "react-icons/fa";
+import { TbCloudNetwork } from "react-icons/tb";
 
 const MastHead = () => {
   const handleSignIn = useSignInCustom();
@@ -39,14 +47,14 @@ const MastHead = () => {
               xl={12}
               style={{ padding: "10px" }}
             >
-              <div className="masthead__content">
+              <div className="masthead__content w-[90%]">
                 <h1 className="masthead__title">
                   <span>{text}</span>{" "}
                   <span>
                     <Cursor className="text-white" />
                   </span>
                 </h1>
-                <p className="masthead__sub">
+                <p className="masthead__sub text-justify">
                   B2HTV Academy là nền tảng đào tạo trực tuyến chuyên sâu về
                   Công nghệ Thông tin, cung cấp các khóa học từ cơ bản đến nâng
                   cao với nội dung thực tiễn và dễ hiểu. Với đội ngũ giảng viên
@@ -114,11 +122,44 @@ const MastHead = () => {
               style={{ padding: "10px" }}
               align="center"
             >
-              <div className="masthead-image">
+              <div className="masthead-image floating-1 relative">
                 <img
                   src={assets.language_introduction}
                   alt="language introduction"
+                  className="rounded-lg"
                 />
+                <div className="bg-white absolute left-[-20px] top-[10%] rounded-xl p-4 floating-2">
+                  <div className="flex items-center gap-3">
+                    <FaLaptopCode className="text-2xl text-dark-2" />
+                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+                      Web Developer
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white absolute left-[-40px] bottom-[30%] rounded-xl p-4 floating-2">
+                  <div className="flex items-center gap-3">
+                    <FaMobileAlt className="text-2xl text-dark-2" />
+                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+                      Mobile Developer
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white absolute right-[-20px] top-0 rounded-xl p-4 floating-2">
+                  <div className="flex items-center gap-3">
+                    <TbCloudNetwork className="text-2xl text-dark-2" />
+                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+                      Network Engineer
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-white absolute right-0 bottom-[10%] rounded-xl p-4 floating-2">
+                  <div className="flex items-center gap-3">
+                    <FaPaintBrush className="text-2xl text-dark-2" />
+                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+                      UX Design
+                    </div>
+                  </div>
+                </div>
               </div>
             </Col>
           </Row>
