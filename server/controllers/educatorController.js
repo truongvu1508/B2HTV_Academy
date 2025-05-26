@@ -437,7 +437,10 @@ const generateEnrollmentData = async (courses) => {
 export const getEnrolledStudentsData = async (req, res) => {
   try {
     const educator = req.auth.userId;
-    const courses = await Course.find({ educator });
+    const courses = await Course.find({ educator }).populate(
+      "category",
+      "name description"
+    );
     const courseIds = courses.map((course) => course._id);
 
     const purchases = await Purchase.find({
@@ -445,15 +448,29 @@ export const getEnrolledStudentsData = async (req, res) => {
       status: "completed",
     })
       .populate("userId", "name imageUrl")
-      .populate("courseId", "courseTitle");
+      .populate({
+        path: "courseId",
+        select: "courseTitle category",
+        populate: {
+          path: "category",
+          select: "name description",
+        },
+      });
+
     const enrolledStudents = purchases.map((purchase) => ({
       student: purchase.userId,
       courseTitle: purchase.courseId.courseTitle,
+      course: {
+        _id: purchase.courseId._id,
+        courseTitle: purchase.courseId.courseTitle,
+        category: purchase.courseId.category,
+      },
       purchaseDate: purchase.createdAt,
     }));
 
     res.json({ success: true, enrolledStudents });
   } catch (error) {
+    console.error("Error in getEnrolledStudentsData:", error);
     res.json({ success: false, message: error.message });
   }
 };
