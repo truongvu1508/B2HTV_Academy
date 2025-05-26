@@ -10,7 +10,7 @@ import "./MastHead.scss";
 import { useUser } from "@clerk/clerk-react";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
 import { useSignInCustom } from "../../../hooks/useSignInCustom";
-import "../../FLoating/Floating.scss";
+
 import {
   FaLaptopCode,
   FaMobileAlt,
