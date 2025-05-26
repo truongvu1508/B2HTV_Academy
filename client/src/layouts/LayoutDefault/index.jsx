@@ -61,7 +61,7 @@ function LayoutDefault() {
           <Sider className="sider" collapsed={collapsed} theme="light">
             <MenuSider />
           </Sider>
-          <Content className="content min-h-screen mt-10">
+          <Content className="content min-h-screen">
             <Outlet />
           </Content>
         </Layout>

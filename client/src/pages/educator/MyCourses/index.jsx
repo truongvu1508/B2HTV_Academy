@@ -249,7 +249,7 @@ const MyCourses = () => {
                 value={selectedCategory}
                 onChange={(e) => {
                   setSelectedCategory(e.target.value);
-                  table.setPageIndex(0); // Reset to first page on filter change
+                  table.setPageIndex(0);
                 }}
                 className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
@@ -328,14 +328,12 @@ const MyCourses = () => {
             </tbody>
           </table>
 
-          {/* Message when no courses match filter */}
           {filteredCourses.length === 0 && selectedCategory && (
             <p className="text-sm text-gray-500 mt-4">
               Không có khóa học nào thuộc danh mục đã chọn.
             </p>
           )}
 
-          {/* Custom Pagination */}
           {filteredCourses.length > 0 && <CustomPagination table={table} />}
         </div>
       </div>
