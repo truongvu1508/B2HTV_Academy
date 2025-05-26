@@ -179,13 +179,13 @@ const MyCourses = () => {
           <div className="flex space-x-2">
             <Link
               to={`/educator/update-course/${row.original._id}`}
-              className="bg-blue-500 text-white px-5 py-3 rounded hover:bg-blue-600 text-xs"
+              className="text-blue-500 px-2 py-3 rounded hover:bg-blue-600 text-lg"
             >
               <FaEye />
             </Link>
             <button
               onClick={() => handleDeleteClick(row.original._id)}
-              className="bg-red-500 text-white px-5 py-3 rounded hover:bg-red-600 text-xs"
+              className="text-red-500 px-2 py-3 rounded hover:bg-red-600 text-lg"
             >
               <FaTrash />
             </button>
