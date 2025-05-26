@@ -136,44 +136,22 @@ const StudentsEnrolled = () => {
               <div className="flex items-center space-x-4">
                 {/* Category Filter */}
                 <div className="flex items-center space-x-2">
-                  <label
-                    htmlFor="categoryFilter"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
+                  <label htmlFor="categoryFilter" className="text-sm">
                     Danh mục:
                   </label>
-                  <div className="relative">
-                    <select
-                      id="categoryFilter"
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="appearance-none w-full min-w-[150px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer"
-                      aria-label="Lọc theo danh mục"
-                    >
-                      <option value="">Tất cả danh mục</option>
-                      {categories.map((category) => (
-                        <option key={category._id} value={category._id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                      <svg
-                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
+                  <select
+                    id="categoryFilter"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm min-w-[150px]"
+                  >
+                    <option value="">Tất cả danh mục</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category._id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 {/* Rows per page */}
                 <div className="flex items-center space-x-2">
