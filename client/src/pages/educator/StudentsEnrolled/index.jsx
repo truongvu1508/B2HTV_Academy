@@ -12,8 +12,28 @@ import useDataTable from "../../../hooks/useDataTable";
 const StudentsEnrolled = () => {
   const { backendUrl, getToken, isEducator } = useContext(AppContext);
   const [enrolledStudents, setEnrolledStudents] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Fetch categories
+  const fetchCategories = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(
+        backendUrl + "/api/educator/categories",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        setCategories(data.categories);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Không thể tải danh mục");
+    }
+  };
+
+  // Fetch enrolled students
   const fetchEnrolledStudents = async () => {
     try {
       setLoading(true);
@@ -37,8 +57,17 @@ const StudentsEnrolled = () => {
   useEffect(() => {
     if (isEducator) {
       fetchEnrolledStudents();
+      fetchCategories();
     }
   }, [isEducator]);
+
+  // Filter enrolled students by selected category
+  const filteredEnrolledStudents = useMemo(() => {
+    if (!selectedCategory) return enrolledStudents;
+    return enrolledStudents.filter(
+      (student) => student.course?.category?._id === selectedCategory
+    );
+  }, [enrolledStudents, selectedCategory]);
 
   // Columns definition for react-table
   const columns = useMemo(
@@ -69,6 +98,15 @@ const StudentsEnrolled = () => {
         cell: ({ getValue }) => <span className="truncate">{getValue()}</span>,
       },
       {
+        accessorKey: "course.category.name",
+        header: "Danh mục",
+        cell: ({ row }) => (
+          <span className="truncate">
+            {row.original.course?.category?.name || "Không xác định"}
+          </span>
+        ),
+      },
+      {
         accessorKey: "purchaseDate",
         header: "Ngày đăng ký",
         cell: ({ getValue }) => new Date(getValue()).toLocaleDateString(),
@@ -79,7 +117,7 @@ const StudentsEnrolled = () => {
 
   // Table instance
   const table = useDataTable({
-    data: enrolledStudents,
+    data: filteredEnrolledStudents,
     columns,
     defaultPageSize: 5,
   });
@@ -95,86 +133,158 @@ const StudentsEnrolled = () => {
           <>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold mb-4">Danh sách học viên</h2>
-              <div className="flex items-center space-x-2">
-                <label htmlFor="rowsPerPage" className="text-sm">
-                  Hiển thị:
-                </label>
-                <select
-                  value={table.getState().pagination.pageSize}
-                  onChange={(e) => {
-                    table.setPageSize(Number(e.target.value));
-                  }}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm"
-                >
-                  {[5, 10, 15, 20, 25].map((pageSize) => (
-                    <option key={pageSize} value={pageSize}>
-                      {pageSize} dòng
-                    </option>
-                  ))}
-                </select>
+              <div className="flex items-center space-x-4">
+                {/* Category Filter */}
+                <div className="flex items-center space-x-2">
+                  <label
+                    htmlFor="categoryFilter"
+                    className="text-sm font-medium text-gray-700 dark:text-gray-300"
+                  >
+                    Danh mục:
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="categoryFilter"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="appearance-none w-full min-w-[150px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer"
+                      aria-label="Lọc theo danh mục"
+                    >
+                      <option value="">Tất cả danh mục</option>
+                      {categories.map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                {/* Rows per page */}
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="rowsPerPage" className="text-sm">
+                    Hiển thị:
+                  </label>
+                  <select
+                    id="rowsPerPage"
+                    value={table.getState().pagination.pageSize}
+                    onChange={(e) => {
+                      table.setPageSize(Number(e.target.value));
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                  >
+                    {[5, 10, 15, 20, 25].map((pageSize) => (
+                      <option key={pageSize} value={pageSize}>
+                        {pageSize} dòng
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
-            <div className="mt-4">
-              <table className="w-full bg-white border border-gray-500/20 text-left">
-                <thead className="border-b border-gray-500/20">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <th
-                          key={header.id}
-                          className={`px-4 py-3 text-sm font-semibold ${
-                            header.id === "index" ? "text-center" : ""
-                          } ${
-                            header.column.getCanSort() ? "cursor-pointer" : ""
-                          }`}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          <div
-                            className={`flex ${
-                              header.id === "index"
-                                ? "justify-center"
-                                : "items-center"
+
+            {/* Results summary */}
+            <div className="mb-4 text-sm text-gray-600">
+              {selectedCategory ? (
+                <span>
+                  Hiển thị {filteredEnrolledStudents.length} học viên
+                  {categories.find((cat) => cat._id === selectedCategory)
+                    ?.name &&
+                    ` trong danh mục "${
+                      categories.find((cat) => cat._id === selectedCategory)
+                        .name
+                    }"`}
+                </span>
+              ) : (
+                <span>Tổng cộng {enrolledStudents.length} học viên</span>
+              )}
+            </div>
+
+            {filteredEnrolledStudents.length === 0 && selectedCategory ? (
+              <div className="text-center py-8">
+                Không có học viên nào trong danh mục "
+                {categories.find((cat) => cat._id === selectedCategory)?.name ||
+                  "đã chọn"}
+                ".
+              </div>
+            ) : (
+              <div className="mt-4">
+                <table className="w-full bg-white border border-gray-500/20 text-left">
+                  <thead className="border-b border-gray-500/20">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <tr key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                          <th
+                            key={header.id}
+                            className={`px-4 py-3 text-sm font-semibold ${
+                              header.id === "index" ? "text-center" : ""
+                            } ${
+                              header.column.getCanSort() ? "cursor-pointer" : ""
+                            }`}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            <div
+                              className={`flex ${
+                                header.id === "index"
+                                  ? "justify-center"
+                                  : "items-center"
+                              }`}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                              {header.column.getCanSort() &&
+                                ({
+                                  asc: <FaSortUp className="ml-2" />,
+                                  desc: <FaSortDown className="ml-2" />,
+                                }[header.column.getIsSorted()] ?? (
+                                  <FaSort className="ml-2 opacity-50" />
+                                ))}
+                            </div>
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {table.getRowModel().rows.map((row) => (
+                      <tr key={row.id} className="border-b border-gray-500/20">
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className={`px-4 py-3 text-sm ${
+                              cell.column.id === "index" ? "text-center" : ""
                             }`}
                           >
                             {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
+                              cell.column.columnDef.cell,
+                              cell.getContext()
                             )}
-                            {header.column.getCanSort() &&
-                              ({
-                                asc: <FaSortUp className="ml-2" />,
-                                desc: <FaSortDown className="ml-2" />,
-                              }[header.column.getIsSorted()] ?? (
-                                <FaSort className="ml-2 opacity-50" />
-                              ))}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody>
-                  {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id} className="border-b border-gray-500/20">
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className={`px-4 py-3 text-sm ${
-                            cell.column.id === "index" ? "text-center" : ""
-                          }`}
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <CustomPagination table={table} />
-            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <CustomPagination table={table} />
+              </div>
+            )}
           </>
         ) : (
           <div className="text-center py-8">Không có học viên nào đăng ký.</div>
