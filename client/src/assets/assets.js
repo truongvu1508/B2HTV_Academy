@@ -27,6 +27,7 @@ import logo from "./logo.png";
 import logo_fold from "./logo-fold.png";
 import logo_b2htv from "./logo_b2htv.png";
 import logo_b2htv_admin from "./logo_b2htv_admin.png";
+import nodata from "./no-data.webp";
 
 import icon_address from "./icon-address.svg";
 import icon_mail from "./icon-mail.svg";
@@ -65,6 +66,7 @@ export const assets = {
   icon_address,
   icon_phone,
   icon_mail,
+  nodata,
 };
 
 export const dummyEducatorData = {
