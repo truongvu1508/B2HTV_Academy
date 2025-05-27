@@ -23,7 +23,7 @@ const CourseCard = ({ course, courseData, loading }) => {
       className="relative overflow-hidden rounded-lg flex flex-col h-full"
     >
       {/* Fixed height for the image container */}
-      <div className="w-full h-80 overflow-hidden">
+      <div className="w-full h-60 overflow-hidden">
         <img
           className="w-full h-full object-cover rounded-md border border-gray/20"
           src={course.courseThumbnail}
