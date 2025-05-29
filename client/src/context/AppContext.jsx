@@ -68,14 +68,34 @@ export const AppContextProvider = (props) => {
         setUserData(data.user);
         if (data.user.isLocked && !isLockNotified) {
           toast.error(
-            "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin qua số điện thoại 0987654321 để được hỗ trợ.",
+            <div className="flex items-start space-x-3 p-1">
+              <div className="flex-1 text-center">
+                <div className="font-bold text-red-700 text-base mb-1">
+                  Tài khoản bị khóa
+                </div>
+                <div className="text-sm text-gray-600 leading-relaxed">
+                  Vui lòng liên hệ admin qua số điện thoại{" "}
+                  <a
+                    href="tel:0987654321"
+                    className="font-semibold text-blue-600 hover:text-blue-800 underline"
+                  >
+                    0987654321
+                  </a>{" "}
+                  để được hỗ trợ.
+                </div>
+              </div>
+            </div>,
             {
               position: "top-center",
-              autoClose: 5000,
+              autoClose: 8000,
               hideProgressBar: false,
               closeOnClick: true,
               pauseOnHover: true,
               draggable: true,
+              className:
+                "bg-gradient-to-r from-red-50 to-red-100 border border-red-200 shadow-xl rounded-xl",
+              bodyClassName: "p-0",
+              progressClassName: "bg-gradient-to-r from-red-400 to-red-600",
             }
           );
           setIsLockNotified(true);
