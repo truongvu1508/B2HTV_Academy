@@ -63,7 +63,7 @@ const MyEnrollments = () => {
     <>
       <Navbar />
 
-      <div className="md:px-36 px-8 pt-10 min-h-screen">
+      <div className="md:px-36 px-8 py-10 min-h-screen">
         <h1 className="text-2xl font-semibold">Khóa học của tôi</h1>
         <table className="md:table-auto table-fixed w-full overflow-hidden border border-gray-500/20 border-collapse mt-10">
           <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left max-sm:hidden">
