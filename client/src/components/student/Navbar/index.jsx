@@ -1,17 +1,38 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { assets } from "../../../assets/assets";
 import { NavLink, useLocation } from "react-router-dom";
-import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import { AppContext } from "../../../context/AppContext";
 import { useSignInCustom } from "../../../hooks/useSignInCustom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const handleSignIn = useSignInCustom();
   const { user } = useUser();
-  const { navigate, isEducator } = useContext(AppContext);
+  const { navigate, isEducator, userData } = useContext(AppContext);
   const location = useLocation();
+  const [isLockNotified, setIsLockNotified] = useState(false); // Trạng thái để tránh lặp thông báo
+
+  // Kiểm tra isLocked từ userData
+  useEffect(() => {
+    if (userData && userData.isLocked && !isLockNotified) {
+      toast.error(
+        "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin qua số điện thoại 0987654321 để được hỗ trợ.",
+        {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
+      setIsLockNotified(true); // Đánh dấu đã hiển thị thông báo
+    }
+  }, [userData, isLockNotified]);
 
   const navLinkStyles = ({ isActive }) =>
     isActive
@@ -32,7 +53,7 @@ const Navbar = () => {
         <div>
           <img
             onClick={() => navigate("/")}
-            className=" w-[200px] cursor-pointer"
+            className="w-[200px] cursor-pointer"
             src={assets.logo_b2htv}
             alt="B2HTV Academy"
           />
@@ -93,6 +114,7 @@ const Navbar = () => {
           )}
         </div>
       </nav>
+      <ToastContainer />
     </header>
   );
 };
