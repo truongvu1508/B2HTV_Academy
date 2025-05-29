@@ -5,15 +5,12 @@ import { UserOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Navbar.scss";
 import { UserButton, useUser } from "@clerk/clerk-react";
 import { AppContext } from "../../../context/AppContext";
-import axios from "axios";
-import { toast } from "react-toastify";
 import { useSignInCustom } from "../../../hooks/useSignInCustom";
 
 const Navbar = () => {
   const handleSignIn = useSignInCustom();
   const { user } = useUser();
-  const { navigate, isEducator, backendUrl, setIsEducator, getToken } =
-    useContext(AppContext);
+  const { navigate, isEducator } = useContext(AppContext);
   const location = useLocation();
 
   const navLinkStyles = ({ isActive }) =>
@@ -27,29 +24,6 @@ const Navbar = () => {
       location.pathname.startsWith("/course-list/") ||
       location.pathname.startsWith("/course/")
     );
-  };
-
-  const becomeEducator = async () => {
-    try {
-      if (isEducator) {
-        navigate("/educator");
-        return;
-      }
-      const token = await getToken();
-      const { data } = await axios.get(
-        backendUrl + "/api/educator/update-role",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (data.success) {
-        setIsEducator(true);
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
   };
 
   return (
