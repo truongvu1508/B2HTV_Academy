@@ -50,20 +50,33 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  //Fetch UserData
+  // Fetch UserData
   const fetchUserData = async () => {
-    if (user.publicMetadata.role === "educator") {
+    if (user?.publicMetadata.role === "educator") {
       setIsEducator(true);
     }
     try {
       const token = await getToken();
-
       const { data } = await axios.get(backendUrl + "/api/user/data", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (data.success) {
         setUserData(data.user);
+        // Kiểm tra isLocked và hiển thị thông báo
+        if (data.user.isLocked) {
+          toast.error(
+            "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin qua số điện thoại 0987654321 để được hỗ trợ.",
+            {
+              position: "top-center",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            }
+          );
+        }
       } else {
         toast.error(data.message);
       }
