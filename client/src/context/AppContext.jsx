@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import { useAuth, useUser, useClerk } from "@clerk/clerk-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -27,11 +27,13 @@ export const AppContextProvider = (props) => {
 
   const { getToken } = useAuth();
   const { user } = useUser();
+  const { signOut } = useClerk();
 
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [isLockNotified, setIsLockNotified] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -63,8 +65,7 @@ export const AppContextProvider = (props) => {
 
       if (data.success) {
         setUserData(data.user);
-        // Kiểm tra isLocked và hiển thị thông báo
-        if (data.user.isLocked) {
+        if (data.user.isLocked && !isLockNotified) {
           toast.error(
             "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin qua số điện thoại 0987654321 để được hỗ trợ.",
             {
@@ -76,6 +77,11 @@ export const AppContextProvider = (props) => {
               draggable: true,
             }
           );
+          setIsLockNotified(true);
+          setTimeout(async () => {
+            await signOut();
+            navigate("/");
+          }, 5000);
         }
       } else {
         toast.error(data.message);
