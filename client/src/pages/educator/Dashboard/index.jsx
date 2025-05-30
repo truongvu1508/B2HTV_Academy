@@ -18,6 +18,7 @@ import { Column, Pie } from "@ant-design/plots";
 import BackToTop from "../../../components/client/BackToTop";
 import CustomPagination from "../../../components/educator/CustomPagination";
 import useDataTable from "../../../hooks/useDataTable";
+import CustomSelect from "../../../components/CustomSelect";
 
 const Dashboard = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -26,7 +27,8 @@ const Dashboard = () => {
   const [enrollmentData, setEnrollmentData] = useState([]);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [timeFrame, setTimeFrame] = useState("month"); // State cho combobox (month, quarter, year)
+  const [timeFrame, setTimeFrame] = useState("month");
+  const [pieChartType, setPieChartType] = useState("course");
 
   const fetchDashboardData = async () => {
     try {
@@ -34,7 +36,7 @@ const Dashboard = () => {
       const token = await getToken();
       const { data } = await axios.get(backendUrl + "/api/educator/dashboard", {
         headers: { Authorization: `Bearer ${token}` },
-        params: { timeFrame }, // Gửi timeFrame qua query params
+        params: { timeFrame, pieChartType },
       });
 
       if (data.success) {
@@ -77,7 +79,7 @@ const Dashboard = () => {
       fetchDashboardData();
       fetchEducatorCourses();
     }
-  }, [isEducator, timeFrame]); // Thêm timeFrame vào dependency array để gọi lại API khi thay đổi
+  }, [isEducator, timeFrame, pieChartType]);
 
   // Column configuration for Recent Enrollments table
   const enrollmentColumns = useMemo(
@@ -234,10 +236,16 @@ const Dashboard = () => {
     data:
       enrollmentData.length > 0
         ? enrollmentData
-        : [
+        : pieChartType === "course"
+        ? [
             { type: "Khóa học A", value: 0 },
             { type: "Khóa học B", value: 0 },
             { type: "Khóa học C", value: 0 },
+          ]
+        : [
+            { type: "Danh mục A", value: 0 },
+            { type: "Danh mục B", value: 0 },
+            { type: "Danh mục C", value: 0 },
           ],
     angleField: "value",
     colorField: "type",
@@ -303,9 +311,24 @@ const Dashboard = () => {
 
         <div className="grid md:grid-cols-2 grid-cols-1 gap-6 w-full">
           <div className="border border-gray-300 rounded-md p-4 bg-white shadow-sm">
-            <h2 className="text-lg font-medium mb-4">
-              Phân bố học viên theo khóa học
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium">
+                Phân bố học viên theo{" "}
+                {pieChartType === "course" ? "khóa học" : "danh mục"}
+              </h2>
+              <div className="flex items-center space-x-2">
+                <CustomSelect
+                  value={pieChartType}
+                  onChange={(e) => setPieChartType(e.target.value)}
+                  options={[
+                    { value: "course", label: "Khóa học" },
+                    { value: "category", label: "Danh mục" },
+                  ]}
+                  label="Phân bố theo"
+                  className="w-40"
+                />
+              </div>
+            </div>
             <div className="h-80">
               <Pie {...pieConfig} />
             </div>
@@ -316,22 +339,20 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
                   <div className="flex items-center space-x-2">
-                    <label htmlFor="rowsPerPageEnrollments" className="text-sm">
-                      Hiển thị:
-                    </label>
-                    <select
-                      value={enrollmentTable.getState().pagination.pageSize}
-                      onChange={(e) => {
-                        enrollmentTable.setPageSize(Number(e.target.value));
-                      }}
-                      className="border border-gray-300 rounded px-2 py-1 text-sm"
-                    >
-                      {[5, 10, 15, 20].map((pageSize) => (
-                        <option key={pageSize} value={pageSize}>
-                          {pageSize} dòng
-                        </option>
-                      ))}
-                    </select>
+                    <CustomSelect
+                      value={enrollmentTable
+                        .getState()
+                        .pagination.pageSize.toString()}
+                      onChange={(e) =>
+                        enrollmentTable.setPageSize(Number(e.target.value))
+                      }
+                      options={[5, 10, 15, 20].map((pageSize) => ({
+                        value: pageSize.toString(),
+                        label: `${pageSize} dòng`,
+                      }))}
+                      label="Hiển thị"
+                      className="w-32"
+                    />
                   </div>
                 </div>
                 <div className="flex flex-col max-w-4xl w-full overflow-hidden rounded-md bg-white">

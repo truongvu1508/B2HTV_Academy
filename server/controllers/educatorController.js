@@ -272,8 +272,13 @@ export const getEducatorCourses = async (req, res) => {
 export const educatorDashboardData = async (req, res) => {
   try {
     const educator = req.auth.userId;
-    const timeFrame = req.query.timeFrame || "month"; // Lấy timeFrame từ query params, mặc định là "month"
-    const courses = await Course.find({ educator });
+    const timeFrame = req.query.timeFrame || "month";
+    const pieChartType = req.query.pieChartType || "course"; // New parameter
+
+    const courses = await Course.find({ educator }).populate(
+      "category",
+      "name"
+    );
     const totalCourses = courses.length;
 
     const courseIds = courses.map((course) => course._id);
@@ -322,8 +327,11 @@ export const educatorDashboardData = async (req, res) => {
       timeFrame
     );
 
-    // For Courses
-    const enrollmentByMonth = await generateEnrollmentData(courses);
+    // Generate enrollment data based on pieChartType
+    const enrollmentByChart = await generateEnrollmentData(
+      courses,
+      pieChartType
+    );
 
     res.json({
       success: true,
@@ -332,13 +340,44 @@ export const educatorDashboardData = async (req, res) => {
         enrolledStudentsData,
         totalCourses,
         totalStudents,
-        salesByMonth: salesByTimeFrame, // Đổi tên để phù hợp với frontend
-        enrollmentByMonth,
+        salesByMonth: salesByTimeFrame,
+        enrollmentByMonth: enrollmentByChart, // This will now contain either course or category data
       },
     });
   } catch (error) {
     console.error("Error in educatorDashboardData:", error);
     res.json({ success: false, message: error.message });
+  }
+};
+
+// Generate enrollment data by chart type (course or category)
+const generateEnrollmentData = async (courses, chartType = "course") => {
+  if (chartType === "category") {
+    // Group by category
+    const categoryData = {};
+
+    courses.forEach((course) => {
+      const categoryName = course.category?.name || "Không có danh mục";
+      const enrollmentCount = course.enrolledStudents.length;
+
+      if (categoryData[categoryName]) {
+        categoryData[categoryName] += enrollmentCount;
+      } else {
+        categoryData[categoryName] = enrollmentCount;
+      }
+    });
+
+    // Convert to array format for chart
+    return Object.keys(categoryData).map((categoryName) => ({
+      type: categoryName,
+      value: categoryData[categoryName],
+    }));
+  } else {
+    // Group by course (original logic)
+    return courses.map((course) => ({
+      type: course.courseTitle,
+      value: course.enrolledStudents.length,
+    }));
   }
 };
 
@@ -426,12 +465,12 @@ const generateSalesByTimeFrame = async (purchases, timeFrame) => {
   return [];
 };
 
-const generateEnrollmentData = async (courses) => {
-  return courses.map((course) => ({
-    type: course.courseTitle,
-    value: course.enrolledStudents.length,
-  }));
-};
+// const generateEnrollmentData = async (courses) => {
+//   return courses.map((course) => ({
+//     type: course.courseTitle,
+//     value: course.enrolledStudents.length,
+//   }));
+// };
 
 // Get Enrolled Students Data
 export const getEnrolledStudentsData = async (req, res) => {
