@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomPagination from "../../../components/educator/CustomPagination";
 import useDataTable from "../../../hooks/useDataTable";
+import CustomSelect from "../../../components/CustomSelect";
 
 const MyCourses = () => {
   const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -244,41 +245,38 @@ const MyCourses = () => {
               <label htmlFor="categoryFilter" className="text-sm">
                 Lọc theo danh mục:
               </label>
-              <select
+              <CustomSelect
                 id="categoryFilter"
                 value={selectedCategory}
                 onChange={(e) => {
                   setSelectedCategory(e.target.value);
                   table.setPageIndex(0);
                 }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="">Tất cả danh mục</option>
-                {categories.map((category) => (
-                  <option key={category._id} value={category._id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { value: "", label: "Tất cả danh mục" },
+                  ...categories.map((category) => ({
+                    value: category._id,
+                    label: category.name,
+                  })),
+                ]}
+                className="w-48"
+                placeholder="Chọn danh mục"
+              />
             </div>
             {/* Rows per page controls */}
             <div className="flex items-center space-x-2">
               <label htmlFor="rowsPerPage" className="text-sm">
                 Hiển thị:
               </label>
-              <select
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm"
-              >
-                {[5, 10, 15, 20, 25].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize} dòng
-                  </option>
-                ))}
-              </select>
+              <CustomSelect
+                value={table.getState().pagination.pageSize.toString()}
+                onChange={(e) => table.setPageSize(Number(e.target.value))}
+                options={[5, 10, 15, 20].map((pageSize) => ({
+                  value: pageSize.toString(),
+                  label: `${pageSize} dòng`,
+                }))}
+                className="w-32"
+              />
             </div>
           </div>
         </div>
