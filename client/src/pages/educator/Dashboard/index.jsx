@@ -350,7 +350,6 @@ const Dashboard = () => {
                         value: pageSize.toString(),
                         label: `${pageSize} dòng`,
                       }))}
-                      label="Hiển thị"
                       className="w-32"
                     />
                   </div>
@@ -439,15 +438,16 @@ const Dashboard = () => {
                 : "năm"}
             </h2>{" "}
             <div className="flex justify-end mb-4">
-              <select
+              <CustomSelect
                 value={timeFrame}
                 onChange={(e) => setTimeFrame(e.target.value)}
-                className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="month">Tháng</option>
-                <option value="quarter">Quý</option>
-                <option value="year">Năm</option>
-              </select>
+                options={[
+                  { value: "month", label: "Tháng" },
+                  { value: "quarter", label: "Quý" },
+                  { value: "year", label: "Năm" },
+                ]}
+                className="w-40"
+              />
             </div>
           </div>
           <div className="h-80">
@@ -461,22 +461,19 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
                 <div className="flex items-center space-x-2">
-                  <label htmlFor="rowsPerPageCourses" className="text-sm">
-                    Hiển thị:
-                  </label>
-                  <select
-                    value={courseTable.getState().pagination.pageSize}
-                    onChange={(e) => {
-                      courseTable.setPageSize(Number(e.target.value));
-                    }}
-                    className="border border-gray-300 rounded px-2 py-1 text-sm"
-                  >
-                    {[5, 10, 15, 20].map((pageSize) => (
-                      <option key={pageSize} value={pageSize}>
-                        {pageSize} dòng
-                      </option>
-                    ))}
-                  </select>
+                  <CustomSelect
+                    value={courseTable
+                      .getState()
+                      .pagination.pageSize.toString()}
+                    onChange={(e) =>
+                      courseTable.setPageSize(Number(e.target.value))
+                    }
+                    options={[5, 10, 15, 20].map((pageSize) => ({
+                      value: pageSize.toString(),
+                      label: `${pageSize} dòng`,
+                    }))}
+                    className="w-32"
+                  />
                 </div>
               </div>
               <div className="flex flex-col overflow-hidden rounded-md bg-white ">
