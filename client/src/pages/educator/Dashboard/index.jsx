@@ -339,6 +339,9 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="pb-4 text-lg font-medium">Đăng ký gần đây</h2>
                   <div className="flex items-center space-x-2">
+                    <label htmlFor="rowsPerPage" className="text-sm">
+                      Hiển thị:
+                    </label>
                     <CustomSelect
                       value={enrollmentTable
                         .getState()
@@ -461,6 +464,9 @@ const Dashboard = () => {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="pb-4 text-lg font-medium">Danh sách khóa học</h2>
                 <div className="flex items-center space-x-2">
+                  <label htmlFor="rowsPerPage" className="text-sm">
+                    Hiển thị:
+                  </label>
                   <CustomSelect
                     value={courseTable
                       .getState()

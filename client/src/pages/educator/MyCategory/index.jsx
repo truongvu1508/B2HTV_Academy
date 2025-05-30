@@ -173,6 +173,9 @@ const MyCategory = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold">Danh sách danh mục</h2>
           <div className="flex items-center space-x-2">
+            <label htmlFor="rowsPerPage" className="text-sm">
+              Hiển thị:
+            </label>
             <CustomSelect
               value={table.getState().pagination.pageSize.toString()}
               onChange={(e) => table.setPageSize(Number(e.target.value))}
