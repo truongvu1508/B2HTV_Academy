@@ -9,6 +9,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import CustomPagination from "../../../components/educator/CustomPagination";
 import useDataTable from "../../../hooks/useDataTable";
+import CustomSelect from "../../../components/CustomSelect";
 
 const MyCategory = () => {
   const { backendUrl, isEducator, getToken } = useContext(AppContext);
@@ -171,24 +172,16 @@ const MyCategory = () => {
 
         <div className="flex justify-between items-center">
           <h2 className="text-lg font-bold">Danh sách danh mục</h2>
-          {/* Điều khiển số dòng mỗi trang */}
-          <div className="flex items-center space-x-2 mb-4">
-            <label htmlFor="rowsPerPage" className="text-sm">
-              Hiển thị:
-            </label>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            >
-              {[5, 10, 15, 20, 25].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  {pageSize} dòng
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center space-x-2">
+            <CustomSelect
+              value={table.getState().pagination.pageSize.toString()}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
+              options={[5, 10, 15, 20].map((pageSize) => ({
+                value: pageSize.toString(),
+                label: `${pageSize} dòng`,
+              }))}
+              className="w-32"
+            />
           </div>
         </div>
 
