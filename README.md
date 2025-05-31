@@ -138,7 +138,7 @@ Built with ❤️ by passionate developers dedicated to revolutionizing online e
 - Stripe account for payments
 - Cloudinary account for media storage
 
-### Installation
+<!-- ### Installation
 
 1. **Clone the repository**
 
@@ -201,7 +201,7 @@ Built with ❤️ by passionate developers dedicated to revolutionizing online e
    - Frontend: `http://localhost:5173`
    - Backend: `http://localhost:5000`
 
----
+--- -->
 
 ## 📸 Screenshots
 
