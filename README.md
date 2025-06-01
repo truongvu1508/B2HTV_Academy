@@ -17,7 +17,7 @@ Built with ❤️ by passionate developers dedicated to revolutionizing online e
 </div>
 
 <div align="center">
-  <h3>🚀 A comprehensive online learning platform built by Team 4</h3>
+  <h3>🚀 A comprehensive online learning platform built by Group 4</h3>
   <p>Empowering education through modern web technologies</p>
 </div>
 
@@ -29,7 +29,6 @@ Built with ❤️ by passionate developers dedicated to revolutionizing online e
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🏗️ Architecture](#️-architecture)
 - [🚀 Getting Started](#-getting-started)
-- [📸 Screenshots](#-screenshots)
 - [👥 Team](#-team)
 - [📄 License](#-license)
 
@@ -138,83 +137,6 @@ Built with ❤️ by passionate developers dedicated to revolutionizing online e
 - Stripe account for payments
 - Cloudinary account for media storage
 
-<!-- ### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/your-team/b2htv-academy.git
-   cd b2htv-academy
-   ```
-
-2. **Setup Backend**
-
-   ```bash
-   cd server
-   npm install
-   ```
-
-   Create `.env` file:
-
-   ```env
-   MONGODB_URI=your_mongodb_connection_string
-   CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-   CLERK_SECRET_KEY=your_clerk_secret_key
-   CLOUDINARY_CLOUD_NAME=your_cloudinary_name
-   CLOUDINARY_API_KEY=your_cloudinary_key
-   CLOUDINARY_API_SECRET=your_cloudinary_secret
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   ```
-
-3. **Setup Frontend**
-
-   ```bash
-   cd ../client
-   npm install
-   ```
-
-   Create `.env` file:
-
-   ```env
-   VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-   VITE_API_URL=http://localhost:5000
-   VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-   ```
-
-4. **Start Development Servers**
-
-   Backend:
-
-   ```bash
-   cd server
-   npm run server
-   ```
-
-   Frontend:
-
-   ```bash
-   cd client
-   npm run dev
-   ```
-
-5. **Access the application**
-   - Frontend: `http://localhost:5173`
-   - Backend: `http://localhost:5000`
-
---- -->
-
-## 📸 Screenshots
-
-<div align="center">
-  <img src="https://via.placeholder.com/800x400/4f46e5/ffffff?text=Course+Catalog" alt="Course Catalog" />
-  <p><em>📚 Modern course catalog with search and filtering</em></p>
-</div>
-
-<div align="center">
-  <img src="https://via.placeholder.com/800x400/059669/ffffff?text=Admin+Dashboard" alt="Admin Dashboard" />
-  <p><em>📊 Comprehensive admin dashboard with analytics</em></p>
-</div>
-
 ---
 
 ## 🎯 Key Highlights
@@ -237,5 +159,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
   <h3>🌟 Star us on GitHub if you find this project helpful!</h3>
-  <p>Made with 💻 and ☕ by Team 4</p>
+  <p>Made with 💻 and ☕ by Group 4</p>
 </div>
