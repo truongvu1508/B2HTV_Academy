@@ -128,7 +128,7 @@ const Player = () => {
   return courseData ? (
     <>
       <Navbar />
-      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36 ">
+      <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36 md:py-18">
         {/* left column */}
         <div className="text-gray-800">
           <h2 className="text-xl font-semibold">Nội dung khóa học</h2>
@@ -218,9 +218,9 @@ const Player = () => {
           </div>
         </div>
         {/* right column */}
-        <div className="md:mt-10">
+        <div className="md:mt-10 ">
           {playerData ? (
-            <div>
+            <div className="md:sticky md:top-3">
               <YouTube
                 videoId={playerData.lectureUrl.split("/").pop()}
                 iframeClassName="w-full aspect-video"
@@ -243,7 +243,7 @@ const Player = () => {
             </div>
           ) : (
             <img
-              className="w-full h-80 object-cover"
+              className="w-full h-80 object-cover md:sticky md:top-3"
               src={courseData ? courseData.courseThumbnail : ""}
               alt=""
             />
