@@ -5,7 +5,13 @@ import Loading from "../../../components/student/Loading";
 import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import {
+  FaSort,
+  FaSortUp,
+  FaSortDown,
+  FaCheckCircle,
+  FaClock,
+} from "react-icons/fa";
 import CustomPagination from "../../../components/educator/CustomPagination";
 import useDataTable from "../../../hooks/useDataTable";
 import CustomSelect from "../../../components/CustomSelect";
@@ -15,6 +21,7 @@ const StudentsEnrolled = () => {
   const [enrolledStudents, setEnrolledStudents] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [progressFilter, setProgressFilter] = useState(""); // New filter for progress
   const [loading, setLoading] = useState(true);
 
   // Fetch categories
@@ -62,13 +69,82 @@ const StudentsEnrolled = () => {
     }
   }, [isEducator]);
 
-  // Filter enrolled students by selected category
+  // Filter enrolled students by selected category and progress
   const filteredEnrolledStudents = useMemo(() => {
-    if (!selectedCategory) return enrolledStudents;
-    return enrolledStudents.filter(
-      (student) => student.course?.category?._id === selectedCategory
+    let filtered = enrolledStudents;
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(
+        (student) => student.course?.category?._id === selectedCategory
+      );
+    }
+
+    // Filter by progress
+    if (progressFilter === "completed") {
+      filtered = filtered.filter((student) => student.progress?.completed);
+    } else if (progressFilter === "in-progress") {
+      filtered = filtered.filter(
+        (student) =>
+          !student.progress?.completed &&
+          student.progress?.progressPercentage > 0
+      );
+    } else if (progressFilter === "not-started") {
+      filtered = filtered.filter(
+        (student) => student.progress?.progressPercentage === 0
+      );
+    }
+
+    return filtered;
+  }, [enrolledStudents, selectedCategory, progressFilter]);
+
+  // Progress status component
+  const ProgressStatus = ({ progress }) => {
+    if (!progress) {
+      return (
+        <div className="flex items-center space-x-2">
+          <div className="w-16 bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-gray-300 h-2 rounded-full"
+              style={{ width: "0%" }}
+            ></div>
+          </div>
+          <span className="text-xs text-gray-500">0%</span>
+        </div>
+      );
+    }
+
+    const { completed, progressPercentage, completedLectures, totalLectures } =
+      progress;
+
+    return (
+      <div className="space-y-1">
+        <div className="flex items-center space-x-2">
+          {completed ? (
+            <FaCheckCircle className="text-green-500 text-sm" />
+          ) : (
+            <FaClock className="text-yellow-500 text-sm" />
+          )}
+          <div className="w-16 bg-gray-200 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full ${
+                completed
+                  ? "bg-green-500"
+                  : progressPercentage > 0
+                  ? "bg-blue-500"
+                  : "bg-gray-300"
+              }`}
+              style={{ width: `${progressPercentage}%` }}
+            ></div>
+          </div>
+          <span className="text-xs font-medium">{progressPercentage}%</span>
+        </div>
+        <div className="text-xs text-gray-500">
+          {completedLectures}/{totalLectures} bài học
+        </div>
+      </div>
     );
-  }, [enrolledStudents, selectedCategory]);
+  };
 
   // Columns definition for react-table
   const columns = useMemo(
@@ -106,6 +182,16 @@ const StudentsEnrolled = () => {
             {row.original.course?.category?.name || "Không xác định"}
           </span>
         ),
+      },
+      {
+        accessorKey: "progress.progressPercentage",
+        header: "Tiến độ",
+        cell: ({ row }) => <ProgressStatus progress={row.original.progress} />,
+        sortingFn: (rowA, rowB) => {
+          const a = rowA.original.progress?.progressPercentage || 0;
+          const b = rowB.original.progress?.progressPercentage || 0;
+          return a - b;
+        },
       },
       {
         accessorKey: "purchaseDate",
@@ -158,6 +244,30 @@ const StudentsEnrolled = () => {
                     placeholder="Chọn danh mục"
                   />
                 </div>
+
+                {/* Progress Filter */}
+                <div className="flex items-center space-x-2">
+                  <label htmlFor="progressFilter" className="text-sm">
+                    Tiến độ:
+                  </label>
+                  <CustomSelect
+                    id="progressFilter"
+                    value={progressFilter}
+                    onChange={(e) => {
+                      setProgressFilter(e.target.value);
+                      table.setPageIndex(0);
+                    }}
+                    options={[
+                      { value: "", label: "Tất cả tiến độ" },
+                      { value: "completed", label: "Đã hoàn thành" },
+                      { value: "in-progress", label: "Đang học" },
+                      { value: "not-started", label: "Chưa bắt đầu" },
+                    ]}
+                    className="min-w-[140px]"
+                    placeholder="Chọn tiến độ"
+                  />
+                </div>
+
                 {/* Rows per page */}
                 <div className="flex items-center space-x-2">
                   <label htmlFor="rowsPerPage" className="text-sm">
@@ -178,27 +288,34 @@ const StudentsEnrolled = () => {
 
             {/* Results summary */}
             <div className="mb-4 text-sm text-gray-600">
-              {selectedCategory ? (
+              {selectedCategory || progressFilter ? (
                 <span>
                   Hiển thị {filteredEnrolledStudents.length} học viên
-                  {categories.find((cat) => cat._id === selectedCategory)
-                    ?.name &&
+                  {selectedCategory &&
+                    categories.find((cat) => cat._id === selectedCategory)
+                      ?.name &&
                     ` trong danh mục "${
                       categories.find((cat) => cat._id === selectedCategory)
                         .name
                     }"`}
+                  {progressFilter && (
+                    <>
+                      {selectedCategory ? " và " : " "}
+                      {progressFilter === "completed" && "đã hoàn thành"}
+                      {progressFilter === "in-progress" && "đang học"}
+                      {progressFilter === "not-started" && "chưa bắt đầu"}
+                    </>
+                  )}
                 </span>
               ) : (
                 <span>Tổng cộng {enrolledStudents.length} học viên</span>
               )}
             </div>
 
-            {filteredEnrolledStudents.length === 0 && selectedCategory ? (
+            {filteredEnrolledStudents.length === 0 &&
+            (selectedCategory || progressFilter) ? (
               <div className="text-center py-8">
-                Không có học viên nào trong danh mục "
-                {categories.find((cat) => cat._id === selectedCategory)?.name ||
-                  "đã chọn"}
-                ".
+                Không có học viên nào phù hợp với bộ lọc đã chọn.
               </div>
             ) : (
               <div className="mt-4">
