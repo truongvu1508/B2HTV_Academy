@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { Purchase } from "../models/Purchase.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
+import { CourseProgress } from "../models/CourseProgress.js";
 
 // Update role to educator
 export const updateRoleToEducator = async (req, res) => {
@@ -489,23 +490,63 @@ export const getEnrolledStudentsData = async (req, res) => {
       .populate("userId", "name imageUrl")
       .populate({
         path: "courseId",
-        select: "courseTitle category",
+        select: "courseTitle category courseContent",
         populate: {
           path: "category",
           select: "name description",
         },
       });
 
-    const enrolledStudents = purchases.map((purchase) => ({
-      student: purchase.userId,
-      courseTitle: purchase.courseId.courseTitle,
-      course: {
-        _id: purchase.courseId._id,
+    // Get all course progress data for enrolled students
+    const courseProgressData = await CourseProgress.find({
+      courseId: { $in: courseIds.map((id) => id.toString()) },
+    });
+
+    // Create a map for quick lookup of progress data
+    const progressMap = new Map();
+    courseProgressData.forEach((progress) => {
+      const key = `${progress.userId}-${progress.courseId}`;
+      progressMap.set(key, progress);
+    });
+
+    const enrolledStudents = purchases.map((purchase) => {
+      const progressKey = `${purchase.userId._id}-${purchase.courseId._id}`;
+      const progress = progressMap.get(progressKey);
+
+      // Calculate total lectures in the course
+      let totalLectures = 0;
+      if (purchase.courseId.courseContent) {
+        purchase.courseId.courseContent.forEach((chapter) => {
+          if (chapter.chapterContent) {
+            totalLectures += chapter.chapterContent.length;
+          }
+        });
+      }
+
+      // Calculate completed lectures
+      const completedLectures = progress ? progress.lectureCompleted.length : 0;
+      const progressPercentage =
+        totalLectures > 0
+          ? Math.round((completedLectures / totalLectures) * 100)
+          : 0;
+
+      return {
+        student: purchase.userId,
         courseTitle: purchase.courseId.courseTitle,
-        category: purchase.courseId.category,
-      },
-      purchaseDate: purchase.createdAt,
-    }));
+        course: {
+          _id: purchase.courseId._id,
+          courseTitle: purchase.courseId.courseTitle,
+          category: purchase.courseId.category,
+        },
+        purchaseDate: purchase.createdAt,
+        progress: {
+          completed: progress ? progress.completed : false,
+          completedLectures,
+          totalLectures,
+          progressPercentage,
+        },
+      };
+    });
 
     res.json({ success: true, enrolledStudents });
   } catch (error) {
