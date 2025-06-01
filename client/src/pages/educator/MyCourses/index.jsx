@@ -148,20 +148,6 @@ const MyCourses = () => {
         ),
       },
       {
-        accessorKey: "revenue",
-        header: "Doanh thu",
-        accessorFn: (row) => {
-          const revenue =
-            row.enrolledStudents?.length === 0
-              ? 0
-              : row.enrolledStudents.length *
-                (row.coursePrice * (1 - (row.discount || 0) / 100));
-          return Math.round(revenue);
-        },
-        cell: ({ getValue }) =>
-          `${getValue().toLocaleString("vi-VN")} ${currency}`,
-      },
-      {
         accessorKey: "enrolledStudents",
         header: "Học viên",
         accessorFn: (row) => row.enrolledStudents?.length || 0,
