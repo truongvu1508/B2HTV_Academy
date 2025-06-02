@@ -2,7 +2,7 @@ import Category from "../models/Category.js";
 import Course from "../models/Course.js";
 import mongoose from "mongoose";
 
-// Lay tat ca danh muc (giữ nguyên code của bạn)
+// Lay tat ca danh muc
 export const getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find().select(
@@ -14,7 +14,7 @@ export const getAllCategories = async (req, res) => {
   }
 };
 
-// Lay danh muc theo ID (giữ nguyên code của bạn)
+// Lay danh muc theo ID
 export const getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
