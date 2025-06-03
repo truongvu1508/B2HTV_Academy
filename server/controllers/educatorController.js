@@ -302,7 +302,7 @@ export const educatorDashboardData = async (req, res) => {
         allStudentIds.add(studentId.toString());
       });
     });
-    const totalStudents = allStudentIds.size; // Count unique students
+    const totalStudents = allStudentIds.size;
 
     // Collect enrolled students data (keep original logic)
     const enrolledStudentsData = [];
@@ -342,7 +342,7 @@ export const educatorDashboardData = async (req, res) => {
         totalCourses,
         totalStudents,
         salesByMonth: salesByTimeFrame,
-        enrollmentByMonth: enrollmentByChart, // This will now contain either course or category data
+        enrollmentByMonth: enrollmentByChart,
       },
     });
   } catch (error) {
