@@ -37,17 +37,23 @@ const MastHead = () => {
           <img src={assets.background} alt="image" />
         </div>
 
-        <div className="container" style={{ padding: "20px" }}>
-          <Row justify="center" align="middle">
+        <div className="container px-4 sm:px-6 lg:px-8">
+          <Row
+            justify="center"
+            align="middle"
+            gutter={[16, 32]}
+            className="min-h-screen"
+          >
+            {/* Content Column */}
             <Col
               xs={24}
               sm={24}
               md={24}
               lg={12}
               xl={12}
-              style={{ padding: "10px" }}
+              className="order-2 lg:order-1"
             >
-              <div className="masthead__content w-[90%]">
+              <div className="masthead__content">
                 <h1 className="masthead__title">
                   <span>{text}</span>{" "}
                   <span>
@@ -70,18 +76,15 @@ const MastHead = () => {
                   trình và quan trọng hơn là vận dụng kiến thức này để giải
                   quyết các bài toán thực tế.
                 </p>
-                {user ? (
-                  <></>
-                ) : (
-                  <>
-                    <Button onClick={handleSignIn} className="masthead__button">
-                      Đăng Ký Tài Khoản
-                    </Button>
-                  </>
+                {!user && (
+                  <Button onClick={handleSignIn} className="masthead__button">
+                    Đăng Ký Tài Khoản
+                  </Button>
                 )}
 
-                <Row className="masthead-info">
-                  <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+                {/* Info Section */}
+                <Row className="masthead-info" gutter={[16, 16]}>
+                  <Col xs={24} sm={8} md={8} lg={24} xl={8}>
                     <div className="masthead-info__item">
                       <div className="masthead-info__icon">
                         <TrophyOutlined />
@@ -91,7 +94,7 @@ const MastHead = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+                  <Col xs={24} sm={8} md={8} lg={24} xl={8}>
                     <div className="masthead-info__item">
                       <div className="masthead-info__icon">
                         <YoutubeOutlined />
@@ -101,7 +104,7 @@ const MastHead = () => {
                       </div>
                     </div>
                   </Col>
-                  <Col xs={24} sm={24} md={24} lg={8} xl={8}>
+                  <Col xs={24} sm={8} md={8} lg={24} xl={8}>
                     <div className="masthead-info__item">
                       <div className="masthead-info__icon">
                         <GlobalOutlined />
@@ -113,49 +116,54 @@ const MastHead = () => {
               </div>
             </Col>
 
+            {/* Image Column */}
             <Col
               xs={24}
               sm={24}
               md={24}
               lg={12}
               xl={12}
-              style={{ padding: "10px" }}
-              align="center"
+              className="order-1 lg:order-2 flex justify-center"
             >
-              <div className="masthead-image floating-1 relative">
+              <div className="masthead-image floating-1 relative w-full max-w-md lg:max-w-lg">
                 <img
                   src={assets.language_introduction}
                   alt="language introduction"
-                  className="rounded-lg"
+                  className="rounded-lg w-full h-auto"
                 />
-                <div className="bg-white absolute left-[-20px] top-[10%] rounded-xl p-4 floating-2">
-                  <div className="flex items-center gap-3">
-                    <FaLaptopCode className="text-2xl text-dark-2" />
-                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+
+                {/* Floating Cards - Responsive positioning */}
+                <div className="floating-card floating-card--top-left">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaLaptopCode className="text-lg sm:text-2xl text-dark-2" />
+                    <div className="whitespace-nowrap text-xs font-semibold text-secondary">
                       Web Developer
                     </div>
                   </div>
                 </div>
-                <div className="bg-white absolute left-[-40px] bottom-[30%] rounded-xl p-4 floating-2">
-                  <div className="flex items-center gap-3">
-                    <FaMobileAlt className="text-2xl text-dark-2" />
-                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+
+                <div className="floating-card floating-card--bottom-left">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaMobileAlt className="text-lg sm:text-2xl text-dark-2" />
+                    <div className="whitespace-nowrap text-xs font-semibold text-secondary">
                       Mobile Developer
                     </div>
                   </div>
                 </div>
-                <div className="bg-white absolute right-[-20px] top-0 rounded-xl p-4 floating-2">
-                  <div className="flex items-center gap-3">
-                    <TbCloudNetwork className="text-2xl text-dark-2" />
-                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+
+                <div className="floating-card floating-card--top-right">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <TbCloudNetwork className="text-lg sm:text-2xl text-dark-2" />
+                    <div className="whitespace-nowrap text-xs font-semibold text-secondary">
                       Network Engineer
                     </div>
                   </div>
                 </div>
-                <div className="bg-white absolute right-0 bottom-[10%] rounded-xl p-4 floating-2">
-                  <div className="flex items-center gap-3">
-                    <FaPaintBrush className="text-2xl text-dark-2" />
-                    <div class="whitespace-nowrap text-xs font-semibold text-secondary">
+
+                <div className="floating-card floating-card--bottom-right">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <FaPaintBrush className="text-lg sm:text-2xl text-dark-2" />
+                    <div className="whitespace-nowrap text-xs font-semibold text-secondary">
                       UX Design
                     </div>
                   </div>
@@ -164,6 +172,8 @@ const MastHead = () => {
             </Col>
           </Row>
         </div>
+
+        {/* Wave animations */}
         <div className="masthead__wave masthead__wave--1"></div>
         <div className="masthead__wave masthead__wave--2"></div>
         <div className="masthead__wave masthead__wave--3"></div>
