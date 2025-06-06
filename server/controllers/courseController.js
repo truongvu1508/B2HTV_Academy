@@ -1,6 +1,6 @@
 import Course from "../models/Course.js";
 
-//Get All Courses
+//Lay tat ca khoa hoc
 export const getAllCourse = async (req, res) => {
   try {
     const courses = await Course.find({ isPublished: true })
@@ -13,7 +13,7 @@ export const getAllCourse = async (req, res) => {
   }
 };
 
-//Get Course by Id
+//Lay khoa hoc theo ID
 export const getCourseId = async (req, res) => {
   const { id } = req.params;
 
