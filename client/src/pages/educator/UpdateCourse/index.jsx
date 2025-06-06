@@ -78,6 +78,7 @@ const UpdateCourse = () => {
         );
 
         if (courseResponse.data.success) {
+          console.log(courseResponse.data.courseData);
           const course = courseResponse.data.courseData;
           setCourseTitle(course.courseTitle);
           setCourseDescription(course.courseDescription);

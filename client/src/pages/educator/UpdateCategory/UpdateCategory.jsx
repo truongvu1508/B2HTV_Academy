@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext";
@@ -8,7 +7,7 @@ import Loading from "../../../components/student/Loading";
 
 const UpdateCategory = () => {
   const { backendUrl, getToken } = useContext(AppContext);
-  const { categoryId } = useParams(); // Match route param name
+  const { categoryId } = useParams();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
