@@ -44,7 +44,8 @@ function LayoutDefault() {
               <p className="mr-2">
                 Xin chào!{" "}
                 <span className="text-dark-1 font-bold">
-                  {user ? user.fullName : "Developer"}
+                  {/* {user ? user.fullName : "Developer"} */}
+                  Admin B2HTV
                 </span>
               </p>
               {user ? (
