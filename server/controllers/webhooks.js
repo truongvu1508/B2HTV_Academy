@@ -4,8 +4,7 @@ import Stripe from "stripe";
 import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
 
-// API Controller Function to Manage Clerk User with database
-
+// Xu ly webhook tu Clerk de quan ly nguoi dung
 export const clerkWebhooks = async (req, res) => {
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
@@ -17,6 +16,7 @@ export const clerkWebhooks = async (req, res) => {
 
     const { data, type } = req.body;
     switch (type) {
+      // Tao du lieu nguoi dung moi
       case "user.created": {
         const userData = {
           _id: data.id,
@@ -56,13 +56,17 @@ export const clerkWebhooks = async (req, res) => {
   }
 };
 
+// Khoi tao Stripe instance
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Xu ly webhook tu Stripe
 export const stripeWebhooks = async (request, response) => {
   const sig = request.headers["stripe-signature"];
 
   let event;
 
   try {
+    // Xac minh webhook tu Stripe
     event = Stripe.webhooks.constructEvent(
       request.body,
       sig,
@@ -72,8 +76,9 @@ export const stripeWebhooks = async (request, response) => {
     response.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle the event
+  // Xu ly su kien tu Stripe
   switch (event.type) {
+    // Thanh toan thanh cong
     case "payment_intent.succeeded": {
       const paymentIntent = event.data.object;
       const paymentIntentId = paymentIntent.id;
@@ -100,6 +105,7 @@ export const stripeWebhooks = async (request, response) => {
       break;
     }
 
+    // Thanh toan that bai
     case "payment_method.payment_failed": {
       const paymentIntent = event.data.object;
       const paymentIntentId = paymentIntent.id;
@@ -119,6 +125,5 @@ export const stripeWebhooks = async (request, response) => {
       console.log(`Unhandled event type ${event.type}`);
   }
 
-  // Return a response to acknowledge receipt of the event
   response.json({ received: true });
 };
