@@ -7,7 +7,7 @@ import User from "../models/User.js";
 import mongoose from "mongoose";
 import { CourseProgress } from "../models/CourseProgress.js";
 
-// Update role to educator
+// Cap nhat vai tro thanh giao vien
 export const updateRoleToEducator = async (req, res) => {
   try {
     const userId = req.auth.userId;
@@ -39,7 +39,7 @@ export const addCourse = async (req, res) => {
         .json({ success: false, message: "Ảnh không được đính kèm" });
     }
 
-    // Parse courseData
+    // Parse du lieu khoa hoc tu JSON
     let parsedCourseData;
     try {
       parsedCourseData = JSON.parse(courseData);
@@ -49,7 +49,7 @@ export const addCourse = async (req, res) => {
         .json({ success: false, message: "Dữ liệu khóa học không hợp lệ" });
     }
 
-    // Kiểm tra các trường bắt buộc
+    // Kiem tra cac truong bat buoc
     const { courseTitle, coursePrice, category } = parsedCourseData;
     if (!courseTitle || !coursePrice || !category) {
       return res.status(400).json({
@@ -58,7 +58,7 @@ export const addCourse = async (req, res) => {
       });
     }
 
-    // Kiểm tra danh mục
+    // Kiem tra danh muc co hop le va thuoc giao vien khong
     if (!mongoose.Types.ObjectId.isValid(category)) {
       return res
         .status(400)
@@ -75,7 +75,7 @@ export const addCourse = async (req, res) => {
       });
     }
 
-    // Gán educator và tạo khóa học
+    // Gan ID giao vien va tao khoa hoc moi
     parsedCourseData.educator = educatorId;
     const newCourse = await Course.create(parsedCourseData);
 
@@ -103,14 +103,14 @@ export const updateCourse = async (req, res) => {
     const imageFile = req.file;
     const educatorId = req.auth.userId;
 
-    // Validate courseId
+    // Kiem tra ID khoa hoc hop le
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res
         .status(400)
         .json({ success: false, message: "ID khóa học không hợp lệ" });
     }
 
-    // Parse courseData
+    // Parse du lieu khoa hoc
     let parsedCourseData;
     try {
       parsedCourseData = JSON.parse(courseData);
@@ -120,7 +120,7 @@ export const updateCourse = async (req, res) => {
         .json({ success: false, message: "Dữ liệu khóa học không hợp lệ" });
     }
 
-    // Normalize courseContent to ensure lectureUrl is optional
+    // Chuan hoa noi dung khoa hoc, dam bao lectureUrl khong bat buoc
     if (parsedCourseData.courseContent) {
       parsedCourseData.courseContent = parsedCourseData.courseContent.map(
         (chapter) => ({
@@ -131,7 +131,7 @@ export const updateCourse = async (req, res) => {
             lectureId: lecture.lectureId,
             lectureTitle: lecture.lectureTitle,
             lectureDuration: lecture.lectureDuration,
-            lectureUrl: lecture.lectureUrl || "", // Normalize to empty string
+            lectureUrl: lecture.lectureUrl || "",
             isPreviewFree: lecture.isPreviewFree || false,
             lectureOrder: lecture.lectureOrder,
           })),
@@ -139,7 +139,7 @@ export const updateCourse = async (req, res) => {
       );
     }
 
-    // Find the course
+    // Tim khoa hoc trong DB
     const course = await Course.findById(courseId);
     if (!course) {
       return res
@@ -147,7 +147,7 @@ export const updateCourse = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy khóa học" });
     }
 
-    // Check educator ownership
+    // Kiem tra quyen so huu khoa hoc
     if (course.educator !== educatorId) {
       return res.status(403).json({
         success: false,
@@ -155,7 +155,7 @@ export const updateCourse = async (req, res) => {
       });
     }
 
-    // Kiểm tra danh mục nếu được cập nhật
+    // Kiem tra danh muc neu duoc cap nhat
     if (parsedCourseData.category) {
       if (!mongoose.Types.ObjectId.isValid(parsedCourseData.category)) {
         return res
@@ -175,7 +175,7 @@ export const updateCourse = async (req, res) => {
       course.category = parsedCourseData.category;
     }
 
-    // Update course fields
+    // Cap nhat cac truong cua khoa hoc
     course.courseTitle = parsedCourseData.courseTitle || course.courseTitle;
     course.courseDescription =
       parsedCourseData.courseDescription || course.courseDescription;
@@ -184,7 +184,6 @@ export const updateCourse = async (req, res) => {
     course.courseContent =
       parsedCourseData.courseContent || course.courseContent;
 
-    // Handle image upload
     if (imageFile) {
       try {
         const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
@@ -199,7 +198,6 @@ export const updateCourse = async (req, res) => {
       }
     }
 
-    // Save updated course with relaxed validation
     await course.save({ validateModifiedOnly: true });
 
     res.json({ success: true, message: "Khóa học đã được cập nhật", course });
@@ -217,14 +215,14 @@ export const deleteCourse = async (req, res) => {
     const { courseId } = req.params;
     const educatorId = req.auth.userId;
 
-    // Validate courseId
+    // Kiem tra ID khoa hoc hop le
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res
         .status(400)
         .json({ success: false, message: "ID khóa học không hợp lệ" });
     }
 
-    // Find the course
+    // Tim khoa hoc
     const course = await Course.findById(courseId);
     if (!course) {
       return res
@@ -232,14 +230,13 @@ export const deleteCourse = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy khóa học" });
     }
 
-    // Check educator ownership
+    // Kiem tra quyen so huu
     if (course.educator !== educatorId) {
       return res
         .status(403)
         .json({ success: false, message: "Không có quyền xóa khóa học này" });
     }
 
-    // Delete the course
     await Course.findByIdAndDelete(courseId);
 
     res.json({ success: true, message: "Khóa học đã được xóa" });
@@ -251,10 +248,11 @@ export const deleteCourse = async (req, res) => {
   }
 };
 
-// Get Educator Courses
+// Lay danh sach khoa hoc cua giao vien
 export const getEducatorCourses = async (req, res) => {
   try {
     const educator = req.auth.userId;
+    // Tim khoa hoc va populate ten danh muc
     const courses = await Course.find({ educator }).populate(
       "category",
       "name"
@@ -269,13 +267,14 @@ export const getEducatorCourses = async (req, res) => {
   }
 };
 
-// Get Educator Dashboard Data
+// Lay du lieu dashboard giao vien
 export const educatorDashboardData = async (req, res) => {
   try {
     const educator = req.auth.userId;
     const timeFrame = req.query.timeFrame || "month";
-    const pieChartType = req.query.pieChartType || "course"; // New parameter
+    const pieChartType = req.query.pieChartType || "course";
 
+    // Tim tat ca khoa hoc cua giao vien
     const courses = await Course.find({ educator }).populate(
       "category",
       "name"
@@ -284,7 +283,7 @@ export const educatorDashboardData = async (req, res) => {
 
     const courseIds = courses.map((course) => course._id);
 
-    // Calculate total earnings
+    // Tinh tong doanh thu tu giao dich
     const purchases = await Purchase.find({
       courseId: { $in: courseIds },
       status: "completed",
@@ -295,7 +294,7 @@ export const educatorDashboardData = async (req, res) => {
       0
     );
 
-    // Collect unique enrolled student IDs for counting
+    // Tinh tong so hoc vien
     const allStudentIds = new Set();
     courses.forEach((course) => {
       course.enrolledStudents.forEach((studentId) => {
@@ -304,7 +303,7 @@ export const educatorDashboardData = async (req, res) => {
     });
     const totalStudents = allStudentIds.size;
 
-    // Collect enrolled students data (keep original logic)
+    // Lay du lieu hoc vien da ghi danh
     const enrolledStudentsData = [];
     for (const course of courses) {
       const students = await User.find(
@@ -322,13 +321,13 @@ export const educatorDashboardData = async (req, res) => {
       });
     }
 
-    // Generate sales data based on timeFrame
+    // Tao du lieu doanh thu theo khung thoi gian
     const salesByTimeFrame = await generateSalesByTimeFrame(
       purchases,
       timeFrame
     );
 
-    // Generate enrollment data based on pieChartType
+    // Tao du lieu ghi danh theo loai bieu do
     const enrollmentByChart = await generateEnrollmentData(
       courses,
       pieChartType
@@ -351,10 +350,10 @@ export const educatorDashboardData = async (req, res) => {
   }
 };
 
-// Generate enrollment data by chart type (course or category)
+// Tao du lieu ghi danh cho bieu do
 const generateEnrollmentData = async (courses, chartType = "course") => {
   if (chartType === "category") {
-    // Group by category
+    // Nhom theo danh muc
     const categoryData = {};
 
     courses.forEach((course) => {
@@ -368,13 +367,13 @@ const generateEnrollmentData = async (courses, chartType = "course") => {
       }
     });
 
-    // Convert to array format for chart
+    // Chuyen thanh mang cho bieu do
     return Object.keys(categoryData).map((categoryName) => ({
       type: categoryName,
       value: categoryData[categoryName],
     }));
   } else {
-    // Group by course (original logic)
+    // Nhom theo khoa hoc
     return courses.map((course) => ({
       type: course.courseTitle,
       value: course.enrolledStudents.length,
@@ -382,12 +381,11 @@ const generateEnrollmentData = async (courses, chartType = "course") => {
   }
 };
 
-// Generate sales data by time frame (month, quarter, year)
+// Tao du lieu doanh thu theo khung thoi gian
 const generateSalesByTimeFrame = async (purchases, timeFrame) => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear(); // Lay nam hien tai
 
   if (timeFrame === "month") {
-    // Initialization for months
     const months = [
       { month: "T1", sales: 0 },
       { month: "T2", sales: 0 },
@@ -412,39 +410,38 @@ const generateSalesByTimeFrame = async (purchases, timeFrame) => {
       const purchaseYear = purchaseDate.getFullYear();
 
       if (purchaseYear === currentYear) {
-        const monthIndex = purchaseDate.getMonth(); // 0-11
+        const monthIndex = purchaseDate.getMonth();
         months[monthIndex].sales += purchase.amount;
       }
     });
 
     return months;
   } else if (timeFrame === "quarter") {
-    // Initialization for quarters
     const quarters = [
-      { quarter: "Q1", sales: 0 }, // Jan-Mar
-      { quarter: "Q2", sales: 0 }, // Apr-Jun
-      { quarter: "Q3", sales: 0 }, // Jul-Sep
-      { quarter: "Q4", sales: 0 }, // Oct-Dec
+      { quarter: "Q1", sales: 0 },
+      { quarter: "Q2", sales: 0 },
+      { quarter: "Q3", sales: 0 },
+      { quarter: "Q4", sales: 0 },
     ];
 
     const completedPurchases = purchases.filter(
       (p) => p.status === "completed"
     );
 
+    // Tinh doanh thu theo quy
     completedPurchases.forEach((purchase) => {
       const purchaseDate = new Date(purchase.createdAt);
       const purchaseYear = purchaseDate.getFullYear();
-      const month = purchaseDate.getMonth(); // 0-11
+      const month = purchaseDate.getMonth();
 
       if (purchaseYear === currentYear) {
-        const quarterIndex = Math.floor(month / 3); // 0-3
+        const quarterIndex = Math.floor(month / 3);
         quarters[quarterIndex].sales += purchase.amount;
       }
     });
 
     return quarters;
   } else if (timeFrame === "year") {
-    // Initialization for years (current year only for simplicity)
     const years = [{ year: currentYear.toString(), sales: 0 }];
 
     const completedPurchases = purchases.filter(
@@ -473,10 +470,11 @@ const generateSalesByTimeFrame = async (purchases, timeFrame) => {
 //   }));
 // };
 
-// Get Enrolled Students Data
+// Lay du lieu hoc vien ghi danh
 export const getEnrolledStudentsData = async (req, res) => {
   try {
     const educator = req.auth.userId;
+    // Tim khoa hoc cua giao vien va populate danh muc
     const courses = await Course.find({ educator }).populate(
       "category",
       "name description"
@@ -497,23 +495,24 @@ export const getEnrolledStudentsData = async (req, res) => {
         },
       });
 
-    // Get all course progress data for enrolled students
+    // Lay du lieu tien do hoc tap
     const courseProgressData = await CourseProgress.find({
       courseId: { $in: courseIds.map((id) => id.toString()) },
     });
 
-    // Create a map for quick lookup of progress data
+    // Tao map de tra cuu tien do nhanh
     const progressMap = new Map();
     courseProgressData.forEach((progress) => {
       const key = `${progress.userId}-${progress.courseId}`;
       progressMap.set(key, progress);
     });
 
+    // Tao danh sach hoc vien ghi danh
     const enrolledStudents = purchases.map((purchase) => {
       const progressKey = `${purchase.userId._id}-${purchase.courseId._id}`;
       const progress = progressMap.get(progressKey);
 
-      // Calculate total lectures in the course
+      // Tinh tong so bai giang
       let totalLectures = 0;
       if (purchase.courseId.courseContent) {
         purchase.courseId.courseContent.forEach((chapter) => {
@@ -523,7 +522,7 @@ export const getEnrolledStudentsData = async (req, res) => {
         });
       }
 
-      // Calculate completed lectures
+      // Tinh so bai giang da hoan thanh va ty le tien do
       const completedLectures = progress ? progress.lectureCompleted.length : 0;
       const progressPercentage =
         totalLectures > 0
@@ -576,6 +575,7 @@ export const getAllUsers = async (req, res) => {
       },
     ]);
 
+    // Tao map de tra cuu tong chi tieu
     const purchaseMap = new Map(
       purchaseAggregates.map((purchase) => [
         purchase._id.toString(),
@@ -606,12 +606,12 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Update User Lock Status
+// Cap nhat trang thai khoa tai khoan
 export const updateUserLockStatus = async (req, res) => {
   try {
     const { userId, isLocked } = req.body;
 
-    // Validate userId
+    // Kiem tra userId
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -619,7 +619,7 @@ export const updateUserLockStatus = async (req, res) => {
       });
     }
 
-    // Find the user
+    // Kiem tra userId
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -628,7 +628,6 @@ export const updateUserLockStatus = async (req, res) => {
       });
     }
 
-    // Update the isLocked status
     user.isLocked = isLocked;
     await user.save();
 
@@ -648,7 +647,7 @@ export const updateUserLockStatus = async (req, res) => {
   }
 };
 
-// Get Educator Category
+// Lay danh muc cua giao vien
 export const getEducatorCategories = async (req, res) => {
   try {
     const educator = req.auth.userId;
@@ -664,7 +663,7 @@ export const getEducatorCategories = async (req, res) => {
   }
 };
 
-// Add Category
+// Them danh muc
 export const addCategory = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -698,7 +697,7 @@ export const addCategory = async (req, res) => {
   }
 };
 
-// Update Category
+// Cap nhat danh muc
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -724,7 +723,6 @@ export const updateCategory = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy danh mục" });
     }
 
-    // Kiểm tra quyền giáo viên
     if (category.educator !== educator) {
       return res.status(403).json({
         success: false,
@@ -752,7 +750,8 @@ export const updateCategory = async (req, res) => {
       .json({ success: false, message: "Lỗi máy chủ: " + error.message });
   }
 };
-// Delete Category
+
+// Xoa danh muc
 export const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -771,7 +770,6 @@ export const deleteCategory = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy danh mục" });
     }
 
-    // Kiểm tra quyền giáo viên
     if (category.educator !== educator) {
       return res
         .status(403)
