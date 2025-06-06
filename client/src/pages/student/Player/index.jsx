@@ -5,12 +5,19 @@ import { useParams } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import Navbar from "../../../components/student/Navbar";
 import Footer from "../../../components/student/Footer";
-import { FaAngleDown, FaCheckCircle, FaPlayCircle } from "react-icons/fa";
+import {
+  FaAngleDown,
+  FaCheckCircle,
+  FaPlayCircle,
+  FaUserGraduate,
+} from "react-icons/fa";
 import YouTube from "react-youtube";
 import Rating from "../../../components/student/Rating";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loading from "../../../components/student/Loading";
+import { CiClock1 } from "react-icons/ci";
+import { FaBookOpenReader } from "react-icons/fa6";
 
 // Cấu hình humanizeDuration cho tiếng Việt
 const vietnameseHumanizer = humanizeDuration.humanizer({
@@ -33,6 +40,8 @@ const Player = () => {
     getToken,
     userData,
     fetchUserEnrolledCourses,
+    calculateCourseDuration,
+    calculateNoOfLectures,
   } = useContext(AppContext);
   const { courseId } = useParams();
   const [courseData, setCourseData] = useState(null);
@@ -131,6 +140,29 @@ const Player = () => {
       <div className="p-4 sm:p-10 flex flex-col-reverse md:grid md:grid-cols-2 gap-10 md:px-36 md:py-18">
         {/* left column */}
         <div className="text-gray-800">
+          <h2 className="text-3xl font-bold text-dark-1">
+            {courseData.courseTitle}
+          </h2>
+
+          <div className="flex items-center text-sm md:text-default gap-4 pb-2 border-b border-gray md:pt-4 mb-10 ">
+            <div className="flex items-center gap-1">
+              <FaUserGraduate className="mr-1" />
+              <p>
+                {courseData.enrolledStudents.length} học viên
+                {/* {courseData.enrolledStudents.length > 1 ?  "students": "student"} */}
+              </p>
+            </div>
+            <div className="h-4 w-px bg-gray-500/40"></div>
+            <div className="flex items-center gap-1">
+              <CiClock1 className="mr-1" />
+              <p>{calculateCourseDuration(courseData)}</p>
+            </div>
+            <div className="h-4 w-px bg-gray-500/40"></div>
+            <div className="flex items-center gap-1">
+              <FaBookOpenReader className="mr-1" />
+              <p>{calculateNoOfLectures(courseData)} bài giảng</p>
+            </div>
+          </div>
           <h2 className="text-xl font-semibold">Nội dung khóa học</h2>
           <div className="pt-5">
             {courseData &&

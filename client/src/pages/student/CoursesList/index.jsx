@@ -56,7 +56,6 @@ const CoursesList = () => {
           return null;
         }
       });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       return detailedData.filter((data) => data !== null);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu khóa học:", error);

@@ -28,8 +28,6 @@ const CoursesSection = () => {
         }
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       return detailedData.filter((data) => data !== null);
     } catch (error) {
       toast.error({ success: false, message: error.message });
