@@ -86,40 +86,59 @@ const MyCategory = () => {
       {
         accessorKey: "name",
         header: "Tên danh mục",
+        size: 200, // Fixed width
         cell: ({ row }) => (
-          <div className="flex items-center space-x-3 truncate">
-            <span className="truncate hidden md:block">
-              {row.original.name}
-            </span>
+          <div className="flex items-center space-x-3">
+            <span className="truncate font-medium">{row.original.name}</span>
           </div>
         ),
       },
       {
         accessorKey: "description",
         header: "Mô tả",
-        cell: ({ getValue }) => (
-          <span className="truncate">{getValue() || "Không có mô tả"}</span>
-        ),
+        size: 300, // Fixed width for description
+        cell: ({ getValue }) => {
+          const description = getValue() || "Không có mô tả";
+          return (
+            <div className="max-w-xs group relative">
+              <span className="truncate block text-sm text-gray-700">
+                {description}
+              </span>
+              {/* Tooltip hiển thị full text khi hover */}
+              {description && description.length > 50 && (
+                <div className="absolute left-0 top-full mt-1 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 max-w-sm break-words shadow-lg">
+                  {description}
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         accessorKey: "createdAt",
         header: "Ngày tạo",
-        cell: ({ getValue }) => new Date(getValue()).toLocaleDateString(),
+        size: 120, // Fixed width
+        cell: ({ getValue }) => (
+          <span className="text-sm text-gray-600">
+            {new Date(getValue()).toLocaleDateString()}
+          </span>
+        ),
       },
       {
         id: "actions",
         header: "",
+        size: 100, // Fixed width for actions
         cell: ({ row }) => (
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 justify-end">
             <Link
               to={`/educator/update-category/${row.original._id}`}
-              className="text-blue-500 px-2 py-2 rounded hover:bg-blue-500 hover:text-white text-lg"
+              className="text-blue-500 px-2 py-2 rounded hover:bg-blue-500 hover:text-white text-lg transition-colors"
             >
               <FaEye />
             </Link>
             <button
               onClick={() => handleDeleteClick(row.original._id)}
-              className="text-red-500 px-2 py-2 rounded hover:bg-red-500 hover:text-white text-lg"
+              className="text-red-500 px-2 py-2 rounded hover:bg-red-500 hover:text-white text-lg transition-colors"
             >
               <FaTrash />
             </button>
@@ -188,50 +207,61 @@ const MyCategory = () => {
           </div>
         </div>
 
-        <div className="mt-4">
-          {/* Bảng */}
-          <table className="w-full bg-white border border-gray-500/20 text-left">
-            <thead className="border-b border-gray-500/20">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-4 py-3 text-sm font-semibold cursor-pointer"
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      <div className="flex items-center">
+        <div className="mt-4 overflow-x-auto">
+          {/* Bảng với responsive wrapper */}
+          <div className="min-w-full">
+            <table className="w-full bg-white border border-gray-500/20 text-left table-fixed">
+              <colgroup>
+                <col className="w-1/4 min-w-[150px]" /> {/* Tên danh mục */}
+                <col className="w-2/5 min-w-[200px]" /> {/* Mô tả */}
+                <col className="w-1/6 min-w-[120px]" /> {/* Ngày tạo */}
+                <col className="w-1/6 min-w-[100px]" /> {/* Actions */}
+              </colgroup>
+              <thead className="border-b border-gray-500/20">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-4 py-3 text-sm font-semibold cursor-pointer"
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <div className="flex items-center">
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: <FaSortUp className="ml-2" />,
+                            desc: <FaSortDown className="ml-2" />,
+                          }[header.column.getIsSorted()] ?? (
+                            <FaSort className="ml-2 opacity-50" />
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-gray-500/20 hover:bg-gray-50"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3 text-sm">
                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                          cell.column.columnDef.cell,
+                          cell.getContext()
                         )}
-                        {{
-                          asc: <FaSortUp className="ml-2" />,
-                          desc: <FaSortDown className="ml-2" />,
-                        }[header.column.getIsSorted()] ?? (
-                          <FaSort className="ml-2 opacity-50" />
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-gray-500/20">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-sm">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Phân trang tùy chỉnh */}
           <CustomPagination table={table} />
@@ -259,11 +289,10 @@ const MyCategory = () => {
               >
                 Hủy
               </button>
-              <button
+              <button>
                 onClick={deleteCategory}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Xóa
+                className="px-4 py-2 bg-red-600 text-white rounded-md
+                hover:bg-red-700"
               </button>
             </div>
           </div>
