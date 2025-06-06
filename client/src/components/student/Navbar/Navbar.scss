@@ -1,6 +1,7 @@
 li a {
   text-transform: uppercase;
 }
+
 .card,
 .user {
   font-size: 32px;
@@ -8,4 +9,44 @@ li a {
 
 .my-enrollments {
   padding: 10px;
+}
+
+// Mobile responsive styles
+@media (max-width: 1023px) {
+  .my-enrollments {
+    padding: 0;
+    background: transparent !important;
+
+    a {
+      background: var(--green-1) !important;
+      padding: 8px 16px !important;
+      border-radius: 4px;
+    }
+  }
+}
+
+// Additional mobile menu styles
+.mobile-menu-overlay {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+// Smooth transitions
+nav {
+  transition: all 0.3s ease;
+}
+
+// Mobile menu animation
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lg\\:hidden .absolute {
+  animation: slideDown 0.2s ease-out;
 }
