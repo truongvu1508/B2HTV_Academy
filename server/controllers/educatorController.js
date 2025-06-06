@@ -26,7 +26,7 @@ export const updateRoleToEducator = async (req, res) => {
   }
 };
 
-// Add New Course
+// Them khoa hoc
 export const addCourse = async (req, res) => {
   try {
     const { courseData } = req.body;
@@ -95,7 +95,7 @@ export const addCourse = async (req, res) => {
   }
 };
 
-// Update Course
+// Cap nhat khoa hoc
 export const updateCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
@@ -209,7 +209,7 @@ export const updateCourse = async (req, res) => {
   }
 };
 
-// Delete Course
+// Xoa khoa hoc
 export const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
